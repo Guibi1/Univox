@@ -18,12 +18,12 @@
 
 		<label class="flex flex-col gap w-full">
 			Nom d'utilisateur
-			<input value={username} type="text" class="h-10" />
+			<input bind:value={username} type="text" class="h-10" />
 		</label>
 
 		<label class="flex flex-col gap w-full">
 			Mot de passe
-			<input value={password} type="password" class="h-10" />
+			<input bind:value={password} type="password" class="h-10" />
 		</label>
 
 		<button class="self-end text-cyan-300 cursor-pointer">Mot de passe oublié?</button>
