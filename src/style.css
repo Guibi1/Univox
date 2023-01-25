@@ -2,7 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+	html {
+		font-family: Arial, Helvetica, sans-serif;
+	}
 
-html {
-    font-family: Arial, Helvetica, sans-serif;
+	h1 {
+		@apply text-4xl;
+	}
+
+	h2 {
+		@apply text-2xl;
+	}
+
+	h3 {
+		@apply text-xl;
+	}
+
+	input {
+		@apply rounded bg-gray-200 text-center text-gray-800;
+		@apply outline-none;
+		@apply focus-visible:border-2 focus-visible:border-gray-200;
+	}
+
+	button {
+	}
 }
