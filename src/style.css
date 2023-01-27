@@ -25,7 +25,11 @@
 		@apply focus-visible:border-2 focus-visible:border-gray-200;
 	}
 
-	button {
+	button,
+	[role='button'],
+	[type='button'],
+	[type='reset'],
+	[type='submit'] {
 		@apply h-10 rounded bg-cyan-300;
 	}
 
