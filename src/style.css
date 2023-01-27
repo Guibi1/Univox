@@ -3,44 +3,43 @@
 @tailwind utilities;
 
 @layer base {
-	html {
-		font-family: Arial, Helvetica, sans-serif;
-	}
+    html {
+        font-family: Arial, Helvetica, sans-serif;
+    }
 
-	h1 {
-		@apply text-2xl;
-	}
+    h1 {
+        @apply text-2xl;
+    }
 
-	h2 {
-		@apply text-xl;
-	}
+    h2 {
+        @apply text-xl;
+    }
 
-	h3 {
-		@apply text-lg;
-	}
+    h3 {
+        @apply text-lg;
+    }
 
-	input {
-		@apply rounded bg-gray-200 text-center text-gray-800;
-		@apply outline-none;
-		@apply focus-visible:border-2 focus-visible:border-gray-200;
-	}
+    input {
+        @apply h-10 rounded bg-gray-200 text-center text-gray-800 outline-none;
+        @apply focus-visible:border-2 focus-visible:border-gray-200;
+    }
 
-	button,
-	[role='button'],
-	[type='button'],
-	[type='reset'],
-	[type='submit'] {
-		@apply h-10 rounded bg-cyan-300;
-	}
+    button,
+    [role="button"],
+    [type="button"],
+    [type="reset"],
+    [type="submit"] {
+        @apply h-10 rounded bg-cyan-300;
+    }
 
-	label {
-		@apply grid gap-1 w-full;
-		@apply grid-rows-2 grid-cols-1;
-		grid-template-rows: min-content 1fr;
-		/* @apply 2xl:grid-rows-1 2xl:grid-cols-2; */
-	}
+    label {
+        @apply grid gap-1 w-full;
+        @apply grid-rows-2 grid-cols-1;
+        grid-template-rows: min-content 1fr;
+        /* @apply 2xl:grid-rows-1 2xl:grid-cols-2; */
+    }
 
-	a {
-		@apply text-cyan-300 cursor-pointer;
-	}
+    a {
+        @apply text-cyan-300 cursor-pointer;
+    }
 }

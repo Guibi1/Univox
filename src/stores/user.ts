@@ -1,31 +1,37 @@
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 interface User {
-	id: string;
-	username: string;
+    id: string;
+    username: string;
 }
 
 function createUserStore() {
-	const { subscribe, set } = writable<User | null>();
+    const { subscribe, set } = writable<User | null>();
 
-	function login(username: string, password: string) {
-		console.log('🚀 ~ file: user.ts:12 ~ login ~ username', username);
+    function login(username: string, password: string) {
+        set({
+            id: "id",
+            username,
+        });
+    }
 
-		set({
-			id: 'id',
-			username
-		});
-	}
+    function signup(fname: string, lname: string, username: string, password: string) {
+        set({
+            id: "id",
+            username,
+        });
+    }
 
-	function signout() {
-		set(null);
-	}
+    function signout() {
+        set(null);
+    }
 
-	return {
-		subscribe,
-		login,
-		signout
-	};
+    return {
+        subscribe,
+        login,
+        signup,
+        signout,
+    };
 }
 
 const user = createUserStore();
