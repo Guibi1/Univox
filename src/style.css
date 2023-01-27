@@ -8,15 +8,15 @@
 	}
 
 	h1 {
-		@apply text-4xl;
-	}
-
-	h2 {
 		@apply text-2xl;
 	}
 
-	h3 {
+	h2 {
 		@apply text-xl;
+	}
+
+	h3 {
+		@apply text-lg;
 	}
 
 	input {
@@ -26,5 +26,17 @@
 	}
 
 	button {
+		@apply h-10 rounded bg-cyan-300;
+	}
+
+	label {
+		@apply grid gap-1 w-full;
+		@apply grid-rows-2 grid-cols-1;
+		grid-template-rows: min-content 1fr;
+		/* @apply 2xl:grid-rows-1 2xl:grid-cols-2; */
+	}
+
+	a {
+		@apply text-cyan-300 cursor-pointer;
 	}
 }
