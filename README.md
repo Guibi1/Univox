@@ -15,6 +15,9 @@ Nous pensons qu'il manque d'outils à la dispostion des étudiants pour partager
 Ainsi, nous avons décider de développer une application web pour répondre à ces besoins. Cette application permettra aux étudiants de s'organiser clairement dans un environnement commun. Les utilisateurs pourront uploader leurs horraires sur notre site qui le lira automatiquement
 
 - L'architecture : 
-Pour le front-end, nous allons utiliser les combinaisons classiques de HTML, CSS et JavaScript pour l'affichage du site. Tailwind, une librairie CSS, nous permettera 
+Pour le front-end, nous allons utiliser les combinaisons classiques de HTML, CSS et JavaScript pour l'affichage du site. Tailwind, une librairie CSS, nous permettera de  
+csharp asp - ado
+java springboot-jdbc - hibernate
+pyhton django4
 
 
