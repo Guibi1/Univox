@@ -9,6 +9,8 @@ function createUserStore() {
 	const { subscribe, set } = writable<User | null>();
 
 	function login(username: string, password: string) {
+		console.log('🚀 ~ file: user.ts:12 ~ login ~ username', username);
+
 		set({
 			id: 'id',
 			username
@@ -26,4 +28,5 @@ function createUserStore() {
 	};
 }
 
-export const user = createUserStore();
+const user = createUserStore();
+export default user;
