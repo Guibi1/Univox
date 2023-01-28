@@ -1,45 +1,33 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    let vendre: boolean = true;
-    page.subscribe((page) => vendre = page.url.pathname.endsWith("/achat"));
+    import { page } from "$app/stores";
 
+    const data = {
+        vendre: {
+            href: "mes-livres",
+            iconName: "book-add",
+            text: "Vendre",
+        },
+        acheter: {
+            href: "achat",
+            iconName: "book-heart",
+            text: "Acheter",
+        },
+    };
+
+    let current: keyof typeof data = "vendre";
+    page.subscribe(
+        (page) => (current = page.url.pathname.endsWith("/achat") ? "vendre" : "acheter")
+    );
 </script>
-
-<a href={vendre ? "mes-livres" : "achat"}>
-    <button> 
-        {#if vendre}
-            <box-icon name='book-add'></box-icon>
-            Vendre
-    
-            {:else}
-            <box-icon name='book-add'></box-icon>
-            Acheter
-        {/if}
-    </button>
-</a>
-
 
 <slot />
 
-
-
-
-<style> 
-    button {
-        @apply absolute rounded-full;
-        @apply right-12 bottom-10;
-
-        @apply gap-3 p-5;
-        @apply text-2xl w-44 h-14;
-
-        @apply text-black;
-        
-
-
-    }
-
-    box-icon {
-            @apply h-10 w-10;
-
-        }
-</style>
+<a
+    href={data[current].href}
+    class="absolute right-8 bottom-8 w-40 flex items-center gap-0.5 p-2 px-4 text-2xl text-black bg-cyan-300 rounded-full"
+>
+    <box-icon name={data[current].iconName} class="h-8 w-8" />
+    <span class="flex-1 text-center">
+        {data[current].text}
+    </span>
+</a>

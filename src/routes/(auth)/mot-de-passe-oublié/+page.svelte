@@ -2,7 +2,7 @@
     import user from "@stores/user";
     let email = "";
 </script>
-    
+
 <form class="flex flex-col justify-between gap-6">
     <h1 class="text-center">Mot de passe oublié</h1>
 
