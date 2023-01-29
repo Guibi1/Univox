@@ -6,7 +6,7 @@
         vendre: {
             href: "mes-livres",
             iconName: "book-add",
-            text: "Vendre",
+            text: "Mes livres",
         },
         acheter: {
             href: "achat",
@@ -27,7 +27,7 @@
 
 <a
     href={data[current].href}
-    class="absolute right-8 bottom-8 w-40 flex items-center gap-0.5 p-2 px-4 text-2xl text-black bg-cyan-300 rounded-full"
+    class="absolute right-8 bottom-8 w-44 flex items-center gap-0.5 p-2 px-4 text-2xl text-black bg-cyan-300 rounded-full"
 >
     <box-icon name={data[current].iconName} class="h-8 w-8" />
     <span class="flex-1 text-center">
