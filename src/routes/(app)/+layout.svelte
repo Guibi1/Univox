@@ -13,11 +13,23 @@
     onDestroy(page.subscribe((page) => (pathname = page.url.pathname)));
 </script>
 
-<div class="overflow-hidden bg-gray-700">
-    {#each pages as page}
-        <a data-active={pathname.startsWith(page.href)} href={page.href}>{page.title}</a>
-    {/each}
-</div>
+<nav class="bg-gray-700">
+    <ul class="flex flex-row h-10">
+        {#each pages as page}
+            <li
+                class={"flex justify-center h-10 hover:bg-cyan-100 p-8" +
+                pathname.startsWith(page.href)
+                    ? "bg-green-300"
+                    : ""}
+            >
+                <a
+                    data-active={pathname.startsWith(page.href)}
+                    href={page.href}
+                    class="text-white text-center hover:text-black"
+                    >{page.title}
+                </a>
+            </li>
+        {/each}
     </ul>
 </nav>
 
