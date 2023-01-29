@@ -1,11 +1,27 @@
-<div class="overflow-hidden bg-gray-700">
-    <a class="active" href="#home">Home</a>
-    <a href="#news">News</a>
-    <a href="#contact">Contact</a>
-    <a href="#about">About</a>
-  </div> 
+<script lang="ts">
+    import { page } from "$app/stores";
+    import { onDestroy } from "svelte";
 
-  <style>
+    const pages = [
+        { href: "/menu", title: "Menu" },
+        { href: "/livres/achat", title: "Livres" },
+        { href: "/horaire", title: "Horaires" },
+        { href: "/amis", title: "Amis" },
+    ];
+
+    let pathname: string = "";
+    onDestroy(page.subscribe((page) => (pathname = page.url.pathname)));
+</script>
+
+<div class="overflow-hidden bg-gray-700">
+    {#each pages as page}
+        <a data-active={pathname.startsWith(page.href)} href={page.href}>{page.title}</a>
+    {/each}
+</div>
+
+<slot />
+
+<style>
     div a {
         float: left;
         color: #f2f2f2;
@@ -17,14 +33,12 @@
 
     div a:hover {
         background-color: #ddd;
-        color: black
+        color: black;
     }
 
-    div a.active {
-        background-color: #04AA6D;
+    div a[data-active="true"] {
+        
+        background-color: #04aa6d;
         color: white;
     }
-
-  </style>
-
-<slot></slot>
+</style>
