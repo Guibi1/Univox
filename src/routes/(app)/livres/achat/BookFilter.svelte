@@ -1,14 +1,16 @@
 <script lang="ts">
-    export let filters;
+    export let filters: string[];
 
-    filters = { test: "asdfasd" };
+    let selectedFilters: string[] = [];
 </script>
 
-<div>
-    <ul>
-        <li>matiere 1</li>
-        <li>matiere 2</li>
-        <li>matiere 3</li>
-        <li>matiere 4</li>
-    </ul>
-</div>
+<ul class="border-4 w-fit p-2 self-center">
+    {#each filters as filter}
+        <li>
+            <label class=" flex flex-row items-center gap-2">
+                <input type="checkbox" bind:group={selectedFilters} value={filter} />
+                {filter}
+            </label>
+        </li>
+    {/each}
+</ul>
