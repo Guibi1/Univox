@@ -26,7 +26,7 @@
                 <a
                     href={page.href}
                     class={"flex items-center h-10 px-4 text-white text-center hover:text-black hover:bg-zinc-400 " +
-                        (pathname.startsWith(page.href) ? "bg-zinc-600" : "")}>{page.title}</a
+                        (pathname.startsWith(page.href) ? "bg-green-500" : "")}>{page.title}</a
                 >
             </li>
         {/each}
