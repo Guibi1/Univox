@@ -1,5 +1,5 @@
 <script lang="ts">
-    import user from "@stores/user";
+    import user from "$lib/stores/user";
     let fname = "";
     let lname = "";
     let email = "";
