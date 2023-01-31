@@ -1,8 +1,8 @@
 <script lang="ts">
-    import user from "@stores/user";
+    import user from "$lib/stores/user";
     let email = "";
 </script>
-    
+
 <form class="flex flex-col justify-between gap-6">
     <h1 class="text-center">Mot de passe oublié</h1>
 

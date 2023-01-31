@@ -1,5 +1,5 @@
 <script lang="ts">
-    import logo from "@assets/logo.webp";
+    import logo from "$assets/logo.webp";
 </script>
 
 <div class="min-h-screen flex justify-evenly items-center bg-stone-200">
