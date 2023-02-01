@@ -6,8 +6,9 @@ const config: UserConfig = {
     plugins: [sveltekit()],
     resolve: {
         alias: {
-            "@src": path.resolve("./src"),
-            "@stores": path.resolve("./src/stores"),
+            $lib: path.resolve("./src/lib"),
+            $src: path.resolve("./src"),
+            $assets: path.resolve("./src/assets"),
         },
     },
 };

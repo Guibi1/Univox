@@ -11,8 +11,10 @@
         "strict": true,
         "isolatedModules": true,
         "paths": {
-            "@src/*": ["./src/*"],
-            "@stores/*": ["./src/stores/*"]
+            "$lib": ["./src/lib"],
+            "$lib/*": ["./src/lib/*"],
+            "$src/*": ["./src/*"],
+            "$assets/*": ["./src/assets/*"]
         }
     }
     // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
