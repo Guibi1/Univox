@@ -15,7 +15,7 @@ test("evaluate performance metrics", async ({ page }) => {
     await univox.goto();
 
     // Inject a PerformanceObserver and access web performance metrics
-    const LCP = await univox.evaluate(() => {
+    const LCP = await page.evaluate(() => {
         return new Promise((resolve) => {
             new PerformanceObserver((list) => {
                 const entries = list.getEntries();
