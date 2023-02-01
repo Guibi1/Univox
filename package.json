@@ -12,7 +12,6 @@
         "format": "prettier --plugin-search-dir . --write ."
     },
     "dependencies": {
-        "@playwright/test": "^1.30.0",
         "boxicons": "^2.1.4"
     },
     "devDependencies": {
@@ -20,6 +19,7 @@
         "@sveltejs/kit": "^1.3.2",
         "@typescript-eslint/eslint-plugin": "^5.49.0",
         "@typescript-eslint/parser": "^5.49.0",
+        "@playwright/test": "^1.30.0",
         "autoprefixer": "^10.4.13",
         "eslint": "^8.28.0",
         "eslint-config-prettier": "^8.5.0",
