@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { UnivoxPage } from "../checkly.config";
+import { UnivoxPage } from "./univoxPage";
 
 test("load site and take a screenshot", async ({ page }) => {
     const univox = UnivoxPage(page);
