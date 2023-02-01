@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import { onDestroy } from "svelte";
     import BookFilter from "./BookFilter.svelte";
     import BookList from "./BookList.svelte";
 
@@ -23,7 +22,7 @@
     let filters: string[] = ["matière 1", "matière 2", "AAAAAAAAAAAAAAAAAaa", "A"];
 
     let bookId: string | null;
-    onDestroy(page.subscribe((page) => (bookId = page.url.searchParams.get("bookId"))));
+    $: bookId = $page.url.searchParams.get("bookId");
 </script>
 
 <div>

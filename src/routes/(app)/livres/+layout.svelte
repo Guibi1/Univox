@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import { onDestroy } from "svelte";
 
     const data = {
         vendre: {
@@ -15,12 +14,8 @@
         },
     };
 
-    let current: keyof typeof data = "vendre";
-    onDestroy(
-        page.subscribe(
-            (page) => (current = page.url.pathname.endsWith("/achat") ? "vendre" : "acheter")
-        )
-    );
+    let current: keyof typeof data;
+    $: current = $page.url.pathname.endsWith("/achat") ? "vendre" : "acheter";
 </script>
 
 <slot />
