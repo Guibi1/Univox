@@ -12,6 +12,7 @@
         "format": "prettier --plugin-search-dir . --write ."
     },
     "dependencies": {
+        "@playwright/test": "^1.30.0",
         "boxicons": "^2.1.4"
     },
     "devDependencies": {
