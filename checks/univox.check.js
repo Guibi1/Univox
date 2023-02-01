@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { UnivoxPage } from "./univoxPage";
 
 test("load site and take a screenshot", async ({ page }) => {
-    const univox = UnivoxPage(page);
+    const univox = new UnivoxPage(page);
     const res = await univox.goto();
 
     expect(res.status()).toBeLessThan(400);
@@ -11,7 +11,7 @@ test("load site and take a screenshot", async ({ page }) => {
 });
 
 test("evaluate performance metrics", async ({ page }) => {
-    const univox = UnivoxPage(page);
+    const univox = new UnivoxPage(page);
     await univox.goto();
 
     // Inject a PerformanceObserver and access web performance metrics
