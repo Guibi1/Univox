@@ -1,6 +1,11 @@
-<script>
+<script lang="ts">
+    import { onMount } from "svelte";
     import "../style.css";
-    import "boxicons";
+
+    onMount(() => {
+        // @ts-ignore
+        import("boxicons");
+    });
 </script>
 
 <slot />
