@@ -13,6 +13,7 @@ Nous sommes des étudiants au Collège Bois-De-Boulogne dans le programme de Sci
 - Le besoin :
 Il n'existe pas de solution qui centralise certains besoins étudiants, soit les échanges d'horaire et les organisations de groupe, les échanges de matériel scolaire et un moyen innovateur de trouver des partenaires de casiers lorqu'on ne connait personne.
 
+- L'idée :
 Il arrive souvent que les étudiant.e.s aient à consulter leurs horaire et celui d'autres personnes pour organiser des rencontres ou des activités à plusieurs; dans ces cas-là, il faut que ces dernier.e.s partagent leurs horaires et trouvent eux-mêmes les moments où tout le monde est disponible, ce qui peut parfois être laborieux s'il y a beaucoup de personnes impliquées.
 
 Aussi, il n'existe pas de solution d'échange de matériel scolaire usagé entre élèves spécialisé: la Coop permet de vendre et d'acheter des livres usagés, mais le vendeur doit faire la démarche d'aller rendre son ouvrage et l'acheteur doit le payer à la Coop.
