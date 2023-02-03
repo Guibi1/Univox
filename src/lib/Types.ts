@@ -1,7 +1,9 @@
-type Book = {
+export type Book = {
     id: string;
     title: string;
+    ISBN: string;
+    src: string;
     author: string;
     price: number;
-    etat: string;
+    state: string;
 };
