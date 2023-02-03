@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import type { Book } from "$lib/Types";
     import BookFilter from "./BookFilter.svelte";
     import BookList from "./BookList.svelte";
 
@@ -8,15 +9,19 @@
             id: "1",
             price: 10.0,
             author: "The holy fish",
-            etat: "En état de décomposition!",
+            state: "En état de décomposition!",
             title: "The history of this horrible project!",
+            ISBN: "",
+            src: "",
         },
         {
             id: "2",
             price: 20.99,
             author: "MAMA",
-            etat: "En mode correct",
+            state: "En mode correct",
             title: "Joe",
+            ISBN: "",
+            src: "",
         },
     ];
     let filters: string[] = ["matière 1", "matière 2", "AAAAAAAAAAAAAAAAAaa", "A"];
