@@ -64,7 +64,7 @@
 <h1 class="text-center pt-2 dark:bg-neutral-900">Acheter des livres</h1>
 
 <div
-    class="sticky top-0 z-50 p-6 flex justify-center border-b dark:bg-neutral-900 dark:border-neutral-500"
+    class="sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500"
 >
     <div class="w-1/2 flex flex-row gap-3 items-center ml-10">
         <input
