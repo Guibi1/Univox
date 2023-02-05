@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import logo from "$assets/logo.webp";
+    import colorScheme, { colorSchemeIsDark } from "$lib/stores/colorScheme";
 
     const pages = [
         { href: "/", title: "Accueil" },
@@ -27,6 +28,10 @@
     <div class="h-full flex flex-row items-center gap-2">
         <img class="h-full aspect-square p-1" src={logo} alt="Univox's logo" />
         <h1 class="text-white">UNIVOX</h1>
+
+        <button on:click={colorScheme.toggle} class="rounded-full p-1 h-8 aspect-square">
+            <box-icon name={$colorSchemeIsDark ? "moon" : "sun"} class="w-full h-full" />
+        </button>
     </div>
 
     <ul class="flex flex-row justify-between items-center">
