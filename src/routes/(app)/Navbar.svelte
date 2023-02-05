@@ -29,7 +29,10 @@
         <img class="h-full aspect-square p-1" src={logo} alt="Univox's logo" />
         <h1 class="text-white">UNIVOX</h1>
 
-        <button on:click={colorScheme.toggle} class="rounded-full p-1 h-8 aspect-square">
+        <button
+            on:click={colorScheme.toggle}
+            class="rounded-lg p-1 h-8 aspect-square border-2 border-zinc-400 hover:border-zinc-300 bg-transparent hover:bg-zinc-500 dark:border-neutral-600 dark:hover:border-neutral-500 dark:hover:bg-neutral-800"
+        >
             <box-icon name={$colorSchemeIsDark ? "moon" : "sun"} class="w-full h-full" />
         </button>
     </div>
