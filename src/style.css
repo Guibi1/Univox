@@ -9,15 +9,23 @@
         min-height: 100dvh;
     }
 
+    body {
+        @apply dark:bg-neutral-800 dark:text-white dark:fill-white;
+    }
+
     h1 {
-        @apply text-2xl;
+        @apply text-4xl;
     }
 
     h2 {
-        @apply text-xl;
+        @apply text-2xl;
     }
 
     h3 {
+        @apply text-xl;
+    }
+
+    h4 {
         @apply text-lg;
     }
 

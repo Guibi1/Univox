@@ -4,7 +4,7 @@
     let selectedFilters: string[] = [];
 </script>
 
-<ul class="border-4 w-fit p-2 self-center">
+<ul class="border-4 w-fit p-2">
     {#each filters as filter}
         <li>
             <label class=" flex flex-row items-center gap-2">
