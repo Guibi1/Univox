@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import type { Book } from "$lib/Types";
 
     export let books: Book[];
 
@@ -8,28 +9,40 @@
     }
 </script>
 
-<ul>
+<ul class="flex flex-col">
     {#each books as book}
         <li
-            class="grid p-4 bg-zinc-300 border-2 border-zinc-400 rounded-xl cursor-pointer"
+            class="grid grid-cols-[8rem_1fr_5rem] grid-rows-[min-content_min-content_1fr_min-content] gap-x-6 p-6 border-neutral-300 border-b-2 cursor-pointer"
             on:click={() => openBook(book)}
             on:keypress={() => openBook(book)}
         >
-            <span class="flex items-baseline gap-1">
-                <h3>{book.title}</h3>
-                <small>de</small>
-                <i>{book.author}</i>
+            <img
+                src={book.src}
+                class="row-span-full object-cover w-full max-h-[12rem]"
+                alt="Couverture du livre"
+            />
+
+            <span class="flex flex-col justify-between">
+                <b>{book.title}</b>
             </span>
-            <span class="row-span-2"
-                >{book.price.toLocaleString("fr-ca", { style: "currency", currency: "CAD" })}</span
+
+            <span class="row-span-3 col-start-3 text-right text-lg">
+                {book.price.toLocaleString("fr-ca", {
+                    style: "currency",
+                    currency: "CAD",
+                })}
+            </span>
+
+            <span class="italic">
+                <small>de</small>
+                {book.author}</span
             >
-            <span>{book.etat}</span>
+
+            <span class="py-2">{book.state}</span>
+
+            <small class="italic">ISBN: {book.ISBN}</small>
+
+            <a href={`?bookId=${book.id}`} class="text-right">Détails ></a>
         </li>
     {/each}
 </ul>
-
-<style>
-    li {
-        grid-template: 1fr 2fr / 1fr 5rem;
-    }
-</style>
