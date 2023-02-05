@@ -3,10 +3,10 @@ import { writable } from "svelte/store";
 export type ColorScheme = "light" | "dark";
 
 function createColorSchemeStore() {
-    const { subscribe, set } = writable<ColorScheme>("dark");
+    const { subscribe, set: setStore } = writable<ColorScheme>("dark");
 
-    function setColorScheme(color: ColorScheme) {
-        set(color);
+    function set(color: ColorScheme) {
+        setStore(color);
         fetch("/api/colorScheme", {
             method: "PUT",
             body: color,
@@ -17,10 +17,17 @@ function createColorSchemeStore() {
         }
     }
 
+    function toggle() {
+        let color;
+        subscribe((c) => (color = c))();
+        set(color === "dark" ? "light" : "dark");
+    }
+
     return {
         subscribe,
-        set: setColorScheme,
-        setInitial: set,
+        setInitial: setStore,
+        set,
+        toggle,
     };
 }
 
