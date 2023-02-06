@@ -54,7 +54,9 @@ export async function fetchSchedule(
         },
     });
 
-    return parseSchedule(await visualiseRes.text());
+    const buffer = await visualiseRes.arrayBuffer();
+    const decoder = new TextDecoder("iso-8859-1");
+    return parseSchedule(decoder.decode(buffer));
 }
 
 /**
