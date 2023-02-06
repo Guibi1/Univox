@@ -1,11 +1,14 @@
 import type { RequestHandler } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 
-export const POST = (async ({ request }) => {
-    return await fetch("http://localhost:3000/api/omnivox/schedule", {
-        headers: {
-            "content-type": "application/json",
-        },
-        method: "POST",
-        body: await request.text(),
-    });
+import { fetchSchedule, login, Semester } from "$lib/server/omnivox";
+
+export const POST = (async ({ request, setHeaders }) => {
+    const data = await request.json();
+
+    const cookie = await login(data.da, data.password);
+    const schedule = await fetchSchedule(cookie, 2023, Semester.Winter);
+
+    setHeaders({ "content-type": "application/json" });
+    return json(schedule);
 }) satisfies RequestHandler;
