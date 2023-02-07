@@ -2,6 +2,11 @@ import type { Handle } from "@sveltejs/kit/types/internal";
 
 export const handle = (async ({ event, resolve }) => {
     const response = await resolve(event);
+    if (response.headers.get("content-type") !== "text/html") {
+        return response;
+    }
+
+    // If its an HTML page
     const headers = response.headers;
     headers.delete("content-length");
 
@@ -12,7 +17,8 @@ export const handle = (async ({ event, resolve }) => {
     );
 
     return new Response(body, {
-        ...response,
+        status: response.status,
+        statusText: response.statusText,
         headers: headers,
     });
 }) satisfies Handle;
