@@ -28,18 +28,16 @@ Nous sommes des étudiants au Collège Bois-De-Boulogne. Nous étudions dans le 
   
   De plus, il n'y a pas un solution simple d'échange de matériel scolaire entre élèves :
   La Coop permet de vendre et d'acheter des livres usagés, mais le processus est difficile ;
-  L'élève doit aller à la coop dans une plage horaire précise afin de remettre c'est livre et espérer que le vendeur accèpte ces livres. Puis trouver ces livres usagés
-  est aussi compliqué. Pour cette raison, les élèves n'utilisent pas forcément beaucoup ce   service et ils doivent chercher eux-même parmis leurs contacts ou sur des
-  sites de vente non spécialisés (ex.: Kijiji).
-  
+
+  L'élève doit aller à la coop dans une plage horaire précise afin de remettre c'est livre et espérer que le vendeur accèpte ces livres. Puis trouver ces livres usagés est aussi compliqué. Pour cette raison, les élèves n'utilisent pas forcément beaucoup ce  service et ils doivent chercher eux-même parmis leurs contacts ou sur des sites externes (ex.: Kijiji).
+
   Finalement, il est aussi compliqué de se trouver un compagnon de casier si on ne connait personne.
-  On n'a non plus l'option de s'inscrire individuellement afin de se
-  faire placer automatiquement, on est réellement obligé de s'inscrire avec quelqu'un.
+  On n'a non plus l'option de s'inscrire individuellement afin de se faire placer automatiquement, on est réellement obligé de s'inscrire avec quelqu'un.
   
   Pour chacun de ces problèmes, il n'existe pas de solutions simples et organisés autour d'un environnement étudiant.
   De plus, au-delà d'une optique estudiantine, il n'existe pas de solution regroupant les services qui répondraient à ces problèmes.
   
-  Notre projet en est la solution.
+  Notre projet essai de régler ces problèmes.
   
 - La solution :
 
