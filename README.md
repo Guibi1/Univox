@@ -26,18 +26,18 @@ Nous sommes des étudiants au Collège Bois-De-Boulogne. Nous étudions dans le 
   le monde est disponible en cherchant à travers plusieurs encadrés de la même couleurs et sans-code de couleur. Ceci est bien-sûr laborieux, et encore plus difficile
   s'il y a beaucoup de personnes impliquées.
   
-  De plus, il n'y a pas un solution simple d'échange de matériel scolaire entre élèves :
-  La Coop permet de vendre et d'acheter des livres usagés, mais le processus est difficile ;
+  De plus, il n'y a pas de solution simple d'échange de matériel scolaire entre élèves :
+  La Coop permet de vendre et d'acheter des livres usagés, mais le processus est peu mis en avant ;
 
-  L'élève doit aller à la coop dans une plage horaire précise afin de remettre c'est livre et espérer que le vendeur accèpte ces livres. Puis trouver ces livres usagés est aussi compliqué. Pour cette raison, les élèves n'utilisent pas forcément beaucoup ce  service et ils doivent chercher eux-même parmis leurs contacts ou sur des sites externes (ex.: Kijiji).
+  L'élève doit se rendre à la coop dans une plage horaire précise afin de remettre ses livres usagés et ensuite c'est la coop qui se charge de la revente; cela pose deux problèmes: d'abord, le fait qu'il faille se déplacer pour mettre son matériel usagé en vente et ensuite, le fait que cette pratique soit assez peu mise en avant: par exemple, un tel service n'est pas visible sur le site de la Coop BdeB. Pour ces raisons, les élèves ou anciens élèves qui souhaitent vendre ou échanger du matériel scolaire dont ils ou elles n'ont plus l'utilité se rendent sur des sites tiers (ex.: Kijiji).
 
   Finalement, il est aussi compliqué de se trouver un compagnon de casier si on ne connait personne.
-  On n'a non plus l'option de s'inscrire individuellement afin de se faire placer automatiquement, on est réellement obligé de s'inscrire avec quelqu'un.
+  L'option de s'inscrire individuellement afin de se faire placer automatiquement n'existant plus, on est obligé de s'inscrire avec quelqu'un.
   
-  Pour chacun de ces problèmes, il n'existe pas de solutions simples et organisés autour d'un environnement étudiant.
+  Pour chacun de ces problèmes, il n'existe pas de solution simple et organisé autour d'un environnement étudiant.
   De plus, au-delà d'une optique estudiantine, il n'existe pas de solution regroupant les services qui répondraient à ces problèmes.
   
-  Notre projet essai de régler ces problèmes.
+  Notre projet essai de remédier à cela.
   
 - La solution :
 
