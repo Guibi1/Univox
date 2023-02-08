@@ -7,27 +7,40 @@
 Univox
 
 - Auteurs :
-Laurent Stephane, Maxime Rodgers, Henri-Louis Charbonneau, Eliott Bonnefoy, Alexandre Veregut.
-Nous sommes des étudiants au Collège Bois-De-Boulogne dans le programme de Science Informatique et Mathématique qui se sont regrouppés pour créer une application web dans le cadre de notre d'un projet d'intégration de la fin de notre programme
+Notre équipe est composer de :
+  Laurent Stephane
+  Maxime Rodgers
+  Henri-Louis Charbonneau
+  Eliott Bonnefoy
+  Alexandre Veregut
+  
+Nous sommes des étudiants au Collège Bois-De-Boulogne. Nous étudions dans le programme de Science Informatique et Mathématique, et nous nous sommes regrouppés pour créer une application web dans le cadre de notre cours.
 
 - Quel(s) sont le(s) problème(s) ? :
 
-  Dans le cadre du Cégep:
+  Dans le cadre du Cégep, nous avons trouvé quelques petits problèmes:
   
-  Il arrive souvent que les étudiant.e.s aient à consulter leurs horaire et celui d'autres personnes pour organiser des rencontres ou des activités à plusieurs; dans
-  ces cas-là, il faut que ces dernier.e.s partagent leurs horaires et trouvent eux-mêmes les moments où tout le monde est disponible, ce qui peut parfois être
-  laborieux s'il y a beaucoup de personnes impliquées.
+  Il arrive souvent que les étudiant(e)s aient à consulter leur horaire et celui des autres pour organiser des rencontres ou des activités en groupe;
+  Par exemple, pour des projet ou des sortits entre amis;
+  Dans ces cas-là, il est compliqué de s'organiser parce qu'il faut non-seulement arriver à partager les horaires entre-eux, mais aussi à trouver les moments où tout
+  le monde est disponible en cherchant à travers plusieurs encadrés de la même couleurs et sans-code de couleur. Ceci est bien-sûr laborieux, et encore plus difficile
+  s'il y a beaucoup de personnes impliquées.
   
-  De plus, il n'existe pas de solution d'échange de matériel scolaire usagé entre élèves spécialisé: la Coop permet de vendre et d'acheter des livres usagés, mais le
-  vendeur doit faire la démarche d'aller rendre son ouvrage et l'acheteur doit le payer à la Coop. Pour cette raison, les élèves n'utilisent pas forcément beaucoup ce service et ils doivent chercher eux-même parmis leurs contacts ou sur des sites de vente non spécialisés (ex.: Kijiji).
+  De plus, il n'y a pas un solution simple d'échange de matériel scolaire entre élèves :
+  La Coop permet de vendre et d'acheter des livres usagés, mais le processus est difficile ;
+  L'élève doit aller à la coop dans une plage horaire précise afin de remettre c'est livre et espérer que le vendeur accèpte ces livres. Puis trouver ces livres usagés
+  est aussi compliqué. Pour cette raison, les élèves n'utilisent pas forcément beaucoup ce   service et ils doivent chercher eux-même parmis leurs contacts ou sur des
+  sites de vente non spécialisés (ex.: Kijiji).
   
-  Finalement, ce n'est pas toujours facile pour un.e nouvel.le élève de trouver un.e partenaire de casier lorsqu'il ou elle ne connaît personne.
+  Finalement, il est aussi compliqué de se trouver un compagnon de casier si on ne connait personne.
+  On n'a non plus l'option de s'inscrire individuellement afin de se
+  faire placer automatiquement, on est réellement obligé de s'inscrire avec quelqu'un.
   
-  Pour chacun de ces problèmes, il n'existe pas de solutions spécialisée pensée et optimisée autour d'un environnement étudiant.
+  Pour chacun de ces problèmes, il n'existe pas de solutions simples et organisés autour d'un environnement étudiant.
   De plus, au-delà d'une optique estudiantine, il n'existe pas de solution regroupant les services qui répondraient à ces problèmes.
   
-
-
+  Notre projet en est la solution.
+  
 - La solution :
 
   Ainsi, nous avons décidé de développer une application web pour répondre à ces besoins. Cette application permettrait aux étudiants de s'organiser clairement dans un
