@@ -1,10 +1,8 @@
-# Projet intégrateur front-end
+# Univox
 
 [![Checkly Badge](https://api.checklyhq.com/v1/badges/checks/e709cb3b-807d-4e5f-8f64-c7906fb01fe4?style=for-the-badge&theme=default)](https://univox.checkly-dashboards.com/) [![Made With Svelte Badge](https://img.shields.io/badge/made%20with-svelte%20kit-orange?style=for-the-badge)](https://kit.svelte.dev/) [![GNU license](https://img.shields.io/badge/License-GNU%20V3-blue?style=for-the-badge)](./LICENSE)
 
 Équipe 3
-
-Univox
 
 - Auteurs :
 Notre équipe est composer de :
