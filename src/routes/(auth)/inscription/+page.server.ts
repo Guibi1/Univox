@@ -1,6 +1,6 @@
 import * as db from "$lib/server/db";
 import { fail, redirect } from "@sveltejs/kit";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 import { ObjectId } from "mongodb";
 import type { Actions } from "./$types";
 import { login } from "$lib/server/omnivox";
@@ -32,7 +32,7 @@ export const actions = {
 
         await db.createUser({
             da: da.toString(),
-            passwordHash: await bcrypt.hash(password.toString(), 11),
+            passwordHash: await bcryptjs.hash(password.toString(), 11),
             email: email.toString(),
             firstName: firstName.toString(),
             lastName: lastName.toString(),
