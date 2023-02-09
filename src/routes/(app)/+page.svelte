@@ -36,21 +36,33 @@
 </script>
 
 <body>
-    <table>
+    <table class="w-1/2 border-2">
         <tr>
-            <th>Company</th>
-            <th>Contact</th>
-            <th>Country</th>
+            <td>Company</td>
+            <td>Contact</td>
+            <td>Country</td>
         </tr>
-        <tr class="text-center">
+        <tr>
             <td>Alfreds Futterkiste</td>
             <td>Maria Anders</td>
             <td>Germany</td>
         </tr>
-        <tr class="text-center">
+        <tr>
             <td>Centro comercial Moctezuma</td>
             <td>Francisco Chang</td>
             <td>Mexico</td>
         </tr>
     </table>
 </body>
+
+<style>
+    tr {
+        text-align: center;
+        height: 50px;
+    }
+
+    td {
+        border-width: 2px;
+        width: 10rem;
+    }
+</style>
