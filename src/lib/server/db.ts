@@ -1,47 +1,20 @@
 import { MONGODB_URI } from "$env/static/private";
-import { Weekday, type User } from "$lib/Types";
-import dayjs from "dayjs";
-import mongoose, { Schema, type FilterQuery } from "mongoose";
+import type { User } from "$lib/Types";
+import mongoose, { type FilterQuery } from "mongoose";
 
+import { ScheduleSchema, UserSchema, type ServerUser } from "./types";
+
+// Connection
 if (mongoose.connection.readyState !== 1) {
     mongoose.set("strictQuery", false);
     mongoose.connect(MONGODB_URI);
 }
 
-const Users = mongoose.model(
-    "users",
-    new Schema({
-        da: String,
-        passwordHash: String,
-        email: String,
-        firstName: String,
-        lastName: String,
-        scheduleID: mongoose.Types.ObjectId,
-    })
-);
+// Models
+const Users = mongoose.model("users", UserSchema);
+const Schedules = mongoose.model("schedules", ScheduleSchema);
 
-const Schedules = mongoose.model(
-    "schedules",
-    new Schema({
-        periods: [
-            {
-                id: String,
-                name: String,
-                group: Number,
-                local: String,
-                type: ["T", "L"],
-                teacher: String,
-                virtual: Boolean,
-                weekday: Weekday,
-                timeStart: dayjs.Dayjs,
-                timeEnd: dayjs.Dayjs,
-            },
-        ],
-    })
-);
-
-type ServerUser = User & { passwordHash: string };
-
+// Helpers
 export async function findUser(filter: FilterQuery<User>) {
     return Users.findOne(filter);
 }
