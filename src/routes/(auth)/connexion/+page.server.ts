@@ -1,7 +1,7 @@
 import * as db from "$lib/server/db";
 import { fail, redirect } from "@sveltejs/kit";
-import type { Actions } from "./$types";
 import bcryptjs from "bcryptjs";
+import type { Actions } from "./$types";
 
 export const actions = {
     default: async ({ request, cookies }) => {
@@ -14,7 +14,7 @@ export const actions = {
         }
 
         const user = await db.findUser({ da });
-        if (!user || !(await bcryptjs.compare(password.toString(), user.passwordHash))) {
+        if (!user || !(await bcryptjs.compare(password.toString(), user.passwordHash ?? ""))) {
             return fail(401, { da, incorrect: true });
         }
 
