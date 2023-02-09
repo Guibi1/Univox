@@ -1,5 +1,5 @@
 import { Weekday, type Schedule, type User } from "$lib/Types";
-import { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import mongoose, { Schema } from "mongoose";
 
 export type ServerUser = User & { passwordHash: string };
@@ -24,8 +24,8 @@ export const ScheduleSchema = new Schema<Schedule>({
             teacher: String,
             virtual: Boolean,
             weekday: Weekday,
-            timeStart: Dayjs,
-            timeEnd: Dayjs,
+            timeStart: dayjs.Dayjs,
+            timeEnd: dayjs.Dayjs,
         },
     ],
 });
