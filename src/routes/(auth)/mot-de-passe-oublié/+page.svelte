@@ -1,57 +1,37 @@
 <script lang="ts">
-    let omnivox = true;
+    import { enhance } from "$app/forms";
+    import type { ActionData } from "./$types";
+
+    export let form: ActionData;
     let loading = false;
-    let errorText = "";
-    let da = "";
-    let password = "";
-
-    async function handleSubmit(e: SubmitEvent) {
-        if (!omnivox) return;
-
-        e.preventDefault();
-        if (da.length === 0 || password.length === 0) return;
-
-        loading = true;
-        const res = await fetch("/api/omnivox/login", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ da, password }),
-        });
-
-        loading = false;
-        if (res.status === 200) {
-            omnivox = false;
-        } else {
-            errorText = "DA ou mot de passe invalide";
-        }
-    }
 </script>
 
-<form
-    on:submit={handleSubmit}
-    method="post"
-    action="/api/reset-password"
-    class="flex flex-col justify-between gap-6"
->
+<form class="flex flex-col justify-between gap-6" method="post" use:enhance>
     <h1 class="text-center">Mot de passe oublié</h1>
 
-    {#if errorText}
-        <span class="text-center text-red-600">{errorText}</span>
-    {/if}
+    <span hidden={form == null || loading} class="text-center text-red-500">
+        {#if form?.missing}
+            Veuillez remplir tous les champs
+        {:else if !form?.incorrect}
+            Vos identifiants Omnivox ne sont pas valide
+        {:else if !form?.noUser}
+            Aucun utilisateur ne correspond au DA entré
+        {/if}
+    </span>
 
-    <label hidden={!omnivox || loading}>
+    <label hidden={loading}>
         No de DA
-        <input bind:value={da} name="da" type="text" required />
+        <input value={form?.da ?? ""} name="da" type="text" />
     </label>
 
-    <label hidden={!omnivox || loading}>
+    <label hidden={loading}>
         Mot de passe Omnivox
-        <input bind:value={password} name="password" type="password" required />
+        <input name="password" type="password" />
     </label>
 
-    <label hidden={omnivox || loading}>
+    <label hidden={loading}>
         Nouveau mot de passe
-        <input name="newPassword" type="password" required={!omnivox} />
+        <input name="newPassword" type="password" />
     </label>
 
     {#if loading}
