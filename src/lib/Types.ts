@@ -1,12 +1,12 @@
 import type { Dayjs } from "dayjs";
-import type { ObjectId } from "bson";
+import type mongoose from "mongoose";
 
 export type User = {
     da: string;
     email: string;
     firstName: string;
     lastName: string;
-    scheduleID: ObjectId;
+    scheduleID: mongoose.Types.ObjectId;
 };
 
 export type Book = {
