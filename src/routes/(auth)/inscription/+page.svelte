@@ -1,30 +1,47 @@
-<form method="post" action="/api/register" class="flex flex-col gap-6">
+<script lang="ts">
+    import { enhance } from "$app/forms";
+    import type { ActionData } from "./$types";
+
+    export let form: ActionData;
+</script>
+
+<form class="flex flex-col gap-6" method="post" use:enhance>
     <h1 class="text-center">Inscription</h1>
+
+    <span hidden={form == null} class="text-center text-red-500">
+        {#if form?.missing}
+            Veuillez remplir tous les champs
+        {:else if form?.incorrect && !form?.da}
+            Un compte avec ce DA existe déjà
+        {:else if form?.incorrect}
+            Assurez-vous d'écrire une adresse courriel valide
+        {/if}
+    </span>
 
     <div class="grid grid-cols-2 gap-4">
         <label>
             Prénom
-            <input name="fname" type="text" required />
+            <input name="firstName" type="text" />
         </label>
 
         <label>
             Nom
-            <input name="lname" type="text" required />
+            <input name="lastName" type="text" />
         </label>
 
         <label class="col-span-2">
             No de DA
-            <input name="da" type="text" required />
+            <input name="da" type="text" />
         </label>
 
         <label class="col-span-2">
             Courriel
-            <input name="email" type="email" required />
+            <input name="email" type="email" />
         </label>
 
         <label class="col-span-2">
             Mot de passe
-            <input name="password" type="password" required />
+            <input name="password" type="password" />
         </label>
     </div>
 
