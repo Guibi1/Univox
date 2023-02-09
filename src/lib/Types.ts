@@ -1,5 +1,5 @@
 import type { Dayjs } from "dayjs";
-import type { ObjectId } from "mongodb";
+import type { ObjectId } from "bson";
 
 export type User = {
     da: string;
