@@ -1,4 +1,13 @@
 import type { Dayjs } from "dayjs";
+import type { ObjectId } from "mongodb";
+
+export type User = {
+    da: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    scheduleID: ObjectId;
+};
 
 export type Book = {
     id: string;
@@ -8,6 +17,10 @@ export type Book = {
     author: string;
     price: number;
     state: string;
+};
+
+export type Schedule = {
+    periods: Class[];
 };
 
 export type Class = {
