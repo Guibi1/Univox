@@ -36,16 +36,44 @@
 </script>
 
 <body>
-    <table class="w-1/2 border-2">
+    <table class="w-3/5 border-2">
         <tr>
-            <td>Company</td>
-            <td>Contact</td>
-            <td>Country</td>
+            <th>Lundi</th>
+            <th>Mardi</th>
+            <th>Mercredi</th>
+            <th>Jeudi</th>
+            <th>Vendredi</th>
+            <th>Samedi</th>
+            <th>Dimanche</th>
         </tr>
         <tr>
             <td>Alfreds Futterkiste</td>
             <td>Maria Anders</td>
             <td>Germany</td>
+            <td>Alfreds Futterkiste</td>
+            <td>Maria Anders</td>
+            <td>Germany</td>
+            <td>Alfreds Futterkiste</td>
+        </tr>   
+        <tr>
+            <td>Centro comercial Moctezuma</td>
+            <td>Francisco Chang</td>
+            <td>Mexico</td>
+        </tr>
+        <tr>
+            <td>Centro comercial Moctezuma</td>
+            <td>Francisco Chang</td>
+            <td>Mexico</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Francisco Chang</td>
+            <td>Mexico</td>
+        </tr>
+        <tr>
+            <td>Centro comercial Moctezuma</td>
+            <td>Francisco Chang</td>
+            <td>Mexico</td>
         </tr>
         <tr>
             <td>Centro comercial Moctezuma</td>
@@ -62,6 +90,10 @@
     }
 
     td {
+        border-width: 2px;
+    }
+
+    th {
         border-width: 2px;
         width: 10rem;
     }
