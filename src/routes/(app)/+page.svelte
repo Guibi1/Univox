@@ -3,6 +3,8 @@
     import dayjs from "dayjs";
 
     /*
+    this is just for reference, please don't delete
+
     export type Class = {
     id: string;
     name: string;
