@@ -1,7 +1,7 @@
 import * as db from "$lib/server/db";
 import { fail, redirect } from "@sveltejs/kit";
 import bcryptjs from "bcryptjs";
-import { ObjectId } from "bson";
+import mongoose from "mongoose";
 import type { Actions } from "./$types";
 import { login } from "$lib/server/omnivox";
 
@@ -36,7 +36,7 @@ export const actions = {
             email: email.toString(),
             firstName: firstName.toString(),
             lastName: lastName.toString(),
-            scheduleID: new ObjectId(),
+            scheduleID: new mongoose.Types.ObjectId(),
         });
 
         throw redirect(303, "/connexion");

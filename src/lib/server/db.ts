@@ -1,43 +1,66 @@
 import { env } from "$env/dynamic/private";
-import type { Schedule, User } from "$lib/Types";
-import { MongoClient, type ObjectId, type Filter } from "mongodb";
+import { Weekday, type User } from "$lib/Types";
+import dayjs from "dayjs";
+import mongoose, { Schema, type FilterQuery } from "mongoose";
 
-const client = new MongoClient(env.MONGODB_URI ?? "mongodb+srv://127.0.0.1/univox");
-const connection = client.connect();
+mongoose.connect(env.MONGODB_URI ?? "mongodb+srv://127.0.0.1/univox");
+
+const Users = mongoose.model(
+    "users",
+    new Schema({
+        da: String,
+        passwordHash: String,
+        email: String,
+        firstName: String,
+        lastName: String,
+        scheduleID: mongoose.Types.ObjectId,
+    })
+);
+
+const Schedules = mongoose.model(
+    "schedules",
+    new Schema({
+        periods: [
+            {
+                id: String,
+                name: String,
+                group: Number,
+                local: String,
+                type: ["T", "L"],
+                teacher: String,
+                virtual: Boolean,
+                weekday: Weekday,
+                timeStart: dayjs.Dayjs,
+                timeEnd: dayjs.Dayjs,
+            },
+        ],
+    })
+);
 
 type ServerUser = User & { passwordHash: string };
 
-export async function findUser(filter: Filter<ServerUser>) {
-    await connection;
-    const db = client.db();
-    const users = db.collection<ServerUser>("users");
-
-    return users.findOne(filter);
+export async function findUser(filter: FilterQuery<User>) {
+    return Users.findOne(filter);
 }
 
 export async function createUser(user: ServerUser): Promise<void> {
-    await connection;
-    const db = client.db();
-
-    const users = db.collection<ServerUser>("users");
-    if (await users.findOne({ da: user.da })) {
+    if (await findUser({ da: user.da })) {
         console.error("A user with this 'da' already exists.");
         return;
     }
 
-    await db.collection<Schedule>("schedules").insertOne({ _id: user.scheduleID, periods: [] });
-    await users.insertOne(user);
+    await Schedules.create({ _id: user.scheduleID, periods: [] });
+    await Users.create(user);
 }
 
-export async function updateUserPassword(userId: ObjectId, passwordHash: string): Promise<void> {
-    await connection;
-    const db = client.db();
-
-    const users = db.collection<ServerUser>("users");
-    if (!(await users.findOne({ _id: userId }))) {
+export async function updateUserPassword(
+    userId: mongoose.Types.ObjectId,
+    passwordHash: string
+): Promise<void> {
+    if (!(await findUser({ _id: userId }))) {
         console.error("No user with this id was found.");
         return;
     }
 
-    await users.updateOne({ _id: userId }, { $set: { passwordHash } });
+    await Users.updateOne({ _id: userId }, { $set: { passwordHash } });
 }
