@@ -1,6 +1,6 @@
 import { env } from "$env/dynamic/private";
 import type { Schedule, User } from "$lib/Types";
-import { MongoClient, ObjectId, type Filter } from "mongodb";
+import { MongoClient, type ObjectId, type Filter } from "mongodb";
 
 const client = new MongoClient(env.MONGODB_URI ?? "mongodb+srv://127.0.0.1/univox");
 const connection = client.connect();
