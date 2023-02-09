@@ -1,9 +1,8 @@
+import { env } from "$env/dynamic/private";
 import type { Schedule, User } from "$lib/Types";
-import * as dotenv from "dotenv";
 import { MongoClient, ObjectId, type Filter } from "mongodb";
 
-dotenv.config();
-const client = new MongoClient(process.env.MONGODB_URI ?? "mongodb+srv://127.0.0.1:27017/univox");
+const client = new MongoClient(env.MONGODB_URI ?? "mongodb+srv://127.0.0.1/univox");
 const connection = client.connect();
 
 type ServerUser = User & { passwordHash: string };

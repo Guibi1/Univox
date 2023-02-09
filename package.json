@@ -16,7 +16,6 @@
         "boxicons": "^2.1.4",
         "cheerio": "^1.0.0-rc.12",
         "dayjs": "^1.11.7",
-        "dotenv": "^16.0.3",
         "mongodb": "^5.0.1"
     },
     "devDependencies": {
