@@ -1,11 +1,11 @@
-import { env } from "$env/dynamic/private";
+import { MONGODB_URI } from "$env/static/private";
 import { Weekday, type User } from "$lib/Types";
 import dayjs from "dayjs";
 import mongoose, { Schema, type FilterQuery } from "mongoose";
 
-if (mongoose.connection.readyState === 0) {
+if (mongoose.connection.readyState !== 1) {
     mongoose.set("strictQuery", false);
-    mongoose.connect(env.MONGODB_URI ?? "mongodb+srv://127.0.0.1/univox");
+    mongoose.connect(MONGODB_URI);
 }
 
 const Users = mongoose.model(
