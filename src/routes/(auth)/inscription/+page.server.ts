@@ -1,7 +1,7 @@
 import * as db from "$lib/server/db";
 import { fail, redirect } from "@sveltejs/kit";
 import bcryptjs from "bcryptjs";
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import type { Actions } from "./$types";
 import { login } from "$lib/server/omnivox";
 
