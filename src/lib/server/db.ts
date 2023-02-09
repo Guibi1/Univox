@@ -3,6 +3,7 @@ import { Weekday, type User } from "$lib/Types";
 import dayjs from "dayjs";
 import mongoose, { Schema, type FilterQuery } from "mongoose";
 
+mongoose.set("strictQuery", false);
 mongoose.connect(env.MONGODB_URI ?? "mongodb+srv://127.0.0.1/univox");
 
 const Users = mongoose.model(
