@@ -1,6 +1,5 @@
 import * as db from "$lib/server/db";
 import { fail, redirect } from "@sveltejs/kit";
-import bcryptjs from "bcryptjs";
 import type { Actions } from "./$types";
 
 export const actions = {
@@ -13,15 +12,14 @@ export const actions = {
             return fail(400, { da, missing: true });
         }
 
-        const user = await db.findUser({ da });
-        if (!user || !(await bcryptjs.compare(password.toString(), user.passwordHash ?? ""))) {
+        const user = await db.compareUserPassword(da.toString(), password.toString());
+        if (!user) {
             return fail(401, { da, incorrect: true });
         }
 
-        // TODO: Manage tokens
-        const token = "TOKEN";
-
+        const token = await db.createToken(user);
         cookies.set("token", token, { path: "/", httpOnly: true });
+
         throw redirect(303, "/");
     },
 } satisfies Actions;
