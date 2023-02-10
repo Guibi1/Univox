@@ -14,8 +14,20 @@
             teacher: "asdjkfwlbk",
             virtual: false,
             weekday: Weekday.Friday,
-            timeStart: dayjs().hour(9).minute(8),
-            timeEnd: dayjs().hour(14),
+            timeStart: dayjs().hour(6).minute(8),
+            timeEnd: dayjs().hour(8).minute(0),
+        },
+        {
+            id: "theIDLOL",
+            name: "aName",
+            group: 105,
+            local: "B-105",
+            type: "L",
+            teacher: "asdjkfwlbk",
+            virtual: false,
+            weekday: Weekday.Wednesday,
+            timeStart: dayjs().hour(14).minute(30),
+            timeEnd: dayjs().hour(16).minute(0),
         },
     ];
 </script>

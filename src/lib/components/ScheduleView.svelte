@@ -31,7 +31,7 @@
 <main>
     <table class="relative">
         <tr style={`height: ${rowHeight}rem;`}>
-            <th style={`width: ${cellWidth}rem;`}>Heures</th>
+            <th style={`width: ${cellWidth}rem;`}></th>
 
             {#each daysOfWeek as day}
                 <th style={`width: ${cellWidth}rem;`}>
@@ -53,14 +53,14 @@
         <!-- TODO: Replace schedule for the user's schedule -->
         {#each schedule as period}
             <div
-                class="absolute bg-neutral-400"
+                class="absolute bg-sky-500  "
                 style={`top: ${
                     rowHeight *
                     (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset)
                 }rem; 
                 left: ${cellWidth * (period.weekday + 1)}rem;
                 width: ${cellWidth}rem;
-                height: ${rowHeight * period.timeEnd.diff(period.timeStart, "hour")}rem;`}
+                height: ${rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60)}rem;`}
             >
                 <p>{period.name}</p>
                 <p>{period.id}</p>
