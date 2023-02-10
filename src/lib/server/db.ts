@@ -32,14 +32,14 @@ export async function getUserFromToken(token: string | undefined): Promise<User 
     }
     const userId = (await Tokens.findOne({ token }))?.userId;
     if (userId) {
-        return Users.findById(userId);
+        return findUserById(userId);
     }
     return null;
 }
 
 // Helpers: User
 export async function findUser(filter: FilterQuery<User>): Promise<User | null> {
-    const user = { ...(await Users.findOne(filter)) };
+    const user = { ...(await Users.findOne(filter))?.toObject() };
     if (!delete user.passwordHash) {
         return null;
     }
@@ -47,7 +47,7 @@ export async function findUser(filter: FilterQuery<User>): Promise<User | null> 
 }
 
 export async function findUserById(id: mongoose.Types.ObjectId): Promise<User | null> {
-    const user = { ...(await Users.findById(id)) };
+    const user = { ...(await Users.findById(id))?.toObject() };
     if (!delete user.passwordHash) {
         return null;
     }
@@ -55,7 +55,7 @@ export async function findUserById(id: mongoose.Types.ObjectId): Promise<User | 
 }
 
 export async function compareUserPassword(da: string, password: string): Promise<User | null> {
-    const user = await Users.findOne({ da });
+    const user = (await Users.findOne({ da }))?.toObject();
     const passwordHash = user?.passwordHash;
     if (passwordHash && (await bcryptjs.compare(password.toString(), passwordHash))) {
         return user;
@@ -63,26 +63,28 @@ export async function compareUserPassword(da: string, password: string): Promise
     return null;
 }
 
-export async function createUser(user: ServerUser): Promise<void> {
+export async function createUser(user: ServerUser): Promise<boolean> {
     if (await findUser({ da: user.da })) {
         console.error("A user with this 'da' already exists.");
-        return;
+        return false;
     }
 
     await Schedules.create({ _id: user.scheduleId, periods: [] });
     await Users.create(user);
+    return true;
 }
 
 export async function updateUserPassword(
     userId: mongoose.Types.ObjectId,
     password: string
-): Promise<void> {
+): Promise<boolean> {
     if (!(await findUserById(userId))) {
         console.error("No user with this id was found.");
-        return;
+        return false;
     }
 
     await Users.findByIdAndUpdate(userId, {
         $set: { passwordHash: await bcryptjs.hash(password, 11) },
     });
+    return true;
 }

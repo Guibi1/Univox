@@ -20,6 +20,6 @@ export const actions = {
         const token = await db.createToken(user);
         cookies.set("token", token, { path: "/", httpOnly: true });
 
-        throw redirect(303, "/");
+        return { success: true };
     },
 } satisfies Actions;
