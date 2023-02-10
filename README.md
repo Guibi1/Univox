@@ -6,10 +6,10 @@
 
 - Auteurs :
 Notre équipe est composer de :
-  Laurent Stephane
-  Maxime Rodgers
-  Henri-Louis Charbonneau
-  Eliott Bonnefoy
+  Laurent Stephane,
+  Maxime Rodgers,
+  Henri-Louis Charbonneau,
+  Eliott Bonnefoy et
   Alexandre Veregut
   
 Nous sommes des étudiants au Collège Bois-De-Boulogne. Nous étudions dans le programme de Science Informatique et Mathématique, et nous nous sommes regrouppés pour créer une application web dans le cadre de notre cours.
