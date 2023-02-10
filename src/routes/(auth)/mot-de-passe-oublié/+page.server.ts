@@ -27,6 +27,7 @@ export const actions = {
         }
 
         await db.updateUserPassword(user?._id, newPassword.toString());
-        throw redirect(303, "/connexion");
+
+        return { success: true };
     },
 } satisfies Actions;
