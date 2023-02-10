@@ -1,9 +1,13 @@
-import type { RequestHandler } from "@sveltejs/kit";
+import * as db from "$lib/server/db";
+import { redirect, type RequestHandler } from "@sveltejs/kit";
 
 export const POST = (async ({ cookies }) => {
     const token = cookies.get("token");
-    // TODO: signout with database
 
+    if (token) {
+        db.deleteToken(token);
+    }
     cookies.delete("token", { path: "/" });
-    return new Response();
+
+    throw redirect(303, "/connexion");
 }) satisfies RequestHandler;

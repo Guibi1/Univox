@@ -3,6 +3,16 @@ import dayjs from "dayjs";
 import mongoose, { Schema } from "mongoose";
 
 export type ServerUser = User & { passwordHash: string };
+export type Token = {
+    _id: mongoose.Types.ObjectId;
+    token: string;
+    userId: mongoose.Types.ObjectId;
+};
+
+export const TokenSchema = new Schema<Token>({
+    token: String,
+    userId: mongoose.Types.ObjectId,
+});
 
 export const UserSchema = new Schema<ServerUser>({
     da: String,
@@ -10,7 +20,7 @@ export const UserSchema = new Schema<ServerUser>({
     email: String,
     firstName: String,
     lastName: String,
-    scheduleID: mongoose.Types.ObjectId,
+    scheduleId: mongoose.Types.ObjectId,
 });
 
 export const ScheduleSchema = new Schema<Schedule>({
