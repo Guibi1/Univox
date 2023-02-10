@@ -2,15 +2,16 @@ import type { Dayjs } from "dayjs";
 import type mongoose from "mongoose";
 
 export type User = {
+    _id: mongoose.Types.ObjectId;
     da: string;
     email: string;
     firstName: string;
     lastName: string;
-    scheduleID: mongoose.Types.ObjectId;
+    scheduleId: mongoose.Types.ObjectId;
 };
 
 export type Book = {
-    id: string;
+    _id: mongoose.Types.ObjectId;
     title: string;
     ISBN: string;
     src: string;
@@ -20,11 +21,12 @@ export type Book = {
 };
 
 export type Schedule = {
+    _id: mongoose.Types.ObjectId;
     periods: Class[];
 };
 
 export type Class = {
-    id: string;
+    _id: mongoose.Types.ObjectId;
     name: string;
     group: number;
     local: string;

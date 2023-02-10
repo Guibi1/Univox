@@ -31,12 +31,13 @@ export const actions = {
         // }
 
         await db.createUser({
+            _id: new mongoose.Types.ObjectId(),
             da: da.toString(),
             passwordHash: await bcryptjs.hash(password.toString(), 11),
             email: email.toString(),
             firstName: firstName.toString(),
             lastName: lastName.toString(),
-            scheduleID: new mongoose.Types.ObjectId(),
+            scheduleId: new mongoose.Types.ObjectId(),
         });
 
         throw redirect(303, "/connexion");
