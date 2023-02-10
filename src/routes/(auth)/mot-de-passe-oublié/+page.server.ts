@@ -1,7 +1,6 @@
 import * as db from "$lib/server/db";
 import { login } from "$lib/server/omnivox";
 import { fail, redirect } from "@sveltejs/kit";
-import bcryptjs from "bcryptjs";
 import type { Actions } from "./$types";
 
 export const actions = {
@@ -27,7 +26,7 @@ export const actions = {
             return fail(401, { da, noUser: true });
         }
 
-        await db.updateUserPassword(user?._id, await bcryptjs.hash(newPassword.toString(), 11));
+        await db.updateUserPassword(user?._id, newPassword.toString());
         throw redirect(303, "/connexion");
     },
 } satisfies Actions;
