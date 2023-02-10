@@ -4,25 +4,16 @@
     export let schedule: Class[];
 
     const rowHeight = 3;
+    const hourOffset = 3;
     const cellWidth = 6;
     const timeOffset = 5;
-    const rowTitles = [
-        "6:00",
-        "7:00",
-        "8:00",
-        "9:00",
-        "10:00",
-        "11:00",
-        "12:00",
-        "13:00",
-        "14:00",
-        "15:00",
-        "16:00",
-        "17:00",
-        "18:00",
-        "19:00",
-        "20:00",
-    ];
+    let rowTitles: string[] = [];
+
+    const scheduleTimeStart = 6;
+    const scheduleTimeEnd = 21;
+    for (let i = scheduleTimeStart; i <= scheduleTimeEnd; i++) {
+        rowTitles[i - scheduleTimeStart] = i + ":00";
+    }
 
     const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 </script>
@@ -31,7 +22,7 @@
 <main>
     <table class="relative">
         <tr style={`height: ${rowHeight}rem;`}>
-            <th style={`width: ${cellWidth}rem;`}></th>
+            <th style={`width: ${cellWidth}rem;`} />
 
             {#each daysOfWeek as day}
                 <th style={`width: ${cellWidth}rem;`}>
@@ -40,13 +31,15 @@
             {/each}
         </tr>
 
-        {#each rowTitles as hour}
+        {#each rowTitles as hour, i}
             <tr style={`height: ${rowHeight}rem;`}>
-                <th>{hour}</th>
+                <th class="-translate-y-1/2">{hour}</th>
 
-                {#each daysOfWeek as _}
-                    <th class="border" />
-                {/each}
+                {#if i < rowTitles.length - 1}
+                    {#each daysOfWeek as _}
+                        <th class="border" />
+                    {/each}
+                {/if}
             </tr>
         {/each}
 
@@ -67,5 +60,9 @@
                 <p>{period.group}</p>
             </div>
         {/each}
+
+         <!-- Pointer date/time -->
+
+         <hr class="h-px bg-red-600 border-0 dark:bg-red-600">
     </table>
 </main>
