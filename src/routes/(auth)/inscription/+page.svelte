@@ -1,8 +1,15 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
+    import { goto } from "$app/navigation";
+    import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
+
+    $: if (form?.success) {
+        goto("/connexion");
+        user.refresh();
+    }
 </script>
 
 <form class="flex flex-col gap-6" method="post" use:enhance>

@@ -40,6 +40,6 @@ export const actions = {
             scheduleId: new mongoose.Types.ObjectId(),
         });
 
-        throw redirect(303, "/connexion");
+        return { success: true };
     },
 } satisfies Actions;
