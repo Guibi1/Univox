@@ -52,4 +52,8 @@
     a {
         @apply text-cyan-300 cursor-pointer;
     }
+
+    [hidden] {
+        display: none !important;
+    }
 }
