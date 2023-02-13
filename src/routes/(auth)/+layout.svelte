@@ -8,7 +8,7 @@
         <h1 class="font-bold text-4xl items-center ">Univox</h1>
     </div>
 
-    <main class="bg-white p-12 rounded w-96 h-max">
+    <main class="bg-white p-6 px-10 rounded w-96 h-max">
         <slot />
     </main>
 </div>
