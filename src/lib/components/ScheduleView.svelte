@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Class } from "$lib/Types";
     import dayjs, { Dayjs } from "dayjs";
+    import { onDestroy } from 'svelte';
 
     export let schedule: Class[];
 
@@ -16,7 +17,9 @@
         rowTitles[i - scheduleTimeStart] = i + ":00";
     }
 
-    console.log(dayjs().day())
+    let currentTime = dayjs();
+    const interval = setInterval(() => (currentTime = dayjs()), 1000 );
+	onDestroy(() => clearInterval(interval));
 
     const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 </script>
@@ -68,14 +71,14 @@
 
         <hr
             class="absolute h-px bg-red-600 border-0 dark:bg-red-600"
-            style={`top: ${rowHeight * (dayjs().hour() + dayjs().minute() / 60 - timeOffset)}rem; 
-        left: ${cellWidth * (dayjs().day())}rem;
+            style={`top: ${rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)}rem; 
+        left: ${cellWidth * (currentTime.day())}rem;
         width: ${cellWidth}rem;`}
         />
 
         <div class="absolute rounded-full w-3 h-3 bg-red-600" 
-        style={`top: ${rowHeight * (dayjs().hour() + dayjs().minute() / 60 - timeOffset) - 0.3}rem; 
-        left: ${cellWidth * dayjs().day() - 0.3}rem;
+        style={`top: ${rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset) - 0.3}rem; 
+        left: ${cellWidth * currentTime.day() - 0.3}rem;
         `}></div>
     </table>
 </main>
