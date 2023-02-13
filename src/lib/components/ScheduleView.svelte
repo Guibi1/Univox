@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Class } from "$lib/Types";
+    import dayjs, { Dayjs } from "dayjs";
 
     export let schedule: Class[];
 
@@ -14,6 +15,8 @@
     for (let i = scheduleTimeStart; i <= scheduleTimeEnd; i++) {
         rowTitles[i - scheduleTimeStart] = i + ":00";
     }
+
+    console.log(dayjs().day())
 
     const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 </script>
@@ -61,8 +64,18 @@
             </div>
         {/each}
 
-         <!-- Pointer date/time -->
+        <!-- Pointer date/time -->
 
-         <hr class="h-px bg-red-600 border-0 dark:bg-red-600">
+        <hr
+            class="absolute h-px bg-red-600 border-0 dark:bg-red-600"
+            style={`top: ${rowHeight * (dayjs().hour() + dayjs().minute() / 60 - timeOffset)}rem; 
+        left: ${cellWidth * (dayjs().day())}rem;
+        width: ${cellWidth}rem;`}
+        />
+
+        <div class="absolute rounded-full w-3 h-3 bg-red-600" 
+        style={`top: ${rowHeight * (dayjs().hour() + dayjs().minute() / 60 - timeOffset) - 0.3}rem; 
+        left: ${cellWidth * dayjs().day() - 0.3}rem;
+        `}></div>
     </table>
 </main>
