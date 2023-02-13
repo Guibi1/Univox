@@ -39,18 +39,20 @@ export async function getUserFromToken(token: string | undefined): Promise<User 
 
 // Helpers: User
 export async function findUser(filter: FilterQuery<User>): Promise<User | null> {
-    const user = { ...(await Users.findOne(filter))?.toObject() };
-    if (!delete user.passwordHash) {
+    const doc = await Users.findOne(filter);
+    if (!doc) {
         return null;
     }
+    const user = { ...doc.toObject(), passwordHash: null };
     return user as User;
 }
 
 export async function findUserById(id: mongoose.Types.ObjectId): Promise<User | null> {
-    const user = { ...(await Users.findById(id))?.toObject() };
-    if (!delete user.passwordHash) {
+    const doc = await Users.findById(id);
+    if (!doc) {
         return null;
     }
+    const user = { ...doc.toObject(), passwordHash: null };
     return user as User;
 }
 
