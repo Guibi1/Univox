@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { enhance } from "$app/forms";
+    import { enhance, type SubmitFunction } from "$app/forms";
     import { goto } from "$app/navigation";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
@@ -11,39 +11,52 @@
         goto("/connexion");
         user.refresh();
     }
+
+    const handleSubmit = (() => {
+        loading = true;
+        return async ({ update }) => {
+            loading = false;
+            update();
+        };
+    }) satisfies SubmitFunction;
 </script>
 
-<form class="flex flex-col justify-between gap-6" method="post" use:enhance>
-    <h1 class="text-center">Mot de passe oublié</h1>
+<h1 class="text-center">Mot de passe oublié</h1>
 
-    <span hidden={form == null || loading} class="text-center text-red-500">
-        {#if form?.missing}
-            Veuillez remplir tous les champs
-        {:else if !form?.incorrect}
-            Vos identifiants Omnivox ne sont pas valide
-        {:else if !form?.noUser}
-            Aucun utilisateur ne correspond au DA entré
-        {/if}
-    </span>
+<span hidden={form == null || loading} class="text-center text-red-500">
+    {#if form?.missing}
+        Veuillez remplir tous les champs
+    {:else if !form?.incorrect}
+        Vos identifiants Omnivox ne sont pas valide
+    {:else if !form?.noUser}
+        Aucun utilisateur ne correspond au DA entré
+    {/if}
+</span>
 
-    <label hidden={loading}>
+{#if loading}
+    <box-icon name="loader-circle" animation="spin" class="h-10 my-6 flex items-center w-full" />
+{/if}
+
+<form
+    use:enhance={handleSubmit}
+    hidden={loading}
+    class="flex flex-col justify-between gap-6"
+    method="post"
+>
+    <label>
         No de DA
         <input value={form?.da ?? ""} name="da" type="text" />
     </label>
 
-    <label hidden={loading}>
+    <label>
         Mot de passe Omnivox
         <input name="password" type="password" />
     </label>
 
-    <label hidden={loading}>
+    <label>
         Nouveau mot de passe
         <input name="newPassword" type="password" />
     </label>
-
-    {#if loading}
-        <box-icon name="loader-circle" animation="spin" class="self-center" />
-    {/if}
 
     <a href="/connexion" class="flex self-start">
         <box-icon name="chevron-left" class="fill-cyan-300" />
