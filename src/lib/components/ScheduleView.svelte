@@ -5,17 +5,18 @@
 
     export let schedule: Class[];
 
-    const rowHeight = 3;
-    const hourOffset = 3;
-    const cellWidth = 6;
-    const timeOffset = 5;
     let rowTitles: string[] = [];
 
-    const scheduleTimeStart = 6;
-    const scheduleTimeEnd = 21;
+    const scheduleTimeStart = 0;
+    const scheduleTimeEnd = 24;
     for (let i = scheduleTimeStart; i <= scheduleTimeEnd; i++) {
         rowTitles[i - scheduleTimeStart] = i + ":00";
     }
+
+    const rowHeight = 3;
+    const hourOffset = 3;
+    const cellWidth = 6;
+    const timeOffset = scheduleTimeStart - 1;
 
     let currentTime = dayjs();
     const interval = setInterval(() => (currentTime = dayjs()), 1000 );
