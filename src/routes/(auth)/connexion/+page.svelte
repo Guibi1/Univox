@@ -1,37 +1,56 @@
 <script lang="ts">
-    import { enhance } from "$app/forms";
-    import { goto } from "$app/navigation";
+    import { enhance, type SubmitFunction } from "$app/forms";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
+    let loading = false;
 
-    $: if (form?.success) {
-        goto("/");
-        user.refresh();
-    }
+    const handleSubmit = (() => {
+        loading = true;
+        return async ({ result, update }) => {
+            if (result.type === "redirect") {
+                user.refresh();
+            }
+            loading = false;
+            update();
+        };
+    }) satisfies SubmitFunction;
 </script>
 
-<form class="flex flex-col justify-between gap-6" method="post" use:enhance>
-    <h1 class="text-center">Connexion</h1>
+<h1 class="text-center">Connexion</h1>
 
-    <span hidden={form == null} class="text-center text-red-500">
-        {#if form?.missing}
-            Veuillez remplir tous les champs
-        {:else if form?.incorrect}
-            Le DA et le mot de passe ne correspondent pas
-        {/if}
-    </span>
+{#if loading}
+    <box-icon name="loader-circle" animation="spin" class="h-10 my-6 flex items-center w-full" />
+{/if}
 
+<form use:enhance={handleSubmit} hidden={loading} class="flex flex-col gap-6" method="post">
     <div class="grid grid-rows-2 gap-4">
         <label>
             No de DA
-            <input name="da" type="text" value={form?.da ?? ""} />
+            <input
+                name="da"
+                type="text"
+                pattern={"\\d{7}"}
+                required
+                placeholder=" "
+                value={form?.da ?? ""}
+            />
         </label>
 
-        <label>
+        <label data-error={form?.incorrect}>
             Mot de passe
-            <input name="password" type="password" />
+            <input
+                name="password"
+                type="password"
+                pattern={".{8,}"}
+                required
+                placeholder=" "
+                on:input={() => form && (form.incorrect = false)}
+            />
+            {#if form?.incorrect}
+                <span>Mot de passe erroné</span>
+            {/if}
         </label>
     </div>
 
