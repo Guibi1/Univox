@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
+    import logo from "$assets/logo.webp";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
 
@@ -18,13 +19,21 @@
     }) satisfies SubmitFunction;
 </script>
 
-<h1 class="text-center">Connexion</h1>
+<div class="pb-4 flex items-center justify-center gap-4">
+    <img src={logo} class="h-12 aspect-square" alt="Univox's logo" />
+    <h1>Bienvenue sur Univox</h1>
+</div>
 
 {#if loading}
     <box-icon name="loader-circle" animation="spin" class="h-10 my-6 flex items-center w-full" />
 {/if}
 
-<form use:enhance={handleSubmit} hidden={loading} class="flex flex-col gap-6" method="post">
+<form
+    use:enhance={handleSubmit}
+    hidden={loading}
+    class="m-auto w-9/12 flex flex-col gap-6"
+    method="post"
+>
     <div class="grid grid-rows-2 gap-4">
         <label>
             No de DA
@@ -52,12 +61,27 @@
                 <span>Mot de passe erroné</span>
             {/if}
         </label>
+        <a href="/mot-de-passe-oublié" class="text-right">Mot de passe oublié ?</a>
     </div>
 
-    <div class="flex justify-between">
-        <a href="/inscription">S'inscrire</a>
-        <a href="/mot-de-passe-oublié">Mot de passe oublié ?</a>
-    </div>
-
-    <button type="submit">Se connecter</button>
+    <button type="submit" class="w-7/12 self-center flex items-center justify-center">
+        Se connecter <box-icon name="chevron-right" />
+    </button>
 </form>
+
+{#if !loading}
+    <div class="my-3 flex items-center gap-6">
+        <hr class="w-full" />
+        <span> ou </span>
+        <hr class="w-full" />
+    </div>
+
+    <div class="m-auto w-9/12 flex">
+        <a
+            href="/inscription"
+            class="m-auto w-7/12 py-2 text-center rounded border-2 border-cyan-300"
+        >
+            S'inscrire
+        </a>
+    </div>
+{/if}

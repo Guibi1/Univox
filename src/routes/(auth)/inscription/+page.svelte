@@ -1,9 +1,10 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
+    import logo from "$assets/logo.webp";
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
-    let firstStep = true;
+    let firstStep = !true;
     let loading = false;
 
     const handleSubmit = (() => {
@@ -18,13 +19,21 @@
     }) satisfies SubmitFunction;
 </script>
 
-<h1 class="text-center pb-4">Inscription</h1>
+<div class="pb-4 flex items-center justify-center gap-4">
+    <img src={logo} class="h-12 aspect-square" alt="Univox's logo" />
+    <h1>Inscription</h1>
+</div>
 
 {#if loading}
     <box-icon name="loader-circle" animation="spin" class="h-10 my-6 flex items-center w-full" />
 {/if}
 
-<form use:enhance={handleSubmit} hidden={loading} class="flex flex-col gap-6" method="post">
+<form
+    use:enhance={handleSubmit}
+    hidden={loading}
+    class="m-auto w-9/12 flex flex-col gap-6"
+    method="post"
+>
     <input hidden name="firstStep" value={firstStep} />
 
     <div hidden={!firstStep} class="grid gap-4">
@@ -106,13 +115,35 @@
                 placeholder=" "
             />
         </label>
+
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <a
+            on:click={() => (firstStep = true)}
+            class="col-span-2 self-left flex items-center"
+            href="javascript:void()"
+        >
+            <box-icon name="chevron-left" class="fill-cyan-300" /> Retour
+        </a>
     </div>
 
-    <button type="submit">{firstStep ? "Suivant" : "S'inscrire"}</button>
-
-    <span class="text-center">
-        ou
-        <br />
-        <a href="/connexion" class="self-center">Se connecter</a>
-    </span>
+    <button type="submit" class="w-7/12 self-center flex items-center justify-center">
+        {firstStep ? "Suivant" : "S'inscrire"} <box-icon name="chevron-right" />
+    </button>
 </form>
+
+{#if !loading}
+    <div class="my-3 flex items-center gap-6">
+        <hr class="w-full" />
+        <span> ou </span>
+        <hr class="w-full" />
+    </div>
+
+    <div class="m-auto w-9/12 flex">
+        <a
+            href="/connexion"
+            class="m-auto w-7/12 py-2 text-center rounded border-2 border-cyan-300"
+        >
+            Se connecter
+        </a>
+    </div>
+{/if}
