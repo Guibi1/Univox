@@ -1,43 +1,24 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
-    import { goto } from "$app/navigation";
-    import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
     let firstStep = true;
     let loading = false;
 
-    const handleSubmit = (({ data }) => {
+    const handleSubmit = (() => {
         loading = true;
         return async ({ result, update }) => {
             loading = false;
-            if (result.type == "success") {
-                if (firstStep) {
-                    firstStep = false;
-                } else {
-                    goto("/connexion");
-                    user.refresh();
-                }
+            if (result.type === "success") {
+                firstStep = false;
             }
             update({ reset: false });
         };
     }) satisfies SubmitFunction;
 </script>
 
-<h1 class="text-center">Inscription</h1>
-
-<span hidden={form == null || loading} class="text-center text-red-500">
-    {#if form?.missing}
-        Veuillez remplir tous les champs
-    {:else if form?.daExists}
-        Un compte avec ce DA existe déjà
-    {:else if form?.omnivoxIncorrect}
-        Vos identifiants omnivox ne sont pas valides
-    {:else if form?.emailIncorrect}
-        Assurez-vous d'écrire une adresse courriel valide
-    {/if}
-</span>
+<h1 class="text-center pb-4">Inscription</h1>
 
 {#if loading}
     <box-icon name="loader-circle" animation="spin" class="h-10 my-6 flex items-center w-full" />
@@ -46,24 +27,35 @@
 <form use:enhance={handleSubmit} hidden={loading} class="flex flex-col gap-6" method="post">
     <input hidden name="firstStep" value={firstStep} />
 
-    <div hidden={!firstStep} class="grid grid-cols-2 gap-4">
-        <label class="col-span-2">
+    <div hidden={!firstStep} class="grid gap-4">
+        <label data-error={form?.daExists}>
             No de DA
             <input
                 name="da"
                 type="text"
                 pattern={"\\d{7}"}
                 required={firstStep}
-                value={form?.da ?? ""}
                 placeholder=" "
+                on:input={() => form && (form.daExists = false)}
+                value={form?.da ?? ""}
             />
-            <!-- <span class="text-center text-red-600">Entrez un DA valide</span> -->
+            {#if form?.daExists}
+                <span>Un compte avec ce DA existe déjà</span>
+            {/if}
         </label>
 
-        <label class="col-span-2">
+        <label data-error={form?.omnivoxIncorrect}>
             Mot de passe Omnivox
-            <input name="omnivoxPassword" type="password" required={firstStep} placeholder=" " />
-            <span>Bruh</span>
+            <input
+                name="omnivoxPassword"
+                type="password"
+                required={firstStep}
+                placeholder=" "
+                on:input={() => form && (form.omnivoxIncorrect = false)}
+            />
+            {#if form?.omnivoxIncorrect}
+                <span>Mot de passe erroné</span>
+            {/if}
         </label>
     </div>
 
@@ -73,24 +65,46 @@
             <input
                 name="firstName"
                 type="text"
+                pattern={"\\D{2,}"}
                 required={!firstStep}
+                placeholder=" "
                 value={form?.firstName ?? ""}
             />
         </label>
 
         <label>
             Nom
-            <input name="lastName" type="text" required={!firstStep} value={form?.lastName ?? ""} />
+            <input
+                name="lastName"
+                type="text"
+                pattern={"\\D{2,}"}
+                required={!firstStep}
+                placeholder=" "
+                value={form?.lastName ?? ""}
+            />
         </label>
 
         <label class="col-span-2">
             Courriel
-            <input name="email" type="email" required={!firstStep} value={form?.email ?? ""} />
+            <input
+                name="email"
+                type="email"
+                pattern={"[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+(\\.[a-zA-Z]+)+"}
+                required={!firstStep}
+                placeholder=" "
+                value={form?.email ?? ""}
+            />
         </label>
 
         <label class="col-span-2">
             Mot de passe
-            <input name="password" type="password" pattern={".{8,}"} required={!firstStep} />
+            <input
+                name="password"
+                type="password"
+                pattern={".{8,}"}
+                required={!firstStep}
+                placeholder=" "
+            />
         </label>
     </div>
 
