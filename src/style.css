@@ -43,11 +43,24 @@
         }
     }
 
-    label > span {
-        @apply hidden;
+    label {
+        span {
+            @apply text-center text-red-600;
+            @apply hidden;
+        }
+
+        &[data-error="true"] {
+            input {
+                @apply border-red-500 focus:valid:border-red-500;
+            }
+
+            span {
+                @apply block;
+            }
+        }
     }
 
-    label:has(:placeholder-shown) > span {
+    label > label:has(:placeholder-shown) > span {
         display: none !important;
     }
 
