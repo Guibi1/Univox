@@ -9,10 +9,10 @@
     const handleSubmit = (() => {
         loading = true;
         return async ({ result, update }) => {
-            loading = false;
             if (result.type === "success") {
                 firstStep = false;
             }
+            loading = false;
             update({ reset: false });
         };
     }) satisfies SubmitFunction;
