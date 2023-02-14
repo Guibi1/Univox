@@ -72,14 +72,17 @@
 
         <hr
             class="absolute h-0.5 bg-red-600 border-0 dark:bg-red-600"
-            style={`top: ${rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset) - 0.125/2}rem; 
+            style={`top: ${rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)}rem; 
         left: ${cellWidth * (currentTime.day())}rem;
-        width: ${cellWidth}rem;`}
+        width: ${cellWidth}rem;
+        transform: translateY(-50%);
+        `};
         />
 
-        <div class="absolute rounded-full w-3 h-3 bg-red-600" 
-        style={`top: ${rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset) - 0.75/2}rem; 
-        left: ${cellWidth * currentTime.day() - 0.75/2}rem;
+        <div class="absolute rounded-full w-3 h-3 bg-red-600 translate-x-[" 
+        style={`top: ${rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)}rem; 
+        left: ${cellWidth * currentTime.day()}rem;
+        transform: translateX(-50%) translateY(-50%);
         `}></div>
     </table>
 </main>
