@@ -30,8 +30,29 @@
     }
 
     input {
-        @apply h-10 rounded bg-gray-200 text-center text-gray-800 outline-none;
-        @apply focus-visible:border-2 focus-visible:border-gray-200;
+        @apply h-10 rounded bg-gray-200 text-center text-gray-800 outline-none border-2 border-transparent;
+        @apply focus-visible:border-gray-200;
+
+        &:not(:placeholder-shown) {
+            @apply invalid:border-red-500;
+            @apply focus:valid:border-green-500;
+        }
+
+        &::placeholder {
+            @apply text-transparent;
+        }
+    }
+
+    label > span {
+        @apply hidden;
+    }
+
+    label:has(:placeholder-shown) > span {
+        display: none !important;
+    }
+
+    label:has(input:invalid) > span {
+        @apply block;
     }
 
     button,
