@@ -18,7 +18,7 @@ export const actions = {
         const password = data.get("password")?.toString();
 
         // Validate first step input
-        if (!da || /\\d{7}/.test(da) || !omnivoxPassword) {
+        if (!da || !/\d{7}/.test(da) || !omnivoxPassword) {
             return fail(400, { da, missing: true });
         }
 
@@ -27,11 +27,11 @@ export const actions = {
             // Validate second step input
             if (
                 !firstName ||
-                /\\D{2,}/.test(firstName) ||
+                !/\D{2,}/.test(firstName) ||
                 !lastName ||
-                /\\D{2,}/.test(lastName) ||
+                !/\D{2,}/.test(lastName) ||
                 !password ||
-                /.{8,}/.test(password) ||
+                !/.{8,}/.test(password) ||
                 !email ||
                 /[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+(\\.[a-zA-Z]+)+/.test(email)
             ) {
