@@ -5,18 +5,22 @@
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
+    let firstStep = true;
     let loading = false;
 
-    $: if (form?.success) {
-        goto("/connexion");
-        user.refresh();
-    }
-
-    const handleSubmit = (() => {
+    const handleSubmit = (({ data }) => {
         loading = true;
-        return async ({ update }) => {
+        return async ({ result, update }) => {
             loading = false;
-            update();
+            if (result.type == "success") {
+                if (firstStep) {
+                    firstStep = false;
+                } else {
+                    goto("/connexion");
+                    user.refresh();
+                }
+            }
+            update({ reset: false });
         };
     }) satisfies SubmitFunction;
 </script>
@@ -40,39 +44,57 @@
 {/if}
 
 <form use:enhance={handleSubmit} hidden={loading} class="flex flex-col gap-6" method="post">
-    <div class="grid grid-cols-2 gap-4">
-        <label>
-            Prénom
-            <input name="firstName" type="text" value={form?.firstName ?? ""} />
-        </label>
+    <input hidden name="firstStep" value={firstStep} />
 
-        <label>
-            Nom
-            <input name="lastName" type="text" value={form?.lastName ?? ""} />
-        </label>
-
+    <div hidden={!firstStep} class="grid grid-cols-2 gap-4">
         <label class="col-span-2">
             No de DA
-            <input name="da" type="text" value={form?.da ?? ""} />
+            <input
+                name="da"
+                type="text"
+                pattern={"\\d{7}"}
+                required={firstStep}
+                value={form?.da ?? ""}
+                placeholder=" "
+            />
+            <!-- <span class="text-center text-red-600">Entrez un DA valide</span> -->
         </label>
 
         <label class="col-span-2">
             Mot de passe Omnivox
-            <input name="omnivoxPassword" type="password" />
+            <input name="omnivoxPassword" type="password" required={firstStep} placeholder=" " />
+            <span>Bruh</span>
+        </label>
+    </div>
+
+    <div hidden={firstStep} class="grid grid-cols-2 gap-4">
+        <label>
+            Prénom
+            <input
+                name="firstName"
+                type="text"
+                required={!firstStep}
+                value={form?.firstName ?? ""}
+            />
+        </label>
+
+        <label>
+            Nom
+            <input name="lastName" type="text" required={!firstStep} value={form?.lastName ?? ""} />
         </label>
 
         <label class="col-span-2">
             Courriel
-            <input name="email" type="email" value={form?.email ?? ""} />
+            <input name="email" type="email" required={!firstStep} value={form?.email ?? ""} />
         </label>
 
         <label class="col-span-2">
             Mot de passe
-            <input name="password" type="password" />
+            <input name="password" type="password" pattern={".{8,}"} required={!firstStep} />
         </label>
     </div>
 
-    <button type="submit">S'inscrire</button>
+    <button type="submit">{firstStep ? "Suivant" : "S'inscrire"}</button>
 
     <span class="text-center">
         ou
