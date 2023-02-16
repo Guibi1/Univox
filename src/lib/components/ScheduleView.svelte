@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { Class } from "$lib/Types";
-    import dayjs, { Dayjs } from "dayjs";
-    import { onDestroy } from 'svelte';
+    import dayjs from "dayjs";
+    import { onDestroy } from "svelte";
+    import Hoverable from "./Hoverable.svelte";
 
     export let schedule: Class[];
 
@@ -14,13 +15,12 @@
     }
 
     const rowHeight = 3;
-    const hourOffset = 3;
     const cellWidth = 6;
     const timeOffset = scheduleTimeStart - 1;
 
     let currentTime = dayjs();
-    const interval = setInterval(() => (currentTime = dayjs()), 1000 );
-	onDestroy(() => clearInterval(interval));
+    const interval = setInterval(() => (currentTime = dayjs()), 1000);
+    onDestroy(() => clearInterval(interval));
 
     const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 </script>
@@ -52,37 +52,66 @@
 
         <!-- TODO: Replace schedule for the user's schedule -->
         {#each schedule as period}
-            <div
-                class="absolute bg-sky-500  "
-                style={`top: ${
-                    rowHeight *
-                    (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset)
-                }rem; 
-                left: ${cellWidth * (period.weekday + 1)}rem;
-                width: ${cellWidth}rem;
-                height: ${rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60)}rem;`}
-            >
-                <p>{period.name}</p>
-                <p>{period.id}</p>
-                <p>{period.group}</p>
-            </div>
+            <Hoverable let:hovering={active}>
+                <div
+                    class="absolute bg-sky-500"
+                    style={`top: ${
+                        rowHeight *
+                        (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset)
+                    }rem; 
+                    left: ${cellWidth * (period.weekday + 1)}rem;
+                    width: ${cellWidth}rem;
+                    height: ${
+                        rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60)
+                    }rem;`}
+                >
+                    {#if active}
+                        <div
+                            class="absolute w-auto h-auto bg-black"
+                            style={`
+                        transform: translateX(${cellWidth}rem);
+                        `}
+                        >
+                            {period.name} <br>
+                            {period.id} <br>
+                            {period.group} <br>
+                            {period.local} <br>
+                            {period.type} <br>
+                            {period.teacher} <br>
+                            {period.virtual} <br>
+                            {period.weekday} <br>
+                            {period.timeStart} <br>
+                            {period.timeEnd}
+                        </div>
+                    {/if}
+                    <p>{period.name}</p>
+                    <p>{period.id}</p>
+                    <p>{period.group}</p>
+                </div>
+            </Hoverable>
         {/each}
 
         <!-- Pointer date/time -->
 
         <hr
             class="absolute h-0.5 bg-red-600 border-0 dark:bg-red-600"
-            style={`top: ${rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)}rem; 
-        left: ${cellWidth * (currentTime.day())}rem;
+            style="{`top: ${
+                rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)
+            }rem; 
+        left: ${cellWidth * currentTime.day()}rem;
         width: ${cellWidth}rem;
         transform: translateY(-50%);
-        `};
+        `};"
         />
 
-        <div class="absolute rounded-full w-3 h-3 bg-red-600 translate-x-[" 
-        style={`top: ${rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)}rem; 
-        left: ${cellWidth * currentTime.day()}rem;
-        transform: translateX(-50%) translateY(-50%);
-        `}></div>
+        <div
+            class="absolute rounded-full w-3 h-3 bg-red-600"
+            style={`top: ${
+                rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)
+            }rem; 
+            left: ${cellWidth * currentTime.day()}rem;
+            transform: translateX(-50%) translateY(-50%);
+            `}
+        />
     </table>
 </main>
