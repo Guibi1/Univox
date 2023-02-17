@@ -55,3 +55,6 @@ Nous sommes des étudiants au Collège Bois-De-Boulogne. Nous étudions dans le 
 
 - L'architecture : 
 Pour le front-end, nous allons utiliser les combinaisons classiques de HTML, CSS et JavaScript pour l'affichage du site. Tailwind, une librairie CSS, nous permettera de travailler l'aspect graphique du site avec une plus grande liberté que Bootstrap, tout en restant plus facile d'utilisation que simplement du CSS
+
+Pdf avec graphiques : [Documents.d.analyse.V1.pdf](https://github.com/Guibi1/H23-Gr3-Equipe3-Univox/files/10771604/Documents.d.analyse.V1.pdf)
+
