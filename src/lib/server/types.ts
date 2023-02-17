@@ -21,6 +21,7 @@ export const UserSchema = new Schema<ServerUser>({
     firstName: String,
     lastName: String,
     scheduleId: mongoose.Types.ObjectId,
+    friends: [mongoose.Types.ObjectId],
 });
 
 export const ScheduleSchema = new Schema<Schedule>({
