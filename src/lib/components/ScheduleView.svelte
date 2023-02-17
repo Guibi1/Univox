@@ -52,7 +52,7 @@
 
         <!-- TODO: Replace schedule for the user's schedule -->
         {#each schedule as period}
-            <Hoverable let:hovering={active}>
+            <Hoverable let:hovering>
                 <div
                     class="absolute bg-sky-500"
                     style={`top: ${
@@ -65,53 +65,43 @@
                         rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60)
                     }rem;`}
                 >
-                    {#if active}
+                    <!-- On Hover -->
+                    {#if hovering}
                         <div
                             class="absolute w-auto h-auto bg-black"
-                            style={`
-                        transform: translateX(${cellWidth}rem);
-                        `}
+                            style={`transform: translateX(${cellWidth}rem);`}
                         >
-                            {period.name} <br>
-                            {period.id} <br>
-                            {period.group} <br>
-                            {period.local} <br>
-                            {period.type} <br>
-                            {period.teacher} <br>
-                            {period.virtual} <br>
-                            {period.weekday} <br>
-                            {period.timeStart} <br>
+                            {period.name} <br />
+                            {period._id} <br />
+                            {period.group} <br />
+                            {period.local} <br />
+                            {period.type} <br />
+                            {period.teacher} <br />
+                            {period.virtual} <br />
+                            {period.weekday} <br />
+                            {period.timeStart} <br />
                             {period.timeEnd}
                         </div>
                     {/if}
+
                     <p>{period.name}</p>
-                    <p>{period.id}</p>
+                    <p>{period._id}</p>
                     <p>{period.group}</p>
                 </div>
             </Hoverable>
         {/each}
 
         <!-- Pointer date/time -->
-
-        <hr
-            class="absolute h-0.5 bg-red-600 border-0 dark:bg-red-600"
-            style="{`top: ${
-                rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)
-            }rem; 
-        left: ${cellWidth * currentTime.day()}rem;
-        width: ${cellWidth}rem;
-        transform: translateY(-50%);
-        `};"
-        />
-
         <div
-            class="absolute rounded-full w-3 h-3 bg-red-600"
+            class="absolute"
             style={`top: ${
                 rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)
-            }rem; 
-            left: ${cellWidth * currentTime.day()}rem;
-            transform: translateX(-50%) translateY(-50%);
-            `}
-        />
+            }rem; left: ${cellWidth * currentTime.day()}rem; width: ${cellWidth}rem;`}
+        >
+            <div
+                class="absolute rounded-full w-3 h-3 bg-red-600 -translate-x-1/2 -translate-y-1/2"
+            />
+            <hr class="border-2 border-red-600 -translate-y-1/2" />
+        </div>
     </table>
 </main>
