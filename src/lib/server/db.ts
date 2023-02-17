@@ -37,6 +37,15 @@ export async function getUserFromToken(token: string | undefined): Promise<User 
     return null;
 }
 
+export async function getUserIdFromToken(
+    token: string | undefined
+): Promise<mongoose.Types.ObjectId | null> {
+    if (!token) {
+        return null;
+    }
+    return (await Tokens.findOne({ token }))?.userId ?? null;
+}
+
 // Helpers: User
 export async function findUser(filter: FilterQuery<User>): Promise<User | null> {
     const doc = await Users.findOne(filter);
@@ -87,6 +96,39 @@ export async function updateUserPassword(
 
     await Users.findByIdAndUpdate(userId, {
         $set: { passwordHash: await bcryptjs.hash(password, 11) },
+    });
+    return true;
+}
+
+// Helpers: Friends
+export async function getFriends(userId: mongoose.Types.ObjectId): Promise<User[] | null> {
+    const user = await findUserById(userId);
+    if (!user) {
+        return null;
+    }
+
+    const friends: User[] = [];
+    for (const friendId of user.friends) {
+        const friend = await findUserById(friendId);
+        if (friend) {
+            friends.push(friend);
+        }
+    }
+
+    return friends;
+}
+
+export async function addFriend(
+    userId: mongoose.Types.ObjectId,
+    friendId: mongoose.Types.ObjectId
+): Promise<boolean> {
+    if (!(await findUserById(userId))) {
+        console.error("No user with this id was found.");
+        return false;
+    }
+
+    await Users.findByIdAndUpdate(userId, {
+        $set: { friends: [friendId] },
     });
     return true;
 }
