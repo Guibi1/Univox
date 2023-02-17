@@ -8,6 +8,7 @@ export type User = {
     firstName: string;
     lastName: string;
     scheduleId: mongoose.Types.ObjectId;
+    friends: mongoose.Types.ObjectId[];
 };
 
 export type Book = {
