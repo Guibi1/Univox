@@ -4,6 +4,11 @@ module.exports = {
     darkMode: ["class", '[data-colorscheme="dark"]'],
     theme: {
         extend: {},
+        screens: {
+            tablet: "640px",
+            laptop: "1024px",
+            desktop: "1280px",
+        },
     },
     plugins: [],
 };
