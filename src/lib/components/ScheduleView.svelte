@@ -11,7 +11,7 @@
     const scheduleTimeStart = 0;
     const scheduleTimeEnd = 24;
     for (let i = scheduleTimeStart; i <= scheduleTimeEnd; i++) {
-        rowTitles[i - scheduleTimeStart] = i + ":00";
+        rowTitles.push(i + ":00");
     }
 
     const rowHeight = 3;
