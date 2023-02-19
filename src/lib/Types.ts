@@ -1,16 +1,16 @@
 import type { Dayjs } from "dayjs";
 import type mongoose from "mongoose";
 
-export type User = {
+export interface User {
     _id: mongoose.Types.ObjectId;
     da: string;
     email: string;
     firstName: string;
     lastName: string;
     scheduleId: mongoose.Types.ObjectId;
-};
+}
 
-export type Book = {
+export interface Book {
     _id: mongoose.Types.ObjectId;
     title: string;
     ISBN: string;
@@ -18,25 +18,28 @@ export type Book = {
     author: string;
     price: number;
     state: string;
-};
+}
 
-export type Schedule = {
+export interface Schedule {
     _id: mongoose.Types.ObjectId;
-    periods: Class[];
-};
+    periods: Period[];
+}
 
-export type Class = {
-    _id: mongoose.Types.ObjectId;
+export interface Period {
     name: string;
+    timeStart: Dayjs;
+    timeEnd: Dayjs;
+}
+
+export interface Class extends Period {
+    _id: mongoose.Types.ObjectId;
     group: number;
     local: string;
     type: "T" | "L";
     teacher: string;
     virtual: boolean;
     weekday: Weekday;
-    timeStart: Dayjs;
-    timeEnd: Dayjs;
-};
+}
 
 export enum Weekday {
     Monday = 0,
