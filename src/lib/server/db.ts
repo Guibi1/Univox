@@ -7,7 +7,7 @@ import { ScheduleSchema, TokenSchema, UserSchema, type ServerUser } from "./type
 // Connection
 if (mongoose.connection.readyState !== 1) {
     mongoose.set("strictQuery", false);
-    mongoose.connect(MONGODB_URI);
+    mongoose.connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox");
 }
 
 // Models
