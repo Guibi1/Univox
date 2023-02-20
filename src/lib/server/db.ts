@@ -1,19 +1,19 @@
 import { MONGODB_URI } from "$env/static/private";
-import type { User } from "$lib/Types";
+import type { Period, Schedule, User } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
 import { ScheduleSchema, TokenSchema, UserSchema, type ServerUser } from "./types";
 
 // Connection
+mongoose.set("strictQuery", false);
 if (mongoose.connection.readyState !== 1) {
-    mongoose.set("strictQuery", false);
     mongoose.connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox");
 }
 
 // Models
-const Tokens = mongoose.model("tokens", TokenSchema);
-const Users = mongoose.model("users", UserSchema);
-const Schedules = mongoose.model("schedules", ScheduleSchema);
+const Tokens = mongoose.models["tokens"] ?? mongoose.model("tokens", TokenSchema);
+const Users = mongoose.models["users"] ?? mongoose.model("users", UserSchema);
+const Schedules = mongoose.models["schedules"] ?? mongoose.model("schedules", ScheduleSchema);
 
 // Helpers: Token
 export async function createToken(user: User) {
@@ -129,6 +129,32 @@ export async function addFriend(
 
     await Users.findByIdAndUpdate(userId, {
         $set: { friends: [friendId] },
+    });
+    return true;
+}
+
+// Helpers: Schedule
+export async function findScheduleById(
+    scheduleId: mongoose.Types.ObjectId
+): Promise<Schedule | null> {
+    const doc = await Schedules.findById(scheduleId);
+    if (!doc) {
+        return null;
+    }
+    return { ...doc.toObject() };
+}
+
+export async function addPeriodsToSchedule(
+    scheduleId: mongoose.Types.ObjectId,
+    periods: Period[]
+): Promise<boolean> {
+    if (!(await findScheduleById(scheduleId))) {
+        console.error("No user with this id was found.");
+        return false;
+    }
+
+    await Schedules.findByIdAndUpdate(scheduleId, {
+        $push: { periods: periods },
     });
     return true;
 }
