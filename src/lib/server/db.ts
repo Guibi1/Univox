@@ -27,10 +27,7 @@ export async function deleteToken(token: string) {
 }
 
 export async function getUserFromToken(token: string | undefined): Promise<User | null> {
-    if (!token) {
-        return null;
-    }
-    const userId = (await Tokens.findOne({ token }))?.userId;
+    const userId = await getUserIdFromToken(token);
     if (userId) {
         return findUserById(userId);
     }
@@ -40,10 +37,13 @@ export async function getUserFromToken(token: string | undefined): Promise<User 
 export async function getUserIdFromToken(
     token: string | undefined
 ): Promise<mongoose.Types.ObjectId | null> {
-    if (!token) {
-        return null;
-    }
-    return (await Tokens.findOne({ token }))?.userId ?? null;
+    if (!token) return null;
+
+    const doc = await Tokens.findOne({ token });
+    if (!doc) return null;
+    doc.lastAccessedDate = Date.now();
+    doc.save();
+    return doc?.userId ?? null;
 }
 
 // Helpers: User
