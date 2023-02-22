@@ -30,8 +30,9 @@
     }
 
     input {
-        @apply h-12 p-4 rounded-lg bg-gray-200 text-center text-gray-800 outline-none border-2 border-transparent;
+        @apply h-12 p-4 rounded-lg bg-neutral-200 text-center text-gray-800 outline-none border-2 border-transparent;
         @apply focus-visible:border-gray-200;
+        @apply dark:text-white dark:bg-slate-500;
 
         &:not(:placeholder-shown) {
             @apply invalid:border-red-500;
