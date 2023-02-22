@@ -7,11 +7,18 @@ export interface Token {
     _id: mongoose.Types.ObjectId;
     token: string;
     userId: mongoose.Types.ObjectId;
+    lastAccessedDate: Date;
 }
 
 export const TokenSchema = new Schema<Token>({
     token: String,
     userId: mongoose.Types.ObjectId,
+    lastAccessedDate: {
+        type: Date,
+        default: Date.now,
+        expires: "1h",
+        index: true,
+    },
 });
 
 // Users
