@@ -24,16 +24,7 @@
     <h1>Bienvenue sur Univox</h1>
 </div>
 
-{#if loading}
-    <box-icon name="loader-circle" animation="spin" class="h-10 my-6 flex items-center w-full" />
-{/if}
-
-<form
-    use:enhance={handleSubmit}
-    hidden={loading}
-    class="m-auto w-9/12 flex flex-col gap-6"
-    method="post"
->
+<form use:enhance={handleSubmit} class="m-auto w-9/12 flex flex-col gap-6" method="post">
     <div class="grid grid-rows-2 gap-4">
         <label>
             No de DA
@@ -44,6 +35,7 @@
                 required
                 placeholder=" "
                 value={form?.da ?? ""}
+                readonly={loading}
             />
         </label>
 
@@ -56,17 +48,27 @@
                 required
                 placeholder=" "
                 on:input={() => form && (form.incorrect = false)}
+                readonly={loading}
             />
             {#if form?.incorrect}
                 <span>Mot de passe erroné</span>
             {/if}
         </label>
+
         <a href="/mot-de-passe-oublié" class="text-right">Mot de passe oublié ?</a>
     </div>
 
-    <button type="submit" class="w-7/12 self-center flex items-center justify-center">
-        Se connecter <box-icon name="chevron-right" />
-    </button>
+    {#if !loading}
+        <button type="submit" class="w-7/12 self-center flex items-center justify-center">
+            Se connecter <box-icon name="chevron-right" />
+        </button>
+    {:else}
+        <box-icon
+            name="loader-circle"
+            animation="spin"
+            class="h-10 my-6 flex items-center w-full"
+        />
+    {/if}
 </form>
 
 {#if !loading}

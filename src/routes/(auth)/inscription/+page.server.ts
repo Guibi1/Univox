@@ -23,27 +23,28 @@ export const actions = {
         }
 
         // We do the second step first to return faster if there's an error
-        if (!firstStep) {
+        if (
+            !firstStep &&
             // Validate second step input
-            if (
-                !firstName ||
+            (!firstName ||
                 !/\D{2,}/.test(firstName) ||
                 !lastName ||
                 !/\D{2,}/.test(lastName) ||
                 !password ||
                 !/.{8,}/.test(password) ||
                 !email ||
-                /[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+(\\.[a-zA-Z]+)+/.test(email)
-            ) {
-                return fail(400, {
-                    da,
-                    omnivoxPassword,
-                    firstName,
-                    lastName,
-                    email,
-                    missing: true,
-                });
-            }
+                /[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+(\\.[a-zA-Z]+)+/.test(
+                    email
+                ))
+        ) {
+            return fail(400, {
+                da,
+                omnivoxPassword,
+                firstName,
+                lastName,
+                email,
+                missing: true,
+            });
         }
 
         // Login via Omnivox to verify the user's identity
@@ -68,6 +69,7 @@ export const actions = {
                 firstName: firstName ?? "",
                 lastName: lastName ?? "",
                 scheduleId: new mongoose.Types.ObjectId(),
+                friends: [],
             });
 
             throw redirect(302, "/connexion");

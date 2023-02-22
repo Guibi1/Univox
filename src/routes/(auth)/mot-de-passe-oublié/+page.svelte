@@ -24,16 +24,7 @@
     <h1>Mot de passe oublié</h1>
 </div>
 
-{#if loading}
-    <box-icon name="loader-circle" animation="spin" class="h-10 my-6 flex items-center w-full" />
-{/if}
-
-<form
-    use:enhance={handleSubmit}
-    hidden={loading}
-    class="m-auto w-9/12 flex flex-col gap-6"
-    method="post"
->
+<form use:enhance={handleSubmit} class="m-auto w-9/12 flex flex-col gap-6" method="post">
     <div class="flex flex-col gap-4">
         <label data-error={form?.incorrect}>
             No de DA
@@ -45,6 +36,7 @@
                 placeholder=" "
                 on:input={() => form && (form.incorrect = false)}
                 value={form?.da ?? ""}
+                readonly={loading}
             />
             {#if form?.incorrect}
                 <span>Aucun utilisateur ne correspond au DA entré</span>
@@ -59,6 +51,7 @@
                 required
                 placeholder=" "
                 on:input={() => form && (form.omnivoxIncorrect = false)}
+                readonly={loading}
             />
             {#if form?.omnivoxIncorrect}
                 <span>Mot de passe Omnivox erroné</span>
@@ -67,7 +60,14 @@
 
         <label>
             Nouveau mot de passe
-            <input name="newPassword" type="password" pattern={".{8,}"} required placeholder=" " />
+            <input
+                name="newPassword"
+                type="password"
+                pattern={".{8,}"}
+                required
+                placeholder=" "
+                readonly={loading}
+            />
         </label>
 
         <a href="/connexion" class="flex self-start">
@@ -76,7 +76,15 @@
         </a>
     </div>
 
-    <button type="submit" class="w-7/12 self-center flex items-center justify-center">
-        Suivant <box-icon name="chevron-right" />
-    </button>
+    {#if !loading}
+        <button type="submit" class="w-7/12 self-center flex items-center justify-center">
+            Suivant <box-icon name="chevron-right" />
+        </button>
+    {:else}
+        <box-icon
+            name="loader-circle"
+            animation="spin"
+            class="h-10 my-6 flex items-center w-full"
+        />
+    {/if}
 </form>
