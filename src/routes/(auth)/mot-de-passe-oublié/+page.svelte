@@ -71,7 +71,7 @@
         </label>
 
         <a href="/connexion" class="flex self-start">
-            <box-icon name="chevron-left" class="fill-cyan-300" />
+            <box-icon name="chevron-left" />
             Retour
         </a>
     </div>

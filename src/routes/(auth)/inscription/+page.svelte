@@ -123,7 +123,7 @@
                 class="col-span-2 self-left flex items-center"
                 href="javascript:void()"
             >
-                <box-icon name="chevron-left" class="fill-cyan-300" /> Retour
+                <box-icon name="chevron-left" /> Retour
             </a>
         </div>
     </div>
