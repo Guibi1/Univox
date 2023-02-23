@@ -2,11 +2,11 @@
 <!-- Settings (notch #): Count: 2; Complexity: 5; Contrast: 4; -->
 
 <svg
-    class="fixed blur-sm"
+    class="fixed -inset-2 blur-sm"
     id="visual"
     viewBox="0 0 900 600"
-    width="100vw"
-    height="100vh"
+    width="105vw"
+    height="105vh"
     preserveAspectRatio="xMinYMin slice"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
