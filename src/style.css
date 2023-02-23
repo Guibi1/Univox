@@ -72,19 +72,23 @@
     [type="button"],
     [type="reset"],
     [type="submit"] {
-        @apply h-12 rounded-lg bg-cyan-300 text-black fill-black;
+        @apply h-12 rounded-lg bg-blue-500 text-white fill-white;
+        @apply dark:bg-blue-300 dark:text-black dark:fill-black;
     }
 
     a {
-        @apply text-cyan-300 cursor-pointer;
+        @apply cursor-pointer text-blue-500 fill-blue-500;
+        @apply dark:text-blue-300 dark:fill-blue-300;
 
         &.outlined {
-            @apply py-2 rounded border-2 border-cyan-300 text-center;
+            @apply py-2 rounded border-2 border-blue-500 text-center;
+            @apply dark:border-blue-300;
         }
     }
 
     hr {
-        @apply border-neutral-700 dark:border-white;
+        @apply border-neutral-700;
+        @apply dark:border-white;
     }
 
     [hidden] {
