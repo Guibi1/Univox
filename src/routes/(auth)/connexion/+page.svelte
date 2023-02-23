@@ -79,11 +79,6 @@
     </div>
 
     <div class="m-auto w-9/12 flex">
-        <a
-            href="/inscription"
-            class="m-auto w-7/12 py-2 text-center rounded border-2 border-cyan-300"
-        >
-            S'inscrire
-        </a>
+        <a href="/inscription" class="outlined m-auto w-7/12"> S'inscrire </a>
     </div>
 {/if}

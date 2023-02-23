@@ -30,8 +30,8 @@
     }
 
     input {
-        @apply h-12 p-4 rounded-lg bg-neutral-200 text-center text-gray-800 outline-none border-2 border-transparent;
-        @apply focus-visible:border-gray-200;
+        @apply h-12 p-4 rounded-lg bg-neutral-100 text-center text-black outline-none border-2 border-transparent;
+        @apply focus-visible:border-neutral-100;
         @apply dark:text-white dark:bg-slate-500;
 
         &:not(:placeholder-shown) {
@@ -41,6 +41,8 @@
     }
 
     label {
+        @apply grid grid-rows-[min-content_1fr] grid-cols-1 gap-1 w-full;
+
         span {
             @apply text-center text-red-600;
             @apply hidden;
@@ -70,21 +72,22 @@
     [type="button"],
     [type="reset"],
     [type="submit"] {
-        @apply h-12 rounded-lg bg-cyan-300;
-    }
-
-    label {
-        @apply grid gap-1 w-full;
-        @apply grid-rows-2 grid-cols-1;
-        grid-template-rows: min-content 1fr;
-        /* @apply 2xl:grid-rows-1 2xl:grid-cols-2; */
+        @apply h-12 rounded-lg bg-cyan-300 text-black fill-black;
     }
 
     a {
         @apply text-cyan-300 cursor-pointer;
+
+        &.outlined {
+            @apply py-2 rounded border-2 border-cyan-300 text-center;
+        }
+    }
+
+    hr {
+        @apply border-neutral-700 dark:border-white;
     }
 
     [hidden] {
-        display: none !important;
+        @apply !hidden;
     }
 }

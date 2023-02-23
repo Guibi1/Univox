@@ -9,7 +9,7 @@
 
 <div class="h-screen flex justify-center items-center">
     <div
-        class="relative w-[32rem] overflow-hidden rounded bg-white dark:bg-neutral-800 !bg-opacity-[85%] backdrop-blur transition-[height]"
+        class="relative w-[32rem] overflow-hidden rounded bg-stone-200 dark:bg-neutral-900 !bg-opacity-80 backdrop-blur-xl transition-[height]"
         style="height: {height}px;"
     >
         <main
