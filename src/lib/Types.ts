@@ -34,17 +34,6 @@ export type Class = {
     type: "T" | "L";
     teacher: string;
     virtual: boolean;
-    weekday: Weekday;
     timeStart: Dayjs;
     timeEnd: Dayjs;
 };
-
-export enum Weekday {
-    Monday = 0,
-    Tuesday = 1,
-    Wednesday = 2,
-    Thursday = 3,
-    Friday = 4,
-    Saturday = 5,
-    Sunday = 6
-}
