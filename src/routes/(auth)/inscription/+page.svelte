@@ -149,11 +149,6 @@
     </div>
 
     <div class="m-auto w-9/12 flex">
-        <a
-            href="/connexion"
-            class="m-auto w-7/12 py-2 text-center rounded border-2 border-cyan-300"
-        >
-            Se connecter
-        </a>
+        <a href="/connexion" class="outlined m-auto w-7/12"> Se connecter </a>
     </div>
 {/if}
