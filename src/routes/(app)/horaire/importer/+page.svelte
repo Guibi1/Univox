@@ -18,6 +18,10 @@
     }) satisfies SubmitFunction;
 </script>
 
+<svelte:head>
+    <title> Univox | Horaire | Importer </title>
+</svelte:head>
+
 <div class="m-auto w-fit pb-4 flex flex-col items-center justify-center gap-4">
     <h1>Importer mon horaire de session depuis Omnivox</h1>
 

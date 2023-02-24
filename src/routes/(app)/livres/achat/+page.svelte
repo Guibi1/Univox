@@ -61,6 +61,10 @@
     }
 </script>
 
+<svelte:head>
+    <title> Univox | Livres | Achat </title>
+</svelte:head>
+
 <h1 class="text-center pt-2 dark:bg-neutral-900">Acheter des livres</h1>
 
 <div
