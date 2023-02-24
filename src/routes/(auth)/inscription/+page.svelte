@@ -19,6 +19,10 @@
     }) satisfies SubmitFunction;
 </script>
 
+<svelte:head>
+    <title> Univox | Inscription </title>
+</svelte:head>
+
 <div class="pb-4 flex items-center justify-center gap-4">
     <img src={logo} class="h-12 aspect-square" alt="Univox's logo" />
     <h1>Inscription</h1>
