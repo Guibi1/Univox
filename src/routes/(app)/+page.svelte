@@ -32,4 +32,8 @@
     ];
 </script>
 
+<svelte:head>
+    <title>Univox</title>
+</svelte:head>
+
 <ScheduleView {schedule} />
