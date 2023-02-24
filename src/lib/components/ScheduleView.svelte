@@ -78,7 +78,7 @@
             <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
             <Hoverable let:hovering>
                 <div
-                    class="absolute bg-sky-500"
+                    class="absolute bg-sky-500 border-red-200 hover:border-2"
                     style={`top: ${
                         rowHeight *
                         (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset)
@@ -90,7 +90,7 @@
                     <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
                     {#if hovering}
                         <div
-                            class="absolute w-auto h-auto bg-black"
+                            class="absolute w-auto h-auto bg-blue-400"
                             style={`transform: translateX(${cellWidth}rem);`}
                         >
                             {period.name} <br />
@@ -104,7 +104,10 @@
                             {period.timeEnd}
                         </div>
                     {/if}
+<<<<<<< Updated upstream
                     <!-- Affiche le nom de la période et son identifiant -->
+=======
+>>>>>>> Stashed changes
                     <p>{period.name}</p>
                     <p>{period._id}</p>
                     <p>{period.group}</p>
