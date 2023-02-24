@@ -33,7 +33,7 @@
 </script>
 
 <svelte:head>
-    <title>Univox</title>
+    <title> Univox </title>
 </svelte:head>
 
 <ScheduleView {schedule} />

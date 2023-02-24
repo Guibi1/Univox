@@ -7,6 +7,10 @@
     onMount(async () => (amis = await (await fetch("/api/user/friends")).json()));
 </script>
 
+<svelte:head>
+    <title> Univox | Amis </title>
+</svelte:head>
+
 <h1 class="text-center pt-2 dark:bg-neutral-900">Amis</h1>
 
 <div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
