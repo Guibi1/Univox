@@ -4,7 +4,7 @@ import { fail, redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 
 export const actions = {
-    default: async ({ request }) => {
+    default: async ({ request, url }) => {
         const data = await request.formData();
         const da = data.get("da")?.toString();
         const omnivoxPassword = data.get("omnivoxPassword")?.toString();
@@ -33,6 +33,6 @@ export const actions = {
 
         await db.updateUserPassword(user?._id, newPassword);
 
-        throw redirect(302, "/connexion");
+        throw redirect(302, "/connexion?" + url.searchParams);
     },
 } satisfies Actions;

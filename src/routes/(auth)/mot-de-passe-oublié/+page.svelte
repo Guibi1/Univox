@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
+    import { page } from "$app/stores";
     import logo from "$assets/logo.webp";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
@@ -20,7 +21,7 @@
 </script>
 
 <svelte:head>
-    <title> Univox | Mot de passe oublié </title>
+    <title>Univox | Mot de passe oublié</title>
 </svelte:head>
 
 <div class="pb-4 flex items-center justify-center gap-4">
@@ -74,7 +75,7 @@
             />
         </label>
 
-        <a href="/connexion" class="flex self-start">
+        <a href={"/connexion" + $page.data.params} class="flex self-start">
             <box-icon name="chevron-left" />
             Retour
         </a>

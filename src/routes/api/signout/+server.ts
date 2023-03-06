@@ -5,7 +5,7 @@ export const POST = (async ({ cookies }) => {
     const token = cookies.get("token");
 
     if (token) {
-        db.deleteToken(token);
+        await db.deleteToken(token);
     }
     cookies.delete("token", { path: "/" });
 
