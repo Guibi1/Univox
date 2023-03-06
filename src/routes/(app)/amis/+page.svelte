@@ -1,21 +1,17 @@
 <script lang="ts" async>
-    import type { User } from "$lib/Types";
-    import { onMount } from "svelte";
-
-    let amis: User[] = [];
-
-    onMount(async () => (amis = await (await fetch("/api/user/friends")).json()));
+    import type { PageData } from "./$types";
+    export let data: PageData;
 </script>
 
 <svelte:head>
-    <title> Univox | Amis </title>
+    <title>Univox | Amis</title>
 </svelte:head>
 
 <h1 class="text-center pt-2 dark:bg-neutral-900">Amis</h1>
 
 <div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
 
-{#each amis as ami}
+{#each data.amis as ami}
     {ami.lastName}
 {/each}
 
