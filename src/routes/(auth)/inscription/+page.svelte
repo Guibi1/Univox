@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
+    import { page } from "$app/stores";
     import logo from "$assets/logo.webp";
     import type { ActionData } from "./$types";
 
@@ -20,7 +21,7 @@
 </script>
 
 <svelte:head>
-    <title> Univox | Inscription </title>
+    <title>Univox | Inscription</title>
 </svelte:head>
 
 <div class="pb-4 flex items-center justify-center gap-4">
@@ -153,6 +154,6 @@
     </div>
 
     <div class="m-auto w-9/12 flex">
-        <a href="/connexion" class="outlined m-auto w-7/12"> Se connecter </a>
+        <a href={"/connexion" + $page.data.params} class="outlined m-auto w-7/12"> Se connecter </a>
     </div>
 {/if}

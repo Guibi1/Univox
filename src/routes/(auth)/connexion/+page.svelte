@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
+    import { page } from "$app/stores";
     import logo from "$assets/logo.webp";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
@@ -20,7 +21,7 @@
 </script>
 
 <svelte:head>
-    <title> Univox | Connexion </title>
+    <title>Univox | Connexion</title>
 </svelte:head>
 
 <div class="pb-4 flex items-center justify-center gap-4">
@@ -59,7 +60,9 @@
             {/if}
         </label>
 
-        <a href="/mot-de-passe-oublié" class="text-right">Mot de passe oublié ?</a>
+        <a href={"/mot-de-passe-oublié" + $page.data.params} class="text-right">
+            Mot de passe oublié ?
+        </a>
     </div>
 
     {#if !loading}
@@ -83,6 +86,6 @@
     </div>
 
     <div class="m-auto w-9/12 flex">
-        <a href="/inscription" class="outlined m-auto w-7/12"> S'inscrire </a>
+        <a href={"/inscription" + $page.data.params} class="outlined m-auto w-7/12"> S'inscrire </a>
     </div>
 {/if}

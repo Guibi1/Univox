@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import type { Actions } from "./$types";
 
 export const actions = {
-    default: async ({ request }) => {
+    default: async ({ request, url }) => {
         const data = await request.formData();
         const firstStep = data.get("firstStep")?.valueOf() == "true";
         const da = data.get("da")?.toString();
@@ -72,7 +72,7 @@ export const actions = {
                 friends: [],
             });
 
-            throw redirect(302, "/connexion");
+            throw redirect(302, "/connexion?" + url.searchParams);
         }
 
         return { da, omnivoxPassword, success: true };
