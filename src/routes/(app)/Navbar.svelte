@@ -1,9 +1,7 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
     import { page } from "$app/stores";
     import logo from "$assets/logo.webp";
     import colorScheme, { colorSchemeIsDark } from "$lib/stores/colorScheme";
-    import user from "$lib/stores/user";
 
     const pages = [
         { href: "/", title: "Accueil" },
@@ -18,11 +16,6 @@
             if ($page.url.pathname.startsWith(href)) currentPage = i;
         }
     }
-
-    const click = (e: MouseEvent) => {
-        e.preventDefault();
-        user.signout().then(() => goto("/connexion"));
-    };
 </script>
 
 <div class="h-10">
@@ -59,8 +52,7 @@
         {/each}
         <li>
             <a
-                href="/connexion"
-                on:click={click}
+                href="/deconnexion"
                 class={`flex items-center h-10 px-4 text-white text-center hover:text-black hover:bg-zinc-400 dark:hover:bg-neutral-600 dark:text-white`}
             >
                 Se déconnecter
