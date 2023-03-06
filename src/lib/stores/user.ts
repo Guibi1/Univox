@@ -9,14 +9,8 @@ function createUserStore() {
         set(user);
     }
 
-    async function signout() {
-        await fetch("/api/signout", { method: "POST" });
-        await refresh();
-    }
-
     return {
         subscribe,
-        signout,
         set,
         refresh,
     };
