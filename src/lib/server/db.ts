@@ -101,12 +101,7 @@ export async function updateUserPassword(
 }
 
 // Helpers: Friends
-export async function getFriends(userId: mongoose.Types.ObjectId): Promise<User[] | null> {
-    const user = await findUserById(userId);
-    if (!user) {
-        return null;
-    }
-
+export async function getFriends(user: User): Promise<User[]> {
     const friends: User[] = [];
     for (const friendId of user.friends) {
         const friend = await findUserById(friendId);
@@ -118,16 +113,8 @@ export async function getFriends(userId: mongoose.Types.ObjectId): Promise<User[
     return friends;
 }
 
-export async function addFriend(
-    userId: mongoose.Types.ObjectId,
-    friendId: mongoose.Types.ObjectId
-): Promise<boolean> {
-    if (!(await findUserById(userId))) {
-        console.error("No user with this id was found.");
-        return false;
-    }
-
-    await Users.findByIdAndUpdate(userId, {
+export async function addFriend(user: User, friendId: mongoose.Types.ObjectId): Promise<boolean> {
+    await Users.findByIdAndUpdate(user, {
         $set: { friends: [friendId] },
     });
     return true;

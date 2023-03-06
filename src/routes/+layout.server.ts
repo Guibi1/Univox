@@ -1,10 +1,20 @@
-import * as db from "$lib/server/db";
 import type { ColorScheme } from "$lib/stores/colorScheme";
-import type { ServerLoadEvent } from "@sveltejs/kit";
+import colorScheme from "$lib/stores/colorScheme";
+import user from "$lib/stores/user";
+import type { LayoutServerLoad } from "./$types";
 
-export async function load({ cookies }: ServerLoadEvent) {
+export const load = (({ cookies, locals }) => {
+    const color = (cookies.get("colorScheme") ?? "dark") as ColorScheme;
+
+    // Stores are up to date during SSR
+    user.set(locals.user);
+    colorScheme.setInitial(color);
+
+    // Data available throughout the site
     return {
-        colorScheme: (cookies.get("colorScheme") ?? "dark") as ColorScheme,
-        currentUser: JSON.stringify(await db.getUserFromToken(cookies.get("token"))),
+        storesInitialValue: {
+            colorScheme: color,
+            serializedUser: JSON.stringify(locals.user),
+        },
     };
-}
+}) satisfies LayoutServerLoad;

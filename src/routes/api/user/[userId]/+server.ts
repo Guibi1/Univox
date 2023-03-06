@@ -3,10 +3,11 @@ import { error, json } from "@sveltejs/kit";
 import mongoose from "mongoose";
 import type { RequestHandler } from "./$types";
 
-export const GET = (async ({ cookies, params }) => {
+export const GET = (async ({ params, locals }) => {
+    if (!locals.user) throw error(401);
+
     const userId = new mongoose.Types.ObjectId(params.userId);
-    const currentUser = await db.getUserFromToken(cookies.get("token"));
-    if (!currentUser?.friends.includes(userId)) {
+    if (!locals.user.friends.includes(userId)) {
         throw error(403);
     }
 
