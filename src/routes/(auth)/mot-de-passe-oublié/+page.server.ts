@@ -1,5 +1,5 @@
 import * as db from "$lib/server/db";
-import { login } from "$lib/server/omnivox";
+import * as omnivox from "$lib/server/omnivox";
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 
@@ -21,7 +21,7 @@ export const actions = {
         }
 
         try {
-            await login(da, omnivoxPassword);
+            await omnivox.login(da, omnivoxPassword);
         } catch (e) {
             return fail(401, { da, omnivoxIncorrect: true });
         }

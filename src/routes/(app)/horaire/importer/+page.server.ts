@@ -1,5 +1,5 @@
 import * as db from "$lib/server/db";
-import { Semester, fetchSchedule, login } from "$lib/server/omnivox";
+import * as omnivox from "$lib/server/omnivox";
 import { fail, redirect } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import type { Actions } from "./$types";
@@ -19,11 +19,13 @@ export const actions = {
         }
 
         try {
-            const schedule = await fetchSchedule(
-                await login(user.da, omnivoxPassword),
+            const cookie = await omnivox.login(user.da, omnivoxPassword);
+            const html = await omnivox.fetchSchedulePageHTML(
+                cookie,
                 dayjs().year(),
-                Semester.Winter
+                omnivox.Semester.Winter
             );
+            const schedule = omnivox.schedulePageToClasses(html);
 
             await db.addPeriodsToSchedule(user.scheduleId, schedule);
         } catch (e) {
