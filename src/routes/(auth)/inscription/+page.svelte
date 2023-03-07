@@ -8,14 +8,21 @@
     let firstStep = true;
     let loading = false;
 
-    const handleSubmit = (() => {
+    const handleSubmit = (({ data }) => {
+        if (!firstStep) {
+            data.set("da", form?.da ?? "");
+            data.set("firstName", form?.firstName ?? "");
+            data.set("lastName", form?.lastName ?? "");
+            data.set("omnivoxPassword", form?.omnivoxPassword ?? "");
+        }
         loading = true;
+
         return async ({ result, update }) => {
             if (result.type === "success") {
                 firstStep = false;
             }
             loading = false;
-            update({ reset: false });
+            update({ reset: true });
         };
     }) satisfies SubmitFunction;
 </script>
@@ -29,12 +36,15 @@
     <h1>Inscription</h1>
 </div>
 
-<form use:enhance={handleSubmit} class="m-auto w-9/12 flex flex-col gap-6" method="post">
-    <input hidden name="firstStep" value={firstStep} />
-
+<form
+    use:enhance={handleSubmit}
+    class="m-auto w-9/12 flex flex-col gap-6"
+    method="post"
+    action={firstStep ? "?/firstStep" : "?/secondStep"}
+>
     <div
-        class="relative w-[240%] grid grid-cols-2 gap-[20%] transition-[right]"
-        style="right: {firstStep ? '0' : '140'}%;"
+        class="relative w-[250%] grid grid-cols-2 gap-[20%] transition-[right]"
+        style="right: {firstStep ? '0' : '150'}%;"
     >
         <div class="grid gap-4">
             <label data-error={form?.daExists}>
@@ -45,7 +55,7 @@
                     pattern={"\\d{7}"}
                     required={firstStep}
                     placeholder=" "
-                    on:input={() => form && (form.daExists = false)}
+                    on:input={() => form?.daExists && (form.daExists = false)}
                     value={form?.da ?? ""}
                     readonly={loading}
                 />
@@ -61,7 +71,7 @@
                     type="password"
                     required={firstStep}
                     placeholder=" "
-                    on:input={() => form && (form.omnivoxIncorrect = false)}
+                    on:input={() => form?.omnivoxIncorrect && (form.omnivoxIncorrect = false)}
                     readonly={loading}
                 />
                 {#if form?.omnivoxIncorrect}
@@ -70,34 +80,11 @@
             </label>
         </div>
 
-        <div hidden={firstStep} class="grid grid-cols-2 gap-4">
-            <label>
-                Prénom
-                <input
-                    name="firstName"
-                    type="text"
-                    pattern={"\\D{2,}"}
-                    required={!firstStep}
-                    placeholder=" "
-                    value={form?.firstName ?? ""}
-                    readonly={loading}
-                />
-            </label>
+        <div hidden={firstStep} class="grid gap-4">
+            <h1 class="text-center">Bonjour, {form?.firstName} !</h1>
+            <span>Il manque quelques information pour finaliser votre compte :</span>
 
-            <label>
-                Nom
-                <input
-                    name="lastName"
-                    type="text"
-                    pattern={"\\D{2,}"}
-                    required={!firstStep}
-                    placeholder=" "
-                    value={form?.lastName ?? ""}
-                    readonly={loading}
-                />
-            </label>
-
-            <label class="col-span-2">
+            <label data-error={form?.emailExists}>
                 Courriel
                 <input
                     name="email"
@@ -106,11 +93,15 @@
                     required={!firstStep}
                     placeholder=" "
                     value={form?.email ?? ""}
+                    on:input={() => form?.emailExists && (form.emailExists = false)}
                     readonly={loading}
                 />
+                {#if form?.emailExists}
+                    <span>Un compte avec cette adresse courriel existe déjà</span>
+                {/if}
             </label>
 
-            <label class="col-span-2">
+            <label>
                 Mot de passe
                 <input
                     name="password"
@@ -125,7 +116,7 @@
             <!-- svelte-ignore a11y-invalid-attribute -->
             <a
                 on:click={() => (firstStep = true)}
-                class="col-span-2 self-left flex items-center"
+                class="self-left flex items-center"
                 href="javascript:void()"
             >
                 <box-icon name="chevron-left" /> Retour
