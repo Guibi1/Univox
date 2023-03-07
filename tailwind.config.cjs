@@ -1,9 +1,22 @@
+const colors = require("tailwindcss/colors");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: ["src/app.html", "src/**/*.svelte"],
     darkMode: ["class", '[data-colorscheme="dark"]'],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                blue: {
+                    primary: "#36A7B3",
+                    secondary: "#0DE9FF",
+                },
+                orange: {
+                    primary: "#FF8126",
+                    secondary: "#FF7F25",
+                },
+            },
+        },
         screens: {
             tablet: "640px",
             laptop: "1024px",
