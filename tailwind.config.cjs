@@ -9,7 +9,7 @@ module.exports = {
             colors: {
                 blue: {
                     primary: "#36A7B3",
-                    secondary: "#0DE9FF",
+                    secondary: "#226B73",
                 },
                 orange: {
                     primary: "#FF8126",
