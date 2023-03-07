@@ -1,6 +1,5 @@
+import * as omnivox from "$lib/server/omnivox";
 import { error, type RequestHandler } from "@sveltejs/kit";
-
-import { login } from "$lib/server/omnivox";
 
 export const POST = (async ({ request }) => {
     const { da, password } = await request.json();
@@ -10,7 +9,7 @@ export const POST = (async ({ request }) => {
     }
 
     try {
-        await login(da, password);
+        await omnivox.login(da, password);
     } catch (e) {
         throw error(401, "Invalid credentials.");
     }
