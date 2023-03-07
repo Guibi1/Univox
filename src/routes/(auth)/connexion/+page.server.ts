@@ -3,7 +3,7 @@ import { fail } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 
 export const actions = {
-    default: async ({ request, cookies }) => {
+    login: async ({ request, cookies }) => {
         const data = await request.formData();
         const da = data.get("da")?.toString();
         const password = data.get("password")?.toString();

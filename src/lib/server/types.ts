@@ -56,7 +56,13 @@ export const UserSchema = new Schema<ServerUser>({
         required: true,
     },
     friendsId: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, unique: true }],
+        type: [mongoose.Schema.Types.ObjectId],
+        validate: {
+            validator: function (arr: unknown[]) {
+                return arr.length === new Set(arr).size;
+            },
+            message: "Duplicate values are not allowed in the array.",
+        },
         ref: "users",
         required: true,
         default: [],
