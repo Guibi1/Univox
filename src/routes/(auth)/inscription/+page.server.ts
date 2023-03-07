@@ -69,7 +69,7 @@ export const actions = {
                 firstName: firstName ?? "",
                 lastName: lastName ?? "",
                 scheduleId: new mongoose.Types.ObjectId(),
-                friends: [],
+                friendsId: [],
             });
 
             throw redirect(302, "/connexion?" + url.searchParams);
