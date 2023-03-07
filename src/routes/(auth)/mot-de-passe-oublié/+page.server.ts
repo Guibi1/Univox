@@ -4,7 +4,7 @@ import { fail, redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 
 export const actions = {
-    default: async ({ request, url }) => {
+    reset: async ({ request, url }) => {
         const data = await request.formData();
         const da = data.get("da")?.toString();
         const omnivoxPassword = data.get("omnivoxPassword")?.toString();

@@ -29,7 +29,12 @@
     <h1>Mot de passe oublié</h1>
 </div>
 
-<form use:enhance={handleSubmit} class="m-auto w-9/12 flex flex-col gap-6" method="post">
+<form
+    use:enhance={handleSubmit}
+    class="m-auto w-9/12 flex flex-col gap-6"
+    method="post"
+    action="?/reset"
+>
     <div class="flex flex-col gap-4">
         <label data-error={form?.incorrect}>
             No de DA
