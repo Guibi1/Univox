@@ -24,8 +24,15 @@
     href={data[current].href}
     class="fixed right-8 bottom-8 w-48 flex items-center gap-0.5 p-2 px-4 text-2xl !text-black !fill-black bg-blue-300 rounded-full"
 >
-    <box-icon name={data[current].iconName} class="h-8 w-8" />
+    <box-icon name={data[current].iconName} class="h-8 w-8 fill-black" />
     <span class="flex-1 text-center">
         {data[current].text}
     </span>
+</a>
+
+<a
+    href={data[current].href}
+    class="fixed left-8 bottom-8 flex items-center gap-0.5 p-2 px-4 text-2xl text-black bg-cyan-300 rounded-full"
+>
+    <box-icon name="book-add" class="h-8 w-8 fill-black" />
 </a>

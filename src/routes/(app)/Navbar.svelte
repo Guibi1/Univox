@@ -43,7 +43,7 @@
                 <a
                     href={page.href}
                     class={`flex items-center h-10 px-4 text-white text-center hover:text-black hover:bg-zinc-400 dark:hover:bg-neutral-600 dark:text-white ${
-                        i === currentPage && "bg-green-500"
+                        i === currentPage && "bg-blue-800"
                     }`}
                 >
                     {page.title}
@@ -55,7 +55,7 @@
                 href="/deconnexion"
                 class={`flex items-center h-10 px-4 text-white text-center hover:text-black hover:bg-zinc-400 dark:hover:bg-neutral-600 dark:text-white`}
             >
-                Se déconnecter
+                <box-icon name="log-out" class="fill-red-500"/>
             </a>
         </li>
     </ul>
