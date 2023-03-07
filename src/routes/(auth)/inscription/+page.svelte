@@ -1,7 +1,6 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
     import { page } from "$app/stores";
-    import logo from "$assets/logo.webp";
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
@@ -32,7 +31,6 @@
 </svelte:head>
 
 <div class="pb-4 flex items-center justify-center gap-4">
-    <img src={logo} class="h-12 aspect-square" alt="Univox's logo" />
     <h1>Inscription</h1>
 </div>
 
