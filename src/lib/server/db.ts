@@ -100,10 +100,42 @@ export async function updateUserPassword(
     return true;
 }
 
+export async function searchUsers(user: User, query: string): Promise<User[]> {
+    query = query.replace(/\./g, "");
+    if (query.length < 4) return [];
+
+    query = query
+        .replace(/a/g, "[a,á,à,ä,â]")
+        .replace(/A/g, "[A,a,á,à,ä,â]")
+        .replace(/e/g, "[e,é,ë,è]")
+        .replace(/E/g, "[E,e,é,ë,è]")
+        .replace(/i/g, "[i,í,ï,ì]")
+        .replace(/I/g, "[I,i,í,ï,ì]")
+        .replace(/o/g, "[o,ó,ö,ò]")
+        .replace(/O/g, "[O,o,ó,ö,ò]")
+        .replace(/u/g, "[u,ü,ú,ù]")
+        .replace(/U/g, "[U,u,ü,ú,ù]");
+
+    return await Users.find({
+        $and: [
+            { _id: { $ne: user._id } },
+            {
+                $or: [
+                    { da: { $eq: query } },
+                    { firstName: { $regex: query, $options: "i" } },
+                    { lastName: { $regex: query, $options: "i" } },
+                ],
+            },
+        ],
+    })
+        .limit(5)
+        .exec();
+}
+
 // Helpers: Friends
 export async function getFriends(user: User): Promise<User[]> {
     const friends: User[] = [];
-    for (const friendId of user.friends) {
+    for (const friendId of user.friendsId) {
         const friend = await findUserById(friendId);
         if (friend) {
             friends.push(friend);
@@ -114,8 +146,14 @@ export async function getFriends(user: User): Promise<User[]> {
 }
 
 export async function addFriend(user: User, friendId: mongoose.Types.ObjectId): Promise<boolean> {
+    if (user._id === friendId) return false;
+    if (user.friendsId.includes(friendId)) return false;
+
     await Users.findByIdAndUpdate(user, {
-        $set: { friends: [friendId] },
+        $push: { friendsId: friendId },
+    });
+    await Users.findByIdAndUpdate(friendId, {
+        $push: { friendsId: user._id },
     });
     return true;
 }

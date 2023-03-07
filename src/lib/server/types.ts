@@ -27,13 +27,40 @@ export interface ServerUser extends User {
 }
 
 export const UserSchema = new Schema<ServerUser>({
-    da: String,
-    passwordHash: String,
-    email: String,
-    firstName: String,
-    lastName: String,
-    scheduleId: mongoose.Types.ObjectId,
-    friends: [mongoose.Types.ObjectId],
+    da: {
+        type: String,
+        text: true,
+        required: true,
+        unique: true,
+    },
+    passwordHash: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    firstName: {
+        type: String,
+        required: true,
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
+    scheduleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "schedules",
+        required: true,
+    },
+    friendsId: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, unique: true }],
+        ref: "users",
+        required: true,
+        default: [],
+    },
 });
 
 // Schedule

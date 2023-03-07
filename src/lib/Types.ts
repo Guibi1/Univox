@@ -8,8 +8,8 @@ export interface User {
     firstName: string;
     lastName: string;
     scheduleId: mongoose.Types.ObjectId;
-    friends: mongoose.Types.ObjectId[];
-};
+    friendsId: mongoose.Types.ObjectId[];
+}
 
 export interface Book {
     _id: mongoose.Types.ObjectId;
@@ -49,5 +49,5 @@ export enum Weekday {
     Thursday = 3,
     Friday = 4,
     Saturday = 5,
-    Sunday = 6
+    Sunday = 6,
 }

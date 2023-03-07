@@ -8,6 +8,7 @@ declare global {
     namespace App {
         interface Locals {
             user: User | null;
+            friends: User[];
         }
         // interface Error {}
         // interface PageData {}

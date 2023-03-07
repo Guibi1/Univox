@@ -1,5 +1,6 @@
 <script lang="ts">
     import colorScheme from "$lib/stores/colorScheme";
+    import friends from "$lib/stores/friends";
     import user from "$lib/stores/user";
     import { onMount } from "svelte";
     import "../style.css";
@@ -8,6 +9,7 @@
     export let data: LayoutData;
     colorScheme.setInitial(data.storesInitialValue.colorScheme);
     user.set(JSON.parse(data.storesInitialValue.serializedUser));
+    friends.set(JSON.parse(data.storesInitialValue.serializedFriends));
 
     onMount(() => {
         // @ts-ignore
