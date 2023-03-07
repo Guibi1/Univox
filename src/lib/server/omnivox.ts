@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import mongoose from "mongoose";
 import type { Class } from "../Types";
 
 dayjs.extend(customParseFormat);
@@ -12,6 +13,11 @@ type OmnivoxCookie = {
     TKSBDBP: string;
 };
 
+type ScheduleCookie = {
+    sessionID: string;
+    rvpMod: string;
+};
+
 export enum Semester {
     Winter = "1",
     Summer = "2",
@@ -19,25 +25,25 @@ export enum Semester {
 }
 
 /**
- * Fetches and parse the user's schedule
+ * Fetches the user's schedule page
  * @param cookie The user's cookie session
  * @param year The year to fetch
  * @param semester The semester to fetch
- * @returns The periods of the user
+ * @returns The HTML text of the schedule's page
  */
-export async function fetchSchedule(
+export async function fetchSchedulePageHTML(
     cookie: OmnivoxCookie,
     year: number,
     semester: Semester
-): Promise<Class[]> {
-    const sessionID = await getScheduleSessionID(cookie);
+): Promise<string> {
+    const { sessionID, rvpMod } = await getScheduleCookies(cookie);
 
     // Get the 'visualise' link
     const res = await fetch("https://bdeb-estd.omnivox.ca:443/estd/hrre/Horaire.ovx", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            "Cookie": `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}`,
+            "Cookie": `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
         },
         body: `AnSession=${year + semester}&Confirm=Consulter+mon+horaire`,
     });
@@ -50,13 +56,25 @@ export async function fetchSchedule(
     // Fetch the actual schedule data
     const visualiseRes = await fetch("https://bdeb-estd.omnivox.ca:443/estd/hrre/" + visualiseURL, {
         headers: {
-            Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}`,
+            Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
         },
     });
 
     const buffer = await visualiseRes.arrayBuffer();
     const decoder = new TextDecoder("iso-8859-1");
-    return parseSchedule(decoder.decode(buffer));
+    return decoder.decode(buffer);
+}
+
+/**
+ * This function parses the provided HTML to create an array of Class
+ * @param HTML The 'visualise' page's HTML content
+ * @returns The user's schedule
+ */
+export function schedulePageToName(HTML: string) {
+    const $ = cheerio.load(HTML);
+    const match = regexFind($("#headerNavbarProfileUserName").first().text(), /(.*)\s(.*)/);
+
+    return { firstName: match[1], lastName: match[2] };
 }
 
 /**
@@ -108,7 +126,7 @@ export async function login(da: string, password: string): Promise<OmnivoxCookie
  * @param {OmnivoxCookie} cookie The user's session cookie
  * @returns The prepared schedule's specific session ID
  */
-async function getScheduleSessionID(cookie: OmnivoxCookie): Promise<string> {
+async function getScheduleCookies(cookie: OmnivoxCookie): Promise<ScheduleCookie> {
     const res = await fetch(
         "https://bdeb-estd.omnivox.ca:443/estd/vl.ovx?lk=%2festd%2fhrre%2fHoraire.ovx",
         {
@@ -120,6 +138,7 @@ async function getScheduleSessionID(cookie: OmnivoxCookie): Promise<string> {
 
     const cookies = res.headers.get("set-cookie");
     const sessionID = regexFind(cookies, /(ASPSESSIONID.+?=.+?);/)[1];
+    const rvpMod = regexFind(cookies, /(rvp-omnivox-mod-bdb.+?=.+?);/)[1];
 
     // Get the load session url
     const text = await res.text();
@@ -130,11 +149,11 @@ async function getScheduleSessionID(cookie: OmnivoxCookie): Promise<string> {
     // This is so that omnvivox allows us to look at the schedule
     await fetch("https://bdeb-estd.omnivox.ca:443/estd/" + loadSessionURL, {
         headers: {
-            Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}`,
+            Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
         },
     });
 
-    return sessionID;
+    return { sessionID, rvpMod };
 }
 
 /**
@@ -142,7 +161,7 @@ async function getScheduleSessionID(cookie: OmnivoxCookie): Promise<string> {
  * @param HTML The 'visualise' page's HTML content
  * @returns The user's schedule
  */
-function parseSchedule(HTML: string) {
+export function schedulePageToClasses(HTML: string): Class[] {
     const schedule: Class[] = [];
     const $ = cheerio.load(HTML);
     const rows = $("table .CelluleHoraire > tbody > tr:not(:first)");
@@ -182,8 +201,9 @@ function parseSchedule(HTML: string) {
             }
 
             schedule.push({
+                _id: new mongoose.Types.ObjectId(),
                 name: match[1],
-                id: match[2],
+                code: match[2],
                 group: Number(match[3]),
                 local: match[4],
                 type: match[5] === "T" ? "T" : "L",

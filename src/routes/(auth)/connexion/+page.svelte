@@ -29,7 +29,12 @@
     <h1>Bienvenue sur Univox</h1>
 </div>
 
-<form use:enhance={handleSubmit} class="m-auto w-9/12 flex flex-col gap-6" method="post">
+<form
+    use:enhance={handleSubmit}
+    class="m-auto w-9/12 flex flex-col gap-6"
+    method="post"
+    action="?/login"
+>
     <div class="grid grid-rows-2 gap-4">
         <label>
             No de DA
