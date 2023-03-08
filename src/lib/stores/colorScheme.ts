@@ -33,15 +33,3 @@ function createColorSchemeStore() {
 
 const colorScheme = createColorSchemeStore();
 export default colorScheme;
-
-function createColorSchemeIsDark() {
-    const { subscribe, set } = writable<boolean>(true);
-    colorScheme.subscribe((color) => set(color === "dark"));
-
-    return {
-        subscribe,
-        set: (isDark: boolean) => colorScheme.set(isDark ? "dark" : "light"),
-    };
-}
-
-export const colorSchemeIsDark = createColorSchemeIsDark();

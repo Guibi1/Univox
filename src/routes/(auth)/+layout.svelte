@@ -1,5 +1,5 @@
 <script lang="ts">
-    import colorScheme, { colorSchemeIsDark } from "$lib/stores/colorScheme";
+    import ColorSchemeSwitch from "$lib/components/ColorSchemeSwitch.svelte";
     import WavesBackground from "./WavesBackground.svelte";
 
     let height: number | null;
@@ -19,14 +19,8 @@
             <slot />
         </main>
 
-        <button
-            on:click={colorScheme.toggle}
-            class="absolute right-2 bottom-2 z-10 rounded-lg p-1 h-8 aspect-square !bg-transparent border-2 border-blue-500 dark:border-blue-primary"
-        >
-            <box-icon
-                name={$colorSchemeIsDark ? "sun" : "moon"}
-                class="w-full h-full fill-gray-600 dark:fill-blue-primary"
-            />
-        </button>
+        <div class="absolute right-4 bottom-4 z-10">
+            <ColorSchemeSwitch />
+        </div>
     </div>
 </div>
