@@ -1,7 +1,6 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
     import { page } from "$app/stores";
-    import logo from "$assets/logo.webp";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
 
@@ -24,10 +23,7 @@
     <title>Univox | Mot de passe oublié</title>
 </svelte:head>
 
-<div class="pb-4 flex items-center justify-center gap-4">
-    <img src={logo} class="h-12 aspect-square" alt="Univox's logo" />
-    <h1>Mot de passe oublié</h1>
-</div>
+<h1 class="pb-4 text-center">Mot de passe oublié</h1>
 
 <form
     use:enhance={handleSubmit}

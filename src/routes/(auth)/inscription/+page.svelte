@@ -30,9 +30,7 @@
     <title>Univox | Inscription</title>
 </svelte:head>
 
-<div class="pb-4 flex items-center justify-center gap-4">
-    <h1>Inscription</h1>
-</div>
+<h1 class="pb-4 text-center">{firstStep ? "Inscription" : `Bonjour, ${form?.firstName} !`}</h1>
 
 <form
     use:enhance={handleSubmit}
@@ -79,7 +77,6 @@
         </div>
 
         <div hidden={firstStep} class="grid gap-4">
-            <h1 class="text-center">Bonjour, {form?.firstName} !</h1>
             <span>Il manque quelques information pour finaliser votre compte :</span>
 
             <label data-error={form?.emailExists}>

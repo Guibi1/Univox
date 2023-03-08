@@ -23,9 +23,7 @@
     <title>Univox | Connexion</title>
 </svelte:head>
 
-<div class="pb-4 flex items-center justify-center gap-4">
-    <h1>Bienvenue sur Univox</h1>
-</div>
+<h1 class="pb-4 text-center">Bienvenue sur Univox</h1>
 
 <form
     use:enhance={handleSubmit}

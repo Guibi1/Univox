@@ -30,9 +30,9 @@
     }
 
     input {
-        @apply h-12 p-4 rounded-lg bg-black text-center text-black outline-none border-2 border-transparent;
-        @apply focus-visible:border-white dark:focus-visible:border-white;
-        @apply dark:text-white dark:bg-transparent dark:border-neutral-300;
+        @apply h-12 p-4 rounded-lg bg-transparent text-center text-black outline-none border-2 border-neutral-600;
+        @apply focus-visible:border-black dark:focus-visible:border-white;
+        @apply dark:text-white dark:border-neutral-300;
 
         &:not(:placeholder-shown) {
             @apply invalid:border-red-500;
@@ -81,9 +81,9 @@
         @apply dark:text-blue-primary dark:fill-blue-primary;
 
         &.outlined {
-            @apply text-white fill-blue-primary;
-            @apply py-2 rounded border-2 border-white text-center;
-            @apply dark:border-white;
+            @apply text-black fill-black;
+            @apply py-2 rounded border-2 border-black text-center;
+            @apply dark:text-white dark:border-white;
         }
     }
 
