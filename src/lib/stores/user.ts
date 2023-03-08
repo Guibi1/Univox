@@ -1,5 +1,5 @@
+import { browser } from "$app/environment";
 import type { User } from "$lib/Types";
-import { onMount } from "svelte";
 import { writable } from "svelte/store";
 
 function createUserStore() {
@@ -7,11 +7,10 @@ function createUserStore() {
     let bc: BroadcastChannel;
 
     // This syncs the different tabs' user
-    onMount(() => {
+    if (browser) {
         bc = new BroadcastChannel("New user data");
         bc.addEventListener("message", (e) => setStore(e.data));
-        return () => bc.close();
-    });
+    }
 
     const set: typeof setStore = (user) => {
         setStore(user);
