@@ -78,23 +78,23 @@
             <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
             <Hoverable let:hovering>
                 <div
-                    class="absolute bg-sky-500 border-red-200 truncate hover:border-2 "
+                    class="absolute bg-sky-500 border-red-200 hover:border-2 "
                     style={`top: ${
                         rowHeight *
                         (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset)
                     }rem; 
-                left: ${cellWidth * period.timeStart.weekday()}rem;
-                width: ${cellWidth}rem;
-                height: ${rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60)}rem;`}
+                    left: ${cellWidth * period.timeStart.weekday()}rem;
+                    width: ${cellWidth}rem;
+                    height: ${rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60)}rem;`}
                 >
                     <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
                     {#if hovering}
                         <div
-                            class="absolute p-4 top-1/2 bg-blue-400 z-10"
+                            class="absolute p-4 top-1/2 max-w-xs bg-blue-400 z-10"
                             style={`transform: translate(${cellWidth}rem,-50%`}
                         >
-                            <p class="text-center">
-                                h<br />
+                            <p class="text-center break-words">
+                                TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST
                                 {period.name} <br />
                                 {period._id} <br />
                                 {period.group} <br />
@@ -104,13 +104,16 @@
                                 {period.virtual} <br />
                                 {period.timeStart} <br />
                                 {period.timeEnd}
+                                
                             </p>
                         </div>
                     {/if}
                     <!-- Affiche le nom de la période et son identifiant -->
-                    <p>{period.name}</p>
-                    <p>{period._id}</p>
-                    <p>{period.group}</p>
+                    <p class="truncate text-center">
+                        {period.name}<br />
+                        {period._id}<br />
+                        {period.group}
+                    </p>
                 </div>
             </Hoverable>
         {/each}
