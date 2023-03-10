@@ -90,8 +90,8 @@
                     <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
                     {#if hovering}
                         <div
-                            class="absolute w-auto h-auto bg-blue-400"
-                            style={`transform: translateX(${cellWidth}rem);`}
+                            class="absolute w-auto h-auto top-1/2 bg-blue-400"
+                            style={`transform: translate(${cellWidth}rem,-50%`}
                         >
                             {period.name} <br />
                             {period._id} <br />
@@ -104,10 +104,7 @@
                             {period.timeEnd}
                         </div>
                     {/if}
-<<<<<<< Updated upstream
                     <!-- Affiche le nom de la période et son identifiant -->
-=======
->>>>>>> Stashed changes
                     <p>{period.name}</p>
                     <p>{period._id}</p>
                     <p>{period.group}</p>
