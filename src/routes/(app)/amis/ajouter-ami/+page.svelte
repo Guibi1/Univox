@@ -1,7 +1,6 @@
 <script lang="ts" async>
     import friends from "$lib/stores/friends";
     import type { User } from "$lib/Types";
-    import { contains } from "cheerio/lib/static";
 
     let query = "";
     let searchResults: User[] = [];
@@ -21,10 +20,10 @@
 </script>
 
 <svelte:head>
-    <title>Univox | Amis</title>
+    <title>Univox | Ajouter des amis</title>
 </svelte:head>
 
-<h1 class="text-center pt-2 dark:bg-neutral-900">Amis</h1>
+<h1 class="text-center pt-2 dark:bg-neutral-900">Ajouter des amis</h1>
 
 <div
     class="sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500"
@@ -48,42 +47,14 @@
             on:keypress={handleSearch}
         />
     </div>
-
-    
-    <a
-    href=amis/ajouter-ami
-    >
-        Ajouter des amis
-        
-    </a>
 </div>
 
 <div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
-
-<ul>
-    {#each $friends as ami}
-        <li>
-            {ami.lastName + ", " + ami.firstName}
-            <button
-                on:click={() => {
-                    query = "";
-                    searchResults = [];
-                    friends.remove(ami._id);
-                }}
-            >
-                retirer ami
-            </button>
-        </li>
-    {/each}
-</ul>
 
 {#each searchResults as user}
     <div>
         {user.firstName}
         
-        {#if $friends.includes(user)} <!-- De base on ne voit pas le nom dans la recherche si on est ami, mais ce serait peut-être mieux de dire qu'on est déjà ami avec la personne -->
-        <div>abc</div>
-        {:else}
             <button
                 on:click={() => {
                     query = "";
@@ -93,8 +64,6 @@
             >
                 ajouter en ami
             </button>
-            {/if}
+        
     </div>
 {/each}
-
-<!-- TODO: faire en sorte que les demandes d'amis soient réciproquent + choisir par le DA + pouvoir enlever des amis -->
