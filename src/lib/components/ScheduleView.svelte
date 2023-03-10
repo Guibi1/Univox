@@ -78,7 +78,7 @@
             <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
             <Hoverable let:hovering>
                 <div
-                    class="absolute bg-sky-500 border-red-200 break-words  hover:border-2 "
+                    class="absolute bg-sky-500 border-red-200 truncate hover:border-2 "
                     style={`top: ${
                         rowHeight *
                         (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset)
