@@ -10,9 +10,31 @@ function createFriendsStore() {
         set(friends);
     }
 
+    async function get(id: mongoose.Types.ObjectId) {
+        await fetch("/api/friends", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ friendId: id }),
+        });
+        refresh();
+    }
+
     async function add(id: mongoose.Types.ObjectId) {
         await fetch("/api/friends", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ friendId: id }),
+        });
+        refresh();
+    }
+
+    async function remove(id: mongoose.Types.ObjectId) {
+        await fetch("/api/friends", {
+            method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -25,6 +47,7 @@ function createFriendsStore() {
         subscribe,
         set,
         add,
+        remove,
         refresh,
     };
 }
