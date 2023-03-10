@@ -13,7 +13,7 @@
             type: "L",
             teacher: "asdjkfwlbk",
             virtual: false,
-            timeStart: dayjs().hour(6).minute(8),
+            timeStart: dayjs().hour(6).minute(0),
             timeEnd: dayjs().hour(8).minute(0),
         },
         {
@@ -24,8 +24,19 @@
             type: "L",
             teacher: "asdjkfwlbk",
             virtual: false,
-            timeStart: dayjs().hour(14).minute(30),
+            timeStart: dayjs().hour(14).minute(0),
             timeEnd: dayjs().hour(16).minute(0),
+        },
+        {
+            _id: new mongoose.Types.ObjectId(),
+            name: "BName",
+            group: 105,
+            local: "B-105",
+            type: "L",
+            teacher: "asdjkfwlbk",
+            virtual: false,
+            timeStart: dayjs().weekday(6).hour(16).minute(30),
+            timeEnd: dayjs().weekday(6).hour(20).minute(0),
         },
     ];
 </script>

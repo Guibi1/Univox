@@ -78,7 +78,7 @@
             <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
             <Hoverable let:hovering>
                 <div
-                    class="absolute bg-sky-500 border-red-200 hover:border-2"
+                    class="absolute bg-sky-500 border-red-200 break-words  hover:border-2 "
                     style={`top: ${
                         rowHeight *
                         (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset)
@@ -90,18 +90,21 @@
                     <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
                     {#if hovering}
                         <div
-                            class="absolute w-auto h-auto top-1/2 bg-blue-400"
+                            class="absolute p-4 top-1/2 bg-blue-400 z-10"
                             style={`transform: translate(${cellWidth}rem,-50%`}
                         >
-                            {period.name} <br />
-                            {period._id} <br />
-                            {period.group} <br />
-                            {period.local} <br />
-                            {period.type} <br />
-                            {period.teacher} <br />
-                            {period.virtual} <br />
-                            {period.timeStart} <br />
-                            {period.timeEnd}
+                            <p class="text-center">
+                                h<br />
+                                {period.name} <br />
+                                {period._id} <br />
+                                {period.group} <br />
+                                {period.local} <br />
+                                {period.type} <br />
+                                {period.teacher} <br />
+                                {period.virtual} <br />
+                                {period.timeStart} <br />
+                                {period.timeEnd}
+                            </p>
                         </div>
                     {/if}
                     <!-- Affiche le nom de la période et son identifiant -->
