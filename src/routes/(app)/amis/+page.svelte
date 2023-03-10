@@ -17,6 +17,14 @@
             handleSearch();
         }, 500);
     }
+
+
+    let test: String[] = [
+        "ami 1",
+        "ami 2",
+        "ami 3",
+        "ami 4"
+    ]
 </script>
 
 <svelte:head>
@@ -51,11 +59,20 @@
 
 <div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
 
-{#each $friends as ami, i}
-    <div>
-        {ami.lastName}{i}
-    </div>
+<ul>
+    {#each $friends as ami}
+        <li>{ami.lastName + ", " + ami.firstName}</li>
+
+    {/each}
+</ul>
+
+<ul>
+{#each test as ami1}
+    <li>{ami1}<li>
+    
+
 {/each}
+    </ul>
 
 {#each searchResults as user}
     <div>
