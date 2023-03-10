@@ -17,14 +17,6 @@
             handleSearch();
         }, 500);
     }
-
-
-    let test: String[] = [
-        "ami 1",
-        "ami 2",
-        "ami 3",
-        "ami 4"
-    ]
 </script>
 
 <svelte:head>
@@ -61,31 +53,35 @@
 
 <ul>
     {#each $friends as ami}
-        <li>{ami.lastName + ", " + ami.firstName}</li>
-
+        <li>
+            {ami.lastName + ", " + ami.firstName}
+            <button
+                on:click={() => {
+                    query = "";
+                    searchResults = [];
+                    friends.remove(ami._id);
+                }}
+            >
+                retirer ami
+            </button>
+        </li>
     {/each}
 </ul>
-
-<ul>
-{#each test as ami1}
-    <li>{ami1}<li>
-    
-
-{/each}
-    </ul>
 
 {#each searchResults as user}
     <div>
         {user.firstName}
-        <button
-            on:click={() => {
-                query = "";
-                searchResults = [];
-                friends.add(user._id);
-            }}
-        >
-            add
-        </button>
+        
+            <button
+                on:click={() => {
+                    query = "";
+                    searchResults = [];
+                    friends.add(user._id);
+                }}
+            >
+                ajouter en ami
+            </button>
+        
     </div>
 {/each}
 
