@@ -1,7 +1,6 @@
 <script lang="ts" async>
     import friends from "$lib/stores/friends";
     import type { User } from "$lib/Types";
-    import { contains } from "cheerio/lib/static";
 
     let query = "";
     let searchResults: User[] = [];
@@ -81,9 +80,7 @@
     <div>
         {user.firstName}
         
-        {#if $friends.includes(user)} <!-- De base on ne voit pas le nom dans la recherche si on est ami, mais ce serait peut-être mieux de dire qu'on est déjà ami avec la personne -->
-        <div>abc</div>
-        {:else}
+        
             <button
                 on:click={() => {
                     query = "";
@@ -93,7 +90,6 @@
             >
                 ajouter en ami
             </button>
-            {/if}
     </div>
 {/each}
 
