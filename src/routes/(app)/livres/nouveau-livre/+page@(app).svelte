@@ -12,8 +12,8 @@
     <title>Univox | Livres | Nouveau livre</title>
 </svelte:head>
 
-<div class="flex min-h-screen items-center justify-evenly bg-stone-200">
-    <main class="h-max w-96 rounded bg-white p-12">
+<div class="min-h-screen flex justify-evenly items-center bg-white dark:bg-neutral-900">
+    <main class="bg-neutral-900 dark:bg-white p-12 rounded w-96 h-max">
         <form
             on:submit={() => doSomething(titreLivre, etatLivre)}
             class="flex flex-col justify-between gap-6"
