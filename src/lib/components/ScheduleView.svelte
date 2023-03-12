@@ -22,7 +22,7 @@
     const interval = setInterval(() => (currentTime = dayjs()), 1000);
     onDestroy(() => clearInterval(interval));
 
-    const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+    const daysOfWeek = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 </script>
 
 <!-- TODO: Style -->
@@ -60,7 +60,7 @@
                     rowHeight *
                     (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset)
                 }rem; 
-            left: ${cellWidth * (period.weekday + 1)}rem;
+            left: ${cellWidth * (period.weekday + 2)}rem;
             width: ${cellWidth}rem;
             height: ${rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60)}rem;`}
             >
@@ -95,7 +95,7 @@
         class="absolute"
         style={`top: ${
             rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)
-        }rem; left: ${cellWidth * currentTime.day()}rem; width: ${cellWidth}rem;`}
+        }rem; left: ${cellWidth * (currentTime.day() + 1)}rem; width: ${cellWidth}rem;`}
     >
         <div class="absolute rounded-full w-3 h-3 bg-red-600 -translate-x-1/2 -translate-y-1/2" />
         <hr class="border-2 !border-red-600 -translate-y-1/2" />
