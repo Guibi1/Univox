@@ -8,7 +8,7 @@ export class UnivoxPage {
         this.page = page;
     }
 
-    async getAbsoluteURI(uri = "/") {
+    getAbsoluteURI(uri = "/") {
         return config.baseURL + uri;
     }
 
