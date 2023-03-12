@@ -3,6 +3,7 @@
 </script>
 
 <button
+    aria-label="thème du site"
     on:click={colorScheme.toggle}
     class="rounded-lg p-1 h-8 aspect-square !bg-transparent border-2 border-blue-primary dark:border-blue-primary"
 >
