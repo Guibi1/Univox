@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { UnivoxPage } from "./univoxPage";
 
 import AuthCheck from "./auth.check";
+import ColorSchemeCheck from "./colorScheme.check";
 
 test("load site and take a screenshot", async ({ page }) => {
     const univox = new UnivoxPage(page);
@@ -36,4 +37,5 @@ test("evaluate performance metrics", async ({ page }) => {
     expect(parseInt(LCP, 10)).toBeLessThan(1000);
 });
 
-test.describe("auth routes", AuthCheck);
+test.describe("Auth routes", AuthCheck);
+test.describe("Color Scheme", ColorSchemeCheck);
