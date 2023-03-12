@@ -1,41 +1,34 @@
 import { expect, test } from "@playwright/test";
 import { UnivoxPage } from "./univoxPage";
 
+// Check Groups
 import AuthCheck from "./auth.check";
+import BookCheck from "./book.check";
 import ColorSchemeCheck from "./colorScheme.check";
 
-test("load site and take a screenshot", async ({ page }) => {
-    const univox = new UnivoxPage(page);
-    const res = await univox.goto();
-
-    expect(res.status()).toBeLessThan(400);
-
-    await univox.screenshot({ path: "home.png", fullPage: true });
-});
-
-test("evaluate performance metrics", async ({ page }) => {
-    const univox = new UnivoxPage(page);
-    await univox.goto();
-
-    // Inject a PerformanceObserver and access web performance metrics
-    const LCP = await page.evaluate(() => {
-        return new Promise((resolve) => {
-            new PerformanceObserver((list) => {
-                const entries = list.getEntries();
-                const LCP = entries.at(-1);
-                resolve(LCP.startTime);
-            }).observe({
-                type: "largest-contentful-paint",
-                buffered: true,
-            });
-        });
-    });
-
-    // Add custom assertions to fail your check
-    // if your web performance degraded
-    console.log("Largest Contentful Paint", parseInt(LCP, 10));
-    expect(parseInt(LCP, 10)).toBeLessThan(1000);
-});
-
+// Check order
 test.describe("Auth routes", AuthCheck);
 test.describe("Color Scheme", ColorSchemeCheck);
+
+test.beforeAll(async ({ page }) => {
+    const univox = new UnivoxPage(page);
+    await univox.goto("/connexion");
+
+    // Fill "da" on <input> [name="da"]
+    await page.fill('input[name="da"]', process.env.DA);
+
+    // Fill "password" on <input> [name="password"]
+    await page.fill('input[name="password"]', process.env.PASSWORD);
+
+    // Click on <button> "Se connecter"
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL(univox.getAbsoluteURI("/"));
+});
+test.afterAll(async ({ page }) => {
+    const univox = new UnivoxPage(page);
+    await univox.goto("/");
+
+    await page.click('a[href="/deconnexion"]');
+});
+
+test.describe("Book routes", BookCheck);
