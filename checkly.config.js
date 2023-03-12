@@ -10,6 +10,5 @@ const config = {
         height: 720,
     },
 };
-process.env.ORIGIN = config.baseURL;
 
 export default config;
