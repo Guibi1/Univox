@@ -13,12 +13,12 @@ const ColorSchemeCheck = () => {
         const univox = new UnivoxPage(page);
         await univox.goto("/connexion");
 
-        // Click on <button> [aria-label="th\E8me du site"]
-        await page.click('[aria-label="thE8me du site"]');
+        // Click on <button> [aria-label="thème du site"]
+        await page.click('[aria-label="thème du site"]');
         await expect(page.locator("html")).toHaveAttribute("data-colorscheme", "light");
 
-        // Click on <button> [aria-label="th\E8me du site"]
-        await page.click('[aria-label="thE8me du site"]');
+        // Click on <button> [aria-label="thème du site"]
+        await page.click('[aria-label="thème du site"]');
         await expect(page.locator("html")).toHaveAttribute("data-colorscheme", "dark");
     });
 
@@ -26,8 +26,8 @@ const ColorSchemeCheck = () => {
         const univox = new UnivoxPage(page);
         await univox.goto("/connexion");
 
-        // Click on <button> [aria-label="th\E8me du site"]
-        await page.click('[aria-label="thE8me du site"]');
+        // Click on <button> [aria-label="thème du site"]
+        await page.click('[aria-label="thème du site"]');
         await expect(page.locator("html")).toHaveAttribute("data-colorscheme", "light");
 
         await page.reload();
