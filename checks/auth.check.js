@@ -15,12 +15,11 @@ const AuthCheck = () => {
         // Click on <button> "Se connecter"
         await page.click('[type="submit"]');
 
-        await page.waitForTimeout(1000);
         await expect(page).toHaveURL(univox.getAbsoluteURI("/connexion"));
         await expect(page.locator("text=Mot de passe erroné")).toBeVisible();
     });
 
-    test("Login with good credentials", async ({ page }) => {
+    test("Login with good credentials and sign out", async ({ page }) => {
         const univox = new UnivoxPage(page);
         await univox.goto("/connexion");
 
@@ -32,8 +31,11 @@ const AuthCheck = () => {
 
         // Click on <button> "Se connecter"
         await page.click('[type="submit"]');
-
         await expect(page).toHaveURL(univox.getAbsoluteURI("/"));
+
+        // Click on <a> "Déconnexion"
+        await page.click('[href="/deconnexion"]');
+        await expect(page).toHaveURL(univox.getAbsoluteURI("/connexion"));
     });
 };
 
