@@ -13,6 +13,7 @@ export class UnivoxPage {
     }
 
     async goto(uri = "/") {
+        await this.page.setExtraHTTPHeaders({ origin: config.baseURL });
         await this.page.setViewportSize(config.defaultViewPortSize);
         return this.page.goto(this.getAbsoluteURI(uri));
     }
