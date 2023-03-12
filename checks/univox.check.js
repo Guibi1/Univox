@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { UnivoxPage } from "./univoxPage";
 
+import AuthCheck from "./auth.check";
+
 test("load site and take a screenshot", async ({ page }) => {
     const univox = new UnivoxPage(page);
     const res = await univox.goto();
@@ -33,3 +35,5 @@ test("evaluate performance metrics", async ({ page }) => {
     console.log("Largest Contentful Paint", parseInt(LCP, 10));
     expect(parseInt(LCP, 10)).toBeLessThan(1000);
 });
+
+test.describe("auth routes", AuthCheck);
