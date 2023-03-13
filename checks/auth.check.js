@@ -7,13 +7,13 @@ const AuthCheck = () => {
         await univox.goto("/connexion");
 
         // Fill "da" on <input> [name="da"]
-        await page.fill('input[name="da"]', "0000000");
+        await page.fill('[name="da"]', "0000000");
 
         // Fill "password" on <input> [name="password"]
-        await page.fill('input[name="password"]', "00000000");
+        await page.fill('[name="password"]', "00000000");
 
         // Click on <button> "Se connecter"
-        await page.click('button[type="submit"]');
+        await page.click('[type="submit"]');
 
         await expect(page.locator("text=Mot de passe erroné")).toBeVisible();
         await expect(page).toHaveURL(univox.getAbsoluteURI("/connexion"));
@@ -24,13 +24,13 @@ const AuthCheck = () => {
         await univox.goto("/connexion");
 
         // Fill "da" on <input> [name="da"]
-        await page.fill('input[name="da"]', process.env.DA);
+        await page.fill('[name="da"]', process.env.DA);
 
         // Fill "password" on <input> [name="password"]
-        await page.fill('input[name="password"]', process.env.PASSWORD);
+        await page.fill('[name="password"]', process.env.PASSWORD);
 
         // Click on <button> "Se connecter"
-        await page.click('button[type="submit"]');
+        await page.click('[type="submit"]');
         await expect(page).toHaveURL(univox.getAbsoluteURI("/"));
 
         // Click on <a> "Déconnexion"

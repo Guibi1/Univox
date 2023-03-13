@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { UnivoxPage } from "./univoxPage";
 
 const ColorSchemeCheck = () => {
-    test("Color scheme btuuon works and is consistent between refreshes", async ({ page }) => {
+    test("Color scheme button works and is consistent between refreshes", async ({ page }) => {
         const univox = new UnivoxPage(page);
         await univox.goto("/connexion");
 
