@@ -25,12 +25,13 @@ test.describe("Logged in", () => {
         await page.click('button[type="submit"]');
         await expect(page).toHaveURL(univox.getAbsoluteURI("/"));
     });
+
+    test.describe("Book routes", BookCheck);
+
     test.afterAll(async ({ page }) => {
         const univox = new UnivoxPage(page);
         await univox.goto("/");
 
         await page.click('a[href="/deconnexion"]');
     });
-
-    test.describe("Book routes", BookCheck);
 });
