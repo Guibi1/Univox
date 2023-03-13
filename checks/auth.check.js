@@ -15,8 +15,8 @@ const AuthCheck = () => {
         // Click on <button> "Se connecter"
         await page.click('button[type="submit"]');
 
-        await expect(page).toHaveURL(univox.getAbsoluteURI("/connexion"));
         await expect(page.locator("text=Mot de passe erroné")).toBeVisible();
+        await expect(page).toHaveURL(univox.getAbsoluteURI("/connexion"));
     });
 
     test("Login with good credentials and sign out", async ({ page }) => {
