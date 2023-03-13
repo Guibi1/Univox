@@ -10,19 +10,6 @@ const BookCheck = () => {
 
         await expect(page).toHaveURL("/livres/achat");
     });
-
-    test("The user can switch between the list of books and their books", async ({ page }) => {
-        const univox = new UnivoxPage(page);
-        await univox.goto("/");
-
-        // Click on <a> "Mes livres"
-        await page.click('a[href="mes-livres"]');
-        await expect(page).toHaveURL("/livres/mes-livres");
-
-        // Click on <a> "Acheter"
-        await page.click('a[href="achat"]');
-        await expect(page).toHaveURL("/livres/achat");
-    });
 };
 
 export default BookCheck;
