@@ -6,7 +6,7 @@ const BookCheck = () => {
         const univox = new UnivoxPage(page);
         await univox.goto("/");
 
-        await page.click('nav > a[href="/livres"]');
+        await page.click('nav a[href="/livres"]');
 
         await expect(page).toHaveURL("/livres/achat");
     });
