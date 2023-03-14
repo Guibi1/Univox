@@ -130,7 +130,7 @@
                             <div
                                 class="absolute rounded-full w-3 h-3 bg-red-600 -translate-x-1/2 -translate-y-1/2"
                             />
-                            <hr class="border-2 border-red-600 -translate-y-1/2" />
+                            <hr class="border-2 !border-red-600 -translate-y-1/2" />
                         </div>
                     {/if}
                 </th>
