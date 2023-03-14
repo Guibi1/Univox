@@ -55,14 +55,17 @@
     <!-- Tableau qui contiendra l'emploi du temps -->
     <table class="relative">
         <!-- Ligne pour les jours de la semaine -->
-        <tr style={`height: ${rowHeight}rem;`}>
-            <th style={`width: ${cellWidth}rem;`} class="translate-y-1/2">
+        <tr class="grid grid-cols-8" style={`height: ${rowHeight}rem;`}>
+            <th
+                class="translate-y-1/2 flex justify-center items-center"
+                style={`width: ${cellWidth}rem;`}
+            >
                 {rowTitles[0]}
             </th>
 
             <!-- Boucle pour chaque jour de la semaine -->
             {#each [...Array(7)].map((_, i) => weekStartDay.weekday(i)) as day}
-                <th style={`width: ${cellWidth}rem;`}>
+                <th>
                     <!-- Affiche le nom complet du jour -->
                     {day.format("dddd")}
                     <br />
@@ -136,14 +139,14 @@
 
         <!-- Boucle pour chaque heure de la journée -->
         {#each rowTitles.slice(1) as hour}
-            <tr style={`height: ${rowHeight}rem;`}>
-                <th class="translate-y-1/2">
+            <tr class="grid grid-cols-8" style={`height: ${rowHeight}rem;`}>
+                <th class="translate-y-1/2 flex justify-center items-center">
                     {hour}
                 </th>
 
                 <!-- Ajouter des cases vides pour les autres jours de la semaine -->
                 {#each Array(7) as _}
-                    <th class="border" />
+                    <td class="border" />
                 {/each}
             </tr>
         {/each}
