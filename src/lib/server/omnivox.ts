@@ -1,10 +1,12 @@
 import * as cheerio from "cheerio";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import weekday from "dayjs/plugin/weekday";
 import mongoose from "mongoose";
 import type { Class } from "../Types";
 
 dayjs.extend(customParseFormat);
+dayjs.extend(weekday);
 
 type OmnivoxCookie = {
     COMN: string;
@@ -191,7 +193,7 @@ export function schedulePageToClasses(HTML: string): Class[] {
             let day = index;
             for (const c of schedule) {
                 if (
-                    c.weekday <= day &&
+                    c.timeStart.weekday() - 1 <= day &&
                     c.timeStart != timeStart &&
                     c.timeStart.isBefore(timeEnd) &&
                     c.timeEnd.isAfter(timeStart)
@@ -209,9 +211,8 @@ export function schedulePageToClasses(HTML: string): Class[] {
                 type: match[5] === "T" ? "T" : "L",
                 teacher: match[6],
                 virtual: match[7] === "Présentiel",
-                weekday: day,
-                timeStart: timeStart,
-                timeEnd: timeEnd,
+                timeStart: timeStart.weekday(day),
+                timeEnd: timeEnd.weekday(day),
             });
         });
     }
