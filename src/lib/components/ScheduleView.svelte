@@ -1,103 +1,154 @@
 <script lang="ts">
+    // Importation des types et bibliothèques nécessaires
     import type { Class } from "$lib/Types";
-    import dayjs from "dayjs";
+    import dayjs, { Dayjs } from "dayjs";
     import { onDestroy } from "svelte";
     import Hoverable from "./Hoverable.svelte";
 
+    // TODO: Remplacer "schedule" par l'emploi du temps de l'utilisateur
     export let schedule: Class[];
 
+    // Déclaration des propriétés
     let rowTitles: string[] = [];
+    let weekStartDay = dayjs();
+    let currentTime = dayjs();
 
+    // Définition des constantes
     const scheduleTimeStart = 0;
     const scheduleTimeEnd = 24;
-    for (let i = scheduleTimeStart; i <= scheduleTimeEnd; i++) {
-        rowTitles.push(i + ":00");
-    }
-
     const rowHeight = 3;
     const cellWidth = 6;
     const timeOffset = scheduleTimeStart - 1;
 
-    let currentTime = dayjs();
-    const interval = setInterval(() => (currentTime = dayjs()), 1000);
+    // Génération des heures de début de chaque ligne
+    for (let i = scheduleTimeStart; i <= scheduleTimeEnd; i++) {
+        rowTitles.push(i + ":00");
+    }
+
+    // Mise à jour de l'heure actuelle toutes les 15 secondes
+    const interval = setInterval(() => (currentTime = dayjs()), 15000);
     onDestroy(() => clearInterval(interval));
 
-    const daysOfWeek = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+    // Fonction de déplacement d'une semaine en arrière ou en avant
+    const moveWeek = (weeks: number) => (weekStartDay = weekStartDay.add(weeks, "weeks"));
+
+    // Fonction qui permet de savoir si deux dayjs désigne le même jour
+    const dateAreTheSame = (day1: Dayjs, day2: Dayjs) => {
+        return (
+            day1.year() === day2.year() &&
+            day1.month() === day2.month() &&
+            day1.date() === day2.date()
+        );
+    };
 </script>
 
-<!-- TODO: Style -->
-<div class="relative">
-    <table>
-        <tr style={`height: ${rowHeight}rem;`}>
-            <th style={`width: ${cellWidth}rem;`} />
+<!-- La section principale de la page -->
+<main>
+    <!-- Affiche la semaine en cours avec le jour de début et de fin -->
+    Semaine du {weekStartDay.weekday(0).format("D")} au {weekStartDay
+        .weekday(6)
+        .format("D MMMM YYYY")}
+    <!-- Boutons pour naviguer vers la semaine précédente ou suivante -->
+    <button on:click={() => moveWeek(-1)}> Previous </button>
+    <button on:click={() => moveWeek(1)}> Next </button>
 
-            {#each daysOfWeek as day}
-                <th style={`width: ${cellWidth}rem;`}>
-                    {day}
+    <!-- Tableau qui contiendra l'emploi du temps -->
+    <table class="relative">
+        <!-- Ligne pour les jours de la semaine -->
+        <tr class="grid grid-cols-8" style={`height: ${rowHeight}rem;`}>
+            <th
+                class="translate-y-1/2 flex justify-center items-center"
+                style={`width: ${cellWidth}rem;`}
+            >
+                {rowTitles[0]}
+            </th>
+
+            <!-- Boucle pour chaque jour de la semaine -->
+            {#each [...Array(7)].map((_, i) => weekStartDay.weekday(i)) as day}
+                <th>
+                    <!-- Affiche le nom complet du jour -->
+                    {day.format("dddd")}
+                    <br />
+                    {day.format("D")}
+
+                    <!-- Boucle pour chaque période de l'emploi du temps -->
+                    {#each schedule.filter((p) => dateAreTheSame(p.timeStart, day)) as period}
+                        <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
+                        <Hoverable let:hovering>
+                            <div
+                                class="absolute bg-sky-500 border-red-200 hover:border-2 "
+                                style={`top: ${
+                                    rowHeight *
+                                    (period.timeStart.hour() +
+                                        period.timeStart.minute() / 60 -
+                                        timeOffset)
+                                }rem; 
+                                width: ${cellWidth}rem;
+                                height: ${
+                                    rowHeight *
+                                    (period.timeEnd.diff(period.timeStart, "minute") / 60)
+                                }rem;`}
+                            >
+                                <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
+                                {#if hovering}
+                                    <div
+                                        class="absolute p-4 top-1/2 max-w-xs bg-blue-400 z-10"
+                                        style={`transform: translate(${cellWidth}rem,-50%`}
+                                    >
+                                        <p class="text-center break-words">
+                                            TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST
+                                            {period.name} <br />
+                                            {period.group} <br />
+                                            {period.local} <br />
+                                            {period.type} <br />
+                                            {period.teacher} <br />
+                                            {period.virtual} <br />
+                                            {period.timeStart} <br />
+                                            {period.timeEnd}
+                                        </p>
+                                    </div>
+                                {/if}
+                                <!-- Affiche le nom de la période et son identifiant -->
+                                <p class="truncate text-center">
+                                    {period.name}<br />
+                                    {period.group}
+                                </p>
+                            </div>
+                        </Hoverable>
+                    {/each}
+
+                    <!-- Pointeur rouge sur l'heure et la date actuelles -->
+                    {#if dateAreTheSame(currentTime, day)}
+                        <div
+                            class="absolute"
+                            style={`top: ${
+                                rowHeight *
+                                (currentTime.hour() + currentTime.minute() / 60 - timeOffset)
+                            }rem; width: ${cellWidth}rem;`}
+                        >
+                            <!-- La marque est un cercle rouge et une ligne rouge -->
+                            <div
+                                class="absolute rounded-full w-3 h-3 bg-red-600 -translate-x-1/2 -translate-y-1/2"
+                            />
+                            <hr class="border-2 border-red-600 -translate-y-1/2" />
+                        </div>
+                    {/if}
                 </th>
             {/each}
         </tr>
 
-        {#each rowTitles as hour, i}
-            <tr style={`height: ${rowHeight}rem;`}>
-                <th class="-translate-y-1/2">{hour}</th>
+        <!-- Boucle pour chaque heure de la journée -->
+        {#each rowTitles.slice(1) as hour}
+            <tr class="grid grid-cols-8" style={`height: ${rowHeight}rem;`}>
+                <th class="translate-y-1/2 flex justify-center items-center">
+                    {hour}
+                </th>
 
-                {#if i < rowTitles.length - 1}
-                    {#each daysOfWeek as _}
-                        <th class="border border-neutral-400 dark:border-white" />
-                    {/each}
-                {/if}
+                <!-- Ajouter des cases vides pour les autres jours de la semaine -->
+                {#each Array(7) as _}
+                    <td class="border border-neutral-400 dark:border-white" />
+                {/each}
             </tr>
         {/each}
     </table>
-
-    <!-- TODO: Replace schedule for the user's schedule -->
-    {#each schedule as period}
-        <Hoverable let:hovering>
-            <div
-                class="absolute bg-sky-500"
-                style={`top: ${
-                    rowHeight *
-                    (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset)
-                }rem; 
-            left: ${cellWidth * (period.weekday + 2)}rem;
-            width: ${cellWidth}rem;
-            height: ${rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60)}rem;`}
-            >
-                <!-- On Hover -->
-                {#if hovering}
-                    <div
-                        class="absolute w-auto h-auto bg-black"
-                        style={`transform: translateX(${cellWidth}rem);`}
-                    >
-                        {period.name} <br />
-                        {period._id} <br />
-                        {period.group} <br />
-                        {period.local} <br />
-                        {period.type} <br />
-                        {period.teacher} <br />
-                        {period.virtual} <br />
-                        {period.weekday} <br />
-                        {period.timeStart} <br />
-                        {period.timeEnd}
-                    </div>
-                {/if}
-
-                <p>{period.name}</p>
-                <p>{period._id}</p>
-                <p>{period.group}</p>
-            </div>
-        </Hoverable>
-    {/each}
-
-    <!-- Pointer date/time -->
-    <div
-        class="absolute"
-        style={`top: ${
-            rowHeight * (currentTime.hour() + currentTime.minute() / 60 - timeOffset)
-        }rem; left: ${cellWidth * (currentTime.day() + 1)}rem; width: ${cellWidth}rem;`}
-    >
-        <div class="absolute rounded-full w-3 h-3 bg-red-600 -translate-x-1/2 -translate-y-1/2" />
-        <hr class="border-2 !border-red-600 -translate-y-1/2" />
-    </div>
-</div>
+</main>
