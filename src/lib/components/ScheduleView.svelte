@@ -19,7 +19,6 @@
     const rowHeight = 3;
     const cellWidth = 6;
     const timeOffset = scheduleTimeStart - 1;
-    const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
     // Génération des heures de début de chaque ligne
     for (let i = scheduleTimeStart; i <= scheduleTimeEnd; i++) {
@@ -143,7 +142,7 @@
                 </th>
 
                 <!-- Ajouter des cases vides pour les autres jours de la semaine -->
-                {#each daysOfWeek as _}
+                {#each Array(7) as _}
                     <th class="border" />
                 {/each}
             </tr>
