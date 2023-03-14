@@ -7,14 +7,14 @@
     let schedule: Class[] = [
         {
             _id: new mongoose.Types.ObjectId(),
-            name: "aName",
+            name: "Yey c'est le 2",
             group: 105,
             local: "B-105",
             type: "L",
             teacher: "asdjkfwlbk",
             virtual: false,
-            timeStart: dayjs().hour(6).minute(0),
-            timeEnd: dayjs().hour(8).minute(0),
+            timeStart: dayjs().date(2).hour(6).minute(0),
+            timeEnd: dayjs().date(2).hour(8).minute(0),
         },
         {
             _id: new mongoose.Types.ObjectId(),
