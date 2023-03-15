@@ -2,7 +2,7 @@ import { MONGODB_URI } from "$env/static/private";
 import type { Period, Schedule, User } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
-import { ScheduleSchema, TokenSchema, UserSchema, type ServerUser } from "./types";
+import { ScheduleSchema, TokenSchema, UserSchema, type ServerUser } from "./schemas";
 
 // Connection
 mongoose.set("strictQuery", false);
