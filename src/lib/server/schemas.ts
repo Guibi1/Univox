@@ -1,4 +1,4 @@
-import type { Schedule, User } from "$lib/Types";
+import type { Book, Schedule, User } from "$lib/Types";
 import dayjs from "dayjs";
 import mongoose, { Schema } from "mongoose";
 
@@ -71,17 +71,52 @@ export const UserSchema = new Schema<ServerUser>({
 
 // Schedule
 export const ScheduleSchema = new Schema<Schedule>({
-    periods: [
-        {
-            id: String,
-            name: String,
-            group: Number,
-            local: String,
-            type: ["T", "L"],
-            teacher: String,
-            virtual: Boolean,
-            timeStart: dayjs.Dayjs,
-            timeEnd: dayjs.Dayjs,
-        },
-    ],
+    periods: {
+        type: [
+            {
+                code: String,
+                name: String,
+                group: Number,
+                local: String,
+                type: String,
+                teacher: String,
+                virtual: Boolean,
+                timeStart: dayjs.Dayjs,
+                timeEnd: dayjs.Dayjs,
+            },
+        ],
+        required: true,
+    },
+});
+
+// Book
+export const BookSchema = new Schema<Book>({
+    sellerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    ISBN: {
+        type: String,
+        required: true,
+    },
+    src: {
+        type: String,
+        required: true,
+    },
+    author: {
+        type: String,
+        required: true,
+    },
+    price: {
+        type: Number,
+        required: true,
+    },
+    state: {
+        type: String,
+        required: true,
+    },
 });
