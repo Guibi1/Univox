@@ -42,4 +42,4 @@ export interface Class extends Period {
     virtual: boolean;
     timeStart: Dayjs;
     timeEnd: Dayjs;
-};
+}
