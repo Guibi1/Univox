@@ -15,9 +15,9 @@
 
 <form
     on:submit={() => doSomething(titreLivre, nomAuteur, etatLivre, prix)}
-    class="grid grid-cols-[1fr_2fr] gap-6"
+    class="grid grid-cols-[2fr_2fr] gap-6"
 >
-    <div class="flex flex-col items-stretch gap-5">
+    <div class="flex flex-col items-stretch gap-5 pl-40">
         <h1 class="text-center">Vendre un livre</h1>
 
         <label>
@@ -39,10 +39,11 @@
             <input bind:value={prix} required />
         </label>
     </div>
-    <div class="pt-20">
+
+    <div class="flex flex-col items-stretch gap-5 pr-40 pt-20">
         <div
-            class="box-border h-2/3 border-4 radius-10 border-gray-600 bg-gray-600 bg-opacity-60"
+            class="box-border h-[250px] rounded-xl border-4 border-gray-600 bg-gray-600 bg-opacity-60"
         />
-        <button class="w-2/3" type="submit">Créer l'annonce</button>
+        <button type="submit">Créer l'annonce</button>
     </div>
 </form>
