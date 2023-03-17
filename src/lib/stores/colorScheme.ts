@@ -27,7 +27,7 @@ function createColorSchemeStore() {
 
     function set(color: ColorScheme) {
         apply(color);
-        fetch("/api/colorScheme", {
+        fetch("/api/settings/colorScheme", {
             method: "PUT",
             body: color,
         });
