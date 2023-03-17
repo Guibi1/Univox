@@ -44,6 +44,12 @@
         <div
             class="box-border h-[250px] rounded-xl border-4 border-gray-600 bg-gray-600 bg-opacity-60"
         />
-        <button type="submit">Créer l'annonce</button>
+
+        <button
+            class="hover:bg-blue-secondary active:bg-cyan-900 focus:ring focus:ring-gray-500"
+            type="submit"
+        >
+            Créer l'annonce
+        </button>
     </div>
 </form>
