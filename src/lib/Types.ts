@@ -36,7 +36,8 @@ export interface Period {
 }
 
 export interface Class extends Period {
-    code: string;
+    _id: mongoose.Types.ObjectId;
+    code?: string;
     group: number;
     local: string;
     type: "T" | "L";
