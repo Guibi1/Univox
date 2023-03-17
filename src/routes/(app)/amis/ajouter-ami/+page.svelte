@@ -26,9 +26,9 @@
 <h1 class="text-center pt-2 dark:bg-neutral-900">Ajouter des amis</h1>
 
 <div
-    class="sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500"
->
-    <div class="w-1/2 flex flex-row gap-3 items-center ml-10">
+    class="top-0 z-50 p-6 grid grid-cols-3 gap-2 grid-justify-item-stretch border-b bg-white dark:bg-neutral-900 dark:border-neutral-500"
+> <!-- "sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500" -->
+    <div class="grid grid-cols-2 gap-2 grid-justify-item-strech w-[1024px]"> <!-- "w-1/2 flex flex-row gap-3 items-center ml-10" -->
         <input
             type="text"
             bind:value={query}
@@ -40,20 +40,30 @@
             class="w-full h-12 rounded-lg text-lg"
         />
 
-        <box-icon
+        <div ><box-icon
             name="search-alt"
-            class="w-10 h-10 cursor-pointer"
+            class="col-start-1 col-end-3 w-10 h-10 cursor-pointer"
             on:click={handleSearch}
             on:keypress={handleSearch}
         />
     </div>
+        
+    </div>
+    
+
+    <a class="col-start-4"
+    href=/amis
+    >
+        Liste d'amis
+        
+    </a>
 </div>
 
 <div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
 
 {#each searchResults as user}
     <div>
-        {user.firstName}
+        {user.lastName + ", " + user.firstName}
         
             <button
                 on:click={() => {

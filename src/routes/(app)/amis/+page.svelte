@@ -25,7 +25,7 @@
 
 <h1 class="text-center pt-2 dark:bg-neutral-900">Amis</h1>
 
-<div
+<!-- <div
     class="sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500"
 >
     <div class="w-1/2 flex flex-row gap-3 items-center ml-10">
@@ -55,14 +55,62 @@
         Ajouter des amis
         
     </a>
-</div>
+</div> -->
+
+<div
+    class="top-0 z-50 p-6 grid grid-cols-2 gap-2 grid-justify-item-stretch border-b bg-white dark:bg-neutral-900 dark:border-neutral-500"
+> <!-- "sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500" -->
+    <div class="grid grid-cols-2 gap-2 grid-justify-item-strech w-[1024px]"> <!-- "w-1/2 flex flex-row gap-3 items-center ml-10" -->
+        <input
+            type="text"
+            bind:value={query}
+            on:keypress={(e) => {
+                if (e.key == "Enter") handleSearch();
+            }}
+            on:input={timedSearch}
+            placeholder="Rechercher"
+            class="w-full h-12 rounded-lg text-lg "
+        />
+
+        <div ><box-icon
+            name="search-alt"
+            class="col-start-1 col-end-3 w-10 h-10 cursor-pointer"
+            on:click={handleSearch}
+            on:keypress={handleSearch}
+        />
+    </div>
+        
+    </div>
+    
+
+    <a class="col-start-3"
+    href=/amis/ajouter-ami
+    >
+        Ajouter un ami
+        
+    </a>
+
+    </div>
 
 <div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
 
 <ul>
     {#each $friends as ami}
         <li>
-            {ami.lastName + ", " + ami.firstName}
+            <div class="flex items-end">{ami.lastName + ", " + ami.firstName}
+                
+                <box-icon
+                id="friend-option-menu"
+                data-dropdown-toggle="dropdown"
+                name="dots-vertical-rounded"
+                class="self-baseline w-6 pb-0 cursor-pointer"
+            />
+
+            </div>
+
+            
+            
+            
             <button
                 on:click={() => {
                     query = "";
@@ -72,6 +120,8 @@
             >
                 retirer ami
             </button>
+
+
         </li>
     {/each}
 </ul>
@@ -93,4 +143,4 @@
     </div>
 {/each}
 
-<!-- TODO: faire en sorte que les demandes d'amis soient réciproquent + choisir par le DA + pouvoir enlever des amis -->
+<!-- TODO: faire en sorte que les demandes d'amis soient réciproquent + choisir par le DA + pouvoir enlever des amis + faire des menus déroulants pour les options d'amis + régler le bazar quand on rapetisse la page -->
