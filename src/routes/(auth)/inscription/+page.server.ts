@@ -58,7 +58,7 @@ export const actions = {
             !password ||
             !/.{8,}/.test(password) ||
             !email ||
-            /[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+(\\.[a-zA-Z]+)+/.test(email)
+            /^[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+$/i.test(email)
         ) {
             return fail(400, {
                 da,

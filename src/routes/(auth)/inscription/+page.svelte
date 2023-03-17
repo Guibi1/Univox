@@ -4,7 +4,7 @@
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
-    let firstStep = true;
+    let firstStep = !true;
     let loading = false;
 
     const handleSubmit = (({ data }) => {
@@ -84,7 +84,7 @@
                 <input
                     name="email"
                     type="email"
-                    pattern={"[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+(\\.[a-zA-Z]+)+"}
+                    pattern="^[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+$"
                     required={!firstStep}
                     placeholder=" "
                     value={form?.email ?? ""}
@@ -108,12 +108,9 @@
                 />
             </label>
 
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a
-                on:click={() => (firstStep = true)}
-                class="self-left flex items-center"
-                href="javascript:void()"
-            >
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <a on:click={() => (firstStep = true)} class="self-left flex items-center">
                 <box-icon name="chevron-left" /> Retour
             </a>
         </div>
