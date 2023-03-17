@@ -1,12 +1,9 @@
 <script lang="ts">
     import startWeekDate, { type StartWeekDate } from "$lib/stores/startWeekDate";
-    
-    startWeekDate.subscribe;
 
     function setDate(event: Event & { currentTarget: HTMLSelectElement }) {
         startWeekDate.set(event.currentTarget.value as StartWeekDate);
     }
-
 </script>
 
 <h1 class="text-center">PARAMÈTRES</h1>
@@ -17,7 +14,6 @@
         on:change={(value) => {
             setDate(value);
         }}
-        bind:value={$startWeekDate}
     >
         <option value="Samedi">Samedi</option>
         <option value="Dimanche">Dimanche</option>
