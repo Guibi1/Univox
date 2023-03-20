@@ -185,22 +185,23 @@ export async function findBookById(bookId: mongoose.Types.ObjectId): Promise<Boo
 
 export async function searchBooks(user: User, query: string, filter: string[]): Promise<Book[]> {
     query = sanitizeQuery(query);
-    if (query.length < 4) return [];
     query = normalizeQuery(query);
-
-    const codeFilterQuery = filter.length > 0 ? [{ code: { $in: filter } }] : [];
 
     return await Books.find({
         $and: [
-            ...codeFilterQuery,
             { sellerId: { $ne: user._id } },
-            {
-                $or: [
-                    { ISBN: { $eq: query } },
-                    { title: { $regex: query, $options: "i" } },
-                    { author: { $regex: query, $options: "i" } },
-                ],
-            },
+            ...(filter.length > 0 ? [{ code: { $in: filter } }] : []),
+            ...(query.length > 0
+                ? [
+                      {
+                          $or: [
+                              { ISBN: { $eq: query } },
+                              { title: { $regex: query, $options: "i" } },
+                              { author: { $regex: query, $options: "i" } },
+                          ],
+                      },
+                  ]
+                : []),
         ],
     })
         .limit(15)
