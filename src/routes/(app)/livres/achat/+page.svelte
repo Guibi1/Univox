@@ -1,10 +1,10 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import SearchBar from "$lib/components/SearchBar.svelte";
     import type { Book } from "$lib/Types";
     import BookFilter from "./BookFilter.svelte";
+    import BookInfo from "./BookInfo.svelte";
     import BookList from "./BookList.svelte";
-
-    let query = "";
 
     let books: Book[] = [];
     let codes: string[] = [];
@@ -12,23 +12,16 @@
     let bookId: string | null;
     $: bookId = $page.url.searchParams.get("bookId");
 
-    function handleSearch() {
-        fetch("/api/search/books", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ query, codes }),
-        });
-        console.log("🚀 ~ file: +page.svelte:22 ~ handleSearch ~ query:", query);
-    }
-
-    let timeout: NodeJS.Timeout | null;
-    function timedSearch() {
-        if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            handleSearch();
-        }, 500);
+    async function handleSearch(query: string) {
+        books = await (
+            await fetch("/api/search/books", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ query, codes }),
+            })
+        ).json();
     }
 </script>
 
@@ -42,16 +35,7 @@
     class="sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500"
 >
     <div class="w-1/2 flex flex-row gap-3 items-center ml-10">
-        <input
-            type="text"
-            bind:value={query}
-            on:input={timedSearch}
-            on:keypress={(e) => {
-                if (e.key == "Enter") handleSearch();
-            }}
-            placeholder="Rechercher"
-            class="w-full h-12 rounded-lg text-lg"
-        />
+        <SearchBar {handleSearch} />
 
         <box-icon
             name="search-alt"
@@ -67,5 +51,5 @@
 
     <BookList {books} />
 
-    <div>{bookId}</div>
+    <BookInfo {bookId} />
 </main>
