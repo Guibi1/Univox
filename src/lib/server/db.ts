@@ -1,8 +1,8 @@
 import { MONGODB_URI } from "$env/static/private";
-import type { Period, Schedule, User } from "$lib/Types";
+import type { Book, Period, Schedule, User } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
-import { ScheduleSchema, TokenSchema, UserSchema, type ServerUser } from "./schemas";
+import { BookSchema, ScheduleSchema, TokenSchema, UserSchema, type ServerUser } from "./schemas";
 
 // Connection
 mongoose.set("strictQuery", false);
@@ -14,6 +14,7 @@ if (mongoose.connection.readyState !== 1) {
 const Tokens = mongoose.models["tokens"] ?? mongoose.model("tokens", TokenSchema);
 const Users = mongoose.models["users"] ?? mongoose.model("users", UserSchema);
 const Schedules = mongoose.models["schedules"] ?? mongoose.model("schedules", ScheduleSchema);
+const Books = mongoose.models["books"] ?? mongoose.model("books", BookSchema);
 
 // Helpers: Token
 export async function createToken(user: User) {
@@ -101,20 +102,9 @@ export async function updateUserPassword(
 }
 
 export async function searchUsers(user: User, query: string): Promise<User[]> {
-    query = query.replace(/\./g, "");
+    query = sanitizeQuery(query);
     if (query.length < 4) return [];
-
-    query = query
-        .replace(/a/g, "[a,á,à,ä,â]")
-        .replace(/A/g, "[A,a,á,à,ä,â]")
-        .replace(/e/g, "[e,é,ë,è]")
-        .replace(/E/g, "[E,e,é,ë,è]")
-        .replace(/i/g, "[i,í,ï,ì]")
-        .replace(/I/g, "[I,i,í,ï,ì]")
-        .replace(/o/g, "[o,ó,ö,ò]")
-        .replace(/O/g, "[O,o,ó,ö,ò]")
-        .replace(/u/g, "[u,ü,ú,ù]")
-        .replace(/U/g, "[U,u,ü,ú,ù]");
+    query = normalizeQuery(query);
 
     return await Users.find({
         $and: [
@@ -174,7 +164,7 @@ export async function addPeriodsToSchedule(
     periods: Period[]
 ): Promise<boolean> {
     if (!(await findScheduleById(scheduleId))) {
-        console.error("No user with this id was found.");
+        console.error("No schedule with this id was found.");
         return false;
     }
 
@@ -182,4 +172,62 @@ export async function addPeriodsToSchedule(
         $push: { periods: periods },
     });
     return true;
+}
+
+// Helpers: Book
+export async function findBookById(bookId: mongoose.Types.ObjectId): Promise<Book | null> {
+    const doc = await Books.findById(bookId);
+    if (!doc) {
+        return null;
+    }
+    return { ...doc.toObject() };
+}
+
+export async function searchBooks(user: User, query: string, codes: string[]): Promise<Book[]> {
+    query = sanitizeQuery(query);
+    query = normalizeQuery(query);
+
+    return await Books.find({
+        $and: [
+            { sellerId: { $ne: user._id } },
+            ...(codes.length > 0 ? [{ code: { $in: codes } }] : []),
+            ...(query.length > 0
+                ? [
+                      {
+                          $or: [
+                              { ISBN: { $eq: query } },
+                              { title: { $regex: query, $options: "i" } },
+                              { author: { $regex: query, $options: "i" } },
+                          ],
+                      },
+                  ]
+                : []),
+        ],
+    })
+        .limit(15)
+        .exec();
+}
+
+export async function addBookListing(book: Book): Promise<boolean> {
+    await Books.create(book);
+    return true;
+}
+
+// Helpers: Query normalization
+function sanitizeQuery(query: string): string {
+    return query.replace(/\./g, "").trim();
+}
+
+function normalizeQuery(query: string): string {
+    return query
+        .replace(/a/g, "[a,á,à,ä,â]")
+        .replace(/A/g, "[A,a,á,à,ä,â]")
+        .replace(/e/g, "[e,é,ë,è]")
+        .replace(/E/g, "[E,e,é,ë,è]")
+        .replace(/i/g, "[i,í,ï,ì]")
+        .replace(/I/g, "[I,i,í,ï,ì]")
+        .replace(/o/g, "[o,ó,ö,ò]")
+        .replace(/O/g, "[O,o,ó,ö,ò]")
+        .replace(/u/g, "[u,ü,ú,ù]")
+        .replace(/U/g, "[U,u,ü,ú,ù]");
 }

@@ -13,6 +13,8 @@ export interface User {
 
 export interface Book {
     _id: mongoose.Types.ObjectId;
+    code: string;
+    sellerId: mongoose.Types.ObjectId;
     title: string;
     ISBN: string;
     src: string;
@@ -27,13 +29,13 @@ export interface Schedule {
 }
 
 export interface Period {
+    _id: mongoose.Types.ObjectId;
     name: string;
     timeStart: Dayjs;
     timeEnd: Dayjs;
 }
 
 export interface Class extends Period {
-    _id: mongoose.Types.ObjectId;
     code: string;
     group: number;
     local: string;
@@ -42,4 +44,4 @@ export interface Class extends Period {
     virtual: boolean;
     timeStart: Dayjs;
     timeEnd: Dayjs;
-};
+}

@@ -1,15 +1,16 @@
 <script lang="ts">
-    export let filters: string[];
+    export let codes: string[];
+    export let onchange: Function;
 
-    let selectedFilters: string[] = [];
+    let options: string[] = ["matière 1", "matière 2", "AAAAAAAAAAAAAAAAAaa", "A"];
 </script>
 
 <ul class="border-4 w-fit p-2">
-    {#each filters as filter}
+    {#each options as code}
         <li>
             <label class=" flex flex-row items-center gap-2">
-                <input type="checkbox" bind:group={selectedFilters} value={filter} />
-                {filter}
+                <input type="checkbox" bind:group={codes} value={code} on:change={onchange} />
+                {code}
             </label>
         </li>
     {/each}
