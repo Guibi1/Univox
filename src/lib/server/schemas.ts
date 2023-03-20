@@ -91,6 +91,10 @@ export const ScheduleSchema = new Schema<Schedule>({
 
 // Book
 export const BookSchema = new Schema<Book>({
+    code: {
+        type: String,
+        required: true,
+    },
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
