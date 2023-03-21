@@ -20,5 +20,5 @@
         }
     }}
     placeholder="Rechercher"
-    class="w-full h-12 rounded-lg text-lg"
+    class="h-12 w-full rounded-lg text-lg"
 />

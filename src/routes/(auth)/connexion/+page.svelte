@@ -27,7 +27,7 @@
 
 <form
     use:enhance={handleSubmit}
-    class="m-auto w-9/12 flex flex-col gap-6"
+    class="m-auto flex w-9/12 flex-col gap-6"
     method="post"
     action="?/login"
 >
@@ -67,14 +67,14 @@
     </div>
 
     {#if !loading}
-        <button type="submit" class="w-7/12 self-center flex items-center justify-center">
+        <button type="submit" class="flex w-7/12 items-center justify-center self-center">
             Se connecter <box-icon name="chevron-right" />
         </button>
     {:else}
         <box-icon
             name="loader-circle"
             animation="spin"
-            class="h-10 my-6 flex items-center w-full"
+            class="my-6 flex h-10 w-full items-center"
         />
     {/if}
 </form>
@@ -86,7 +86,7 @@
         <hr class="w-full" />
     </div>
 
-    <div class="m-auto w-9/12 flex">
+    <div class="m-auto flex w-9/12">
         <a href={"/inscription" + $page.data.params} class="outlined m-auto w-7/12"> S'inscrire </a>
     </div>
 {/if}

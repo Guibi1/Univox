@@ -22,7 +22,7 @@
 
 <a
     href={data[current].href}
-    class="fixed right-8 bottom-8 w-48 flex items-center gap-0.5 p-2 px-4 text-2xl !text-black !fill-black bg-blue-300 rounded-full"
+    class="fixed right-8 bottom-8 flex w-48 items-center gap-0.5 rounded-full bg-blue-300 !fill-black p-2 px-4 text-2xl !text-black"
 >
     <box-icon name={data[current].iconName} class="h-8 w-8 fill-black" />
     <span class="flex-1 text-center">
@@ -32,7 +32,7 @@
 
 <a
     href={data[current].href}
-    class="fixed left-8 bottom-8 flex items-center gap-0.5 p-2 px-4 text-2xl text-black bg-cyan-300 rounded-full"
+    class="fixed left-8 bottom-8 flex items-center gap-0.5 rounded-full bg-cyan-300 p-2 px-4 text-2xl text-black"
 >
     <box-icon name="book-add" class="h-8 w-8 fill-black" />
 </a>
