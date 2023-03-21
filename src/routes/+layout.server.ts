@@ -1,8 +1,6 @@
-import type { ColorScheme } from "$lib/stores/colorScheme";
-import colorScheme from "$lib/stores/colorScheme";
+import colorScheme, { type ColorScheme } from "$lib/stores/colorScheme";
 import friends from "$lib/stores/friends";
-import type { StartWeekDate } from "$lib/stores/startWeekDate";
-import startWeekDate from "$lib/stores/startWeekDate";
+import startWeekDate, { type StartWeekDate } from "$lib/stores/startWeekDate";
 import user from "$lib/stores/user";
 import type { LayoutServerLoad } from "./$types";
 

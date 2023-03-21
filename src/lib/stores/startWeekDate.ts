@@ -10,18 +10,11 @@ function createStartWeekDateStore() {
 
     if (browser) {
         bc = new BroadcastChannel("New startWeekDate data");
-        bc.addEventListener("message", (e) => apply(e.data));
-    }
-
-    function apply(date: StartWeekDate) {
-        setStore(date);
-        if (typeof document !== "undefined") {
-            document.documentElement.setAttribute("data-startWeekDate", date);
-        }
+        bc.addEventListener("message", (e) => setStore(e.data));
     }
 
     function set(date: StartWeekDate) {
-        apply(date);
+        setStore(date);
         fetch("/api/settings/startWeekDate", {
             method: "PUT",
             body: date,
