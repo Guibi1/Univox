@@ -1,5 +1,5 @@
 <script lang="ts">
-    import startWeekDate from "$lib/stores/startWeekDate";
+    import { weekdayOffset, dateAreTheSame } from "$lib/stores/startWeekDate";
 
     // Importation des types et bibliothèques nécessaires
     import type { Class } from "$lib/Types";
@@ -20,6 +20,7 @@
     const scheduleTimeEnd = 24;
     const rowHeight = 3;
     const cellWidth = 6;
+
     const timeOffset = scheduleTimeStart - 1;
 
     // Génération des heures de début de chaque ligne
@@ -27,31 +28,19 @@
         rowTitles.push(i + ":00");
     }
 
-    // Mise à jour de l'heure actuelle toutes les 15 secondes
-    const interval = setInterval(() => (currentTime = dayjs()), 15000);
+    // Mise à jour de l'heure actuelle toutes les 60 secondes
+    const interval = setInterval(() => (currentTime = dayjs()), 60000);
     onDestroy(() => clearInterval(interval));
 
     // Fonction de déplacement d'une semaine en arrière ou en avant
     const moveWeek = (weeks: number) => (currentWeek = currentWeek.add(weeks, "weeks"));
-
-    // Fonction qui permet de savoir si deux dayjs désigne le même jour
-    const dateAreTheSame = (day1: Dayjs, day2: Dayjs) => {
-        return (
-            day1.year() === day2.year() &&
-            day1.month() === day2.month() &&
-            day1.date() === day2.date()
-        );
-    };
-
-    let dateOffset = startWeekDate.getOffset();
-    console.log(dateOffset);
 </script>
 
 <!-- La section principale de la page -->
 <main>
     <!-- Affiche la semaine en cours avec le jour de début et de fin -->
-    Semaine du {currentWeek.weekday(dateOffset).format("D")} au {currentWeek
-        .weekday(6)
+    Semaine du {currentWeek.weekday($weekdayOffset).format("D")} au {currentWeek
+        .weekday(6 + $weekdayOffset)
         .format("D MMMM YYYY")}
     <!-- Boutons pour naviguer vers la semaine précédente ou suivante -->
     <button on:click={() => moveWeek(-1)}> Previous </button>
@@ -69,7 +58,7 @@
             </th>
 
             <!-- Boucle pour chaque jour de la semaine -->
-            {#each [...Array(7)].map((_, i) => currentWeek.weekday(i + dateOffset)) as day}
+            {#each [...Array(7)].map((_, i) => currentWeek.weekday(i + $weekdayOffset)) as day}
                 <th>
                     <!-- Affiche le nom complet du jour -->
                     {day.format("dddd")}
