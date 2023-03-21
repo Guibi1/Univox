@@ -1,3 +1,3 @@
 <svelte:head>
-    <title> Univox | Horaire </title>
+    <title>Univox | Horaire</title>
 </svelte:head>

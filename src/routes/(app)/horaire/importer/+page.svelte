@@ -19,17 +19,17 @@
 </script>
 
 <svelte:head>
-    <title> Univox | Horaire | Importer </title>
+    <title>Univox | Horaire | Importer</title>
 </svelte:head>
 
-<div class="m-auto w-fit pb-4 flex flex-col items-center justify-center gap-4">
+<div class="m-auto flex w-fit flex-col items-center justify-center gap-4 pb-4">
     <h1>Importer mon horaire de session depuis Omnivox</h1>
 
     {#if loading}
         <box-icon
             name="loader-circle"
             animation="spin"
-            class="h-10 my-6 flex items-center w-full"
+            class="my-6 flex h-10 w-full items-center"
         />
     {/if}
 </div>
@@ -37,7 +37,7 @@
 <form
     use:enhance={handleSubmit}
     hidden={loading}
-    class="m-auto w-80 flex flex-col gap-6"
+    class="m-auto flex w-80 flex-col gap-6"
     method="post"
 >
     <label data-error={form?.incorrect}>

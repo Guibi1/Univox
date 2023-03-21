@@ -9,11 +9,11 @@
 </script>
 
 <svelte:head>
-    <title> Univox | Livres | Nouveau livre </title>
+    <title>Univox | Livres | Nouveau livre</title>
 </svelte:head>
 
-<div class="min-h-screen flex justify-evenly items-center bg-stone-200">
-    <main class="bg-white p-12 rounded w-96 h-max">
+<div class="flex min-h-screen items-center justify-evenly bg-stone-200">
+    <main class="h-max w-96 rounded bg-white p-12">
         <form
             on:submit={() => doSomething(titreLivre, etatLivre)}
             class="flex flex-col justify-between gap-6"

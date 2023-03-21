@@ -57,7 +57,7 @@
         <!-- Ligne pour les jours de la semaine -->
         <tr class="grid grid-cols-8" style={`height: ${rowHeight}rem;`}>
             <th
-                class="translate-y-1/2 flex justify-center items-center"
+                class="flex translate-y-1/2 items-center justify-center"
                 style={`width: ${cellWidth}rem;`}
             >
                 {rowTitles[0]}
@@ -76,7 +76,7 @@
                         <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
                         <Hoverable let:hovering>
                             <div
-                                class="absolute bg-sky-500 border-red-200 hover:border-2 "
+                                class="absolute border-red-200 bg-sky-500 hover:border-2 "
                                 style={`top: ${
                                     rowHeight *
                                     (period.timeStart.hour() +
@@ -92,10 +92,10 @@
                                 <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
                                 {#if hovering}
                                     <div
-                                        class="absolute p-4 top-1/2 max-w-xs bg-blue-400 z-10"
+                                        class="absolute top-1/2 z-10 max-w-xs bg-blue-400 p-4"
                                         style={`transform: translate(${cellWidth}rem,-50%`}
                                     >
-                                        <p class="text-center break-words">
+                                        <p class="break-words text-center">
                                             TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST
                                             {period.name} <br />
                                             {period.group} <br />
@@ -128,9 +128,9 @@
                         >
                             <!-- La marque est un cercle rouge et une ligne rouge -->
                             <div
-                                class="absolute rounded-full w-3 h-3 bg-red-600 -translate-x-1/2 -translate-y-1/2"
+                                class="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-600"
                             />
-                            <hr class="border-2 !border-red-600 -translate-y-1/2" />
+                            <hr class="-translate-y-1/2 border-2 !border-red-600" />
                         </div>
                     {/if}
                 </th>
@@ -140,7 +140,7 @@
         <!-- Boucle pour chaque heure de la journée -->
         {#each rowTitles.slice(1) as hour}
             <tr class="grid grid-cols-8" style={`height: ${rowHeight}rem;`}>
-                <th class="translate-y-1/2 flex justify-center items-center">
+                <th class="flex translate-y-1/2 items-center justify-center">
                     {hour}
                 </th>
 
