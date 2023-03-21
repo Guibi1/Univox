@@ -10,7 +10,7 @@
     }
 
     body {
-        @apply dark:bg-neutral-800 dark:text-white dark:fill-white;
+        @apply dark:bg-neutral-800 dark:fill-white dark:text-white;
     }
 
     h1 {
@@ -30,9 +30,9 @@
     }
 
     input {
-        @apply h-12 p-4 rounded-lg bg-transparent text-center text-black outline-none border-2 border-neutral-600;
+        @apply h-12 rounded-lg border-2 border-neutral-600 bg-transparent p-4 text-center text-black outline-none;
         @apply focus-visible:border-black dark:focus-visible:border-white;
-        @apply dark:text-white dark:border-neutral-300;
+        @apply dark:border-neutral-300 dark:text-white;
 
         &:not(:placeholder-shown) {
             @apply invalid:border-red-500;
@@ -41,7 +41,7 @@
     }
 
     label {
-        @apply grid grid-rows-[min-content_1fr] grid-cols-1 gap-1 w-full;
+        @apply grid w-full grid-cols-1 grid-rows-[min-content_1fr] gap-1;
 
         span {
             @apply text-center text-red-600;
@@ -72,18 +72,17 @@
     [type="button"],
     [type="reset"],
     [type="submit"] {
-        @apply h-12 rounded-lg bg-blue-primary text-white fill-white;
-        @apply dark:bg-blue-primary dark:text-black dark:fill-black;
+        @apply h-12 rounded-lg bg-blue-primary fill-white text-white;
+        @apply dark:bg-blue-primary dark:fill-black dark:text-black;
     }
 
     a {
-        @apply cursor-pointer text-orange-secondary fill-orange-secondary;
-        @apply dark:text-blue-primary dark:fill-blue-primary;
+        @apply cursor-pointer fill-blue-primary text-blue-primary;
 
         &.outlined {
-            @apply text-black fill-black;
-            @apply py-2 rounded border-2 border-black text-center;
-            @apply dark:text-white dark:border-white;
+            @apply fill-black text-black;
+            @apply rounded border-2 border-black py-2 text-center;
+            @apply dark:border-white dark:text-white;
         }
     }
 
@@ -94,5 +93,16 @@
 
     [hidden] {
         @apply !hidden;
+    }
+}
+
+@layer components {
+    .bg-glass {
+        background: linear-gradient(150deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3));
+        @apply backdrop-blur-lg;
+        
+        [data-colorscheme="dark"] & {
+            background: linear-gradient(150deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
+        }
     }
 }

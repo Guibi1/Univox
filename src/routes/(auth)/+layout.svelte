@@ -16,14 +16,14 @@
 
 <WavesBackground />
 
-<div class="h-screen flex justify-center items-center">
+<div class="flex h-screen items-center justify-center">
     <div
-        class="relative w-[32rem] overflow-hidden rounded bg-stone-200 dark:bg-neutral-900 !bg-opacity-60 backdrop-blur-xl transition-[height]"
+        class="bg-glass relative w-[32rem] overflow-hidden rounded-2xl transition-[height]"
         style="height: {height}px;"
     >
         <main
             bind:clientHeight={height}
-            class="absolute w-full py-12 px-10 flex flex-col gap-2 items-stretch"
+            class="absolute flex w-full flex-col items-stretch gap-2 py-12 px-10"
         >
             <slot />
         </main>
