@@ -1,52 +1,76 @@
 <script lang="ts">
-    let titreLivre = "";
-    let nomAuteur = "";
-    let etatLivre = "";
-    let prix: string = "";
+    import { enhance, type SubmitFunction } from "$app/forms";
+    import { page } from "$app/stores";
+    import user from "$lib/stores/user";
+    import type { ActionData } from "./$types";
 
-    function doSomething(titreLivre: any, nomAuteur: any, etatLivre: any, prix: any): any {
-        throw new Error("Function not implemented.");
-    }
+    export let form: ActionData;
+    let loading = false;
+    let imagesSrc: string[] = [];
+
+    const handleSubmit = (() => {
+        loading = true;
+        return async ({ result, update }) => {
+            if (result.type === "redirect") {
+                user.refresh();
+            }
+            loading = false;
+            update();
+        };
+    }) satisfies SubmitFunction;
 </script>
 
 <svelte:head>
     <title>Univox | Livres | Nouveau livre</title>
 </svelte:head>
 
-<form
-    on:submit={() => doSomething(titreLivre, nomAuteur, etatLivre, prix)}
-    class="grid grid-cols-[2fr_2fr] gap-6"
->
-    <div class="flex flex-col items-stretch gap-5 pl-40">
-        <h1 class="text-center">Vendre un livre</h1>
+<h1 class="text-center">Vendre un livre</h1>
 
-        <label>
+<form
+    use:enhance={handleSubmit}
+    class="m-auto grid max-w-5xl grid-cols-[2fr_2fr] gap-6"
+    method="post"
+>
+    <div class="flex flex-col items-stretch gap-5">
+        <label data-error={form?.missing}>
             Nom du livre
-            <input bind:value={titreLivre} required />
+            <input name="title" type="text" required placeholder=" " />
         </label>
 
         <label>
-            Nom de(s) (l')auteur(s)
-            <input bind:value={nomAuteur} required />
+            Nom de(s) l'auteur(s)
+            <input name="author" type="text" required placeholder=" " />
         </label>
 
         <label>
             L'état du livre
-            <input bind:value={etatLivre} required />
+            <select name="state" required>
+                <option>Neuf</option>
+                <option>Usagé - Comme neuf</option>
+                <option>Usagé - Bon état</option>
+                <option>Usagé - Endommagé</option>
+            </select>
         </label>
+
         <label>
             Prix de vente
-            <input bind:value={prix} required />
+            <input name="price" type="text" maxlength="3" required placeholder=" " />
         </label>
     </div>
 
-    <div class="flex flex-col items-stretch gap-5 pr-40 pt-20">
-        <div
-            class="box-border h-[250px] rounded-xl border-4 border-gray-600 bg-gray-600 bg-opacity-60"
-        />
+    <div class="flex flex-col items-stretch gap-5">
+        <div class="grid h-[15rem] flex-col rounded-xl">
+            {#each imagesSrc as image}
+                <img src={image} alt="Livre" />
+            {:else}
+                <div class="cursor-pointer bg-neutral-500 flex items-center justify-center">
+                    <box-icon name="plus" size="3rem" />
+                </div>
+            {/each}
+        </div>
 
         <button
-            class="hover:bg-blue-secondary active:bg-cyan-900 focus:ring focus:ring-gray-500"
+            class="hover:bg-blue-secondary focus:ring focus:ring-gray-500 active:bg-cyan-900"
             type="submit"
         >
             Créer l'annonce
