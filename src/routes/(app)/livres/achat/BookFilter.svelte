@@ -1,6 +1,6 @@
 <script lang="ts">
     export let codes: string[];
-    export let onchange: Function;
+    export let onchange: (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => any;
 
     let options: string[] = ["matière 1", "matière 2", "AAAAAAAAAAAAAAAAAaa", "A"];
 </script>
