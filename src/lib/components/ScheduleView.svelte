@@ -1,4 +1,6 @@
 <script lang="ts">
+    import startWeekDate from "$lib/stores/startWeekDate";
+
     // Importation des types et bibliothèques nécessaires
     import type { Class } from "$lib/Types";
     import dayjs, { Dayjs } from "dayjs";
@@ -10,7 +12,7 @@
 
     // Déclaration des propriétés
     let rowTitles: string[] = [];
-    let weekStartDay = dayjs();
+    let currentWeek = dayjs();
     let currentTime = dayjs();
 
     // Définition des constantes
@@ -30,7 +32,7 @@
     onDestroy(() => clearInterval(interval));
 
     // Fonction de déplacement d'une semaine en arrière ou en avant
-    const moveWeek = (weeks: number) => (weekStartDay = weekStartDay.add(weeks, "weeks"));
+    const moveWeek = (weeks: number) => (currentWeek = currentWeek.add(weeks, "weeks"));
 
     // Fonction qui permet de savoir si deux dayjs désigne le même jour
     const dateAreTheSame = (day1: Dayjs, day2: Dayjs) => {
@@ -40,12 +42,15 @@
             day1.date() === day2.date()
         );
     };
+
+    let dateOffset = startWeekDate.getOffset();
+    console.log(dateOffset);
 </script>
 
 <!-- La section principale de la page -->
 <main>
     <!-- Affiche la semaine en cours avec le jour de début et de fin -->
-    Semaine du {weekStartDay.weekday(0).format("D")} au {weekStartDay
+    Semaine du {currentWeek.weekday(dateOffset).format("D")} au {currentWeek
         .weekday(6)
         .format("D MMMM YYYY")}
     <!-- Boutons pour naviguer vers la semaine précédente ou suivante -->
@@ -64,7 +69,7 @@
             </th>
 
             <!-- Boucle pour chaque jour de la semaine -->
-            {#each [...Array(7)].map((_, i) => weekStartDay.weekday(i)) as day}
+            {#each [...Array(7)].map((_, i) => currentWeek.weekday(i + dateOffset)) as day}
                 <th>
                     <!-- Affiche le nom complet du jour -->
                     {day.format("dddd")}

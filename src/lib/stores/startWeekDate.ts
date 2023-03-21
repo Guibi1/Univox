@@ -28,10 +28,26 @@ function createStartWeekDateStore() {
         if (bc) bc.postMessage(date);
     }
 
+    function getOffset() {
+        let date = "Dimanche";
+        subscribe((d) => (date = d))();
+
+        if (date == "Samedi") {
+            return -1;
+        }
+        else if (date == "Lundi") {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
     return {
         subscribe,
         setInitial: setStore,
         set,
+        getOffset,
     };
 }
 
