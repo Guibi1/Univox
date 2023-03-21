@@ -16,7 +16,7 @@ export const TokenSchema = new Schema<Token>({
     lastAccessedDate: {
         type: Date,
         default: Date.now,
-        expires: "1h",
+        expires: "2d",
         index: true,
     },
 });
