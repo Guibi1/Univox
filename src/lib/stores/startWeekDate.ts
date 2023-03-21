@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
-import { writable } from "svelte/store";
+import dayjs, { Dayjs } from "dayjs";
+import { derived, writable } from "svelte/store";
 
 export type StartWeekDate = "Samedi" | "Dimanche" | "Lundi";
 
@@ -28,28 +29,33 @@ function createStartWeekDateStore() {
         if (bc) bc.postMessage(date);
     }
 
-    function getOffset() {
-        let date = "Dimanche";
-        subscribe((d) => (date = d))();
-
-        if (date == "Samedi") {
-            return -1;
-        }
-        else if (date == "Lundi") {
-            return 1;
-        }
-        else {
-            return 0;
-        }
-    }
-
     return {
         subscribe,
         setInitial: setStore,
         set,
-        getOffset,
     };
 }
 
 const startWeekDate = createStartWeekDateStore();
 export default startWeekDate;
+
+export const weekdayOffset = derived(startWeekDate, ($startWeekDate) => {
+    const currentDate = dayjs().day();
+
+    let offset = $startWeekDate === "Samedi" ? -1 : $startWeekDate === "Lundi" ? 1 : 0;
+
+    if (offset == 1 && currentDate == 0) {
+        offset -= 7;
+    } else if (offset == -1 && currentDate == 6) {
+        offset += 7;
+    }
+
+    return offset;
+});
+
+// Fonction qui permet de savoir si deux dayjs désigne le même jour
+export const dateAreTheSame = (day1: Dayjs, day2: Dayjs) => {
+    return (
+        day1.year() === day2.year() && day1.month() === day2.month() && day1.date() === day2.date()
+    );
+};
