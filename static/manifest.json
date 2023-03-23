@@ -1,0 +1,23 @@
+{
+    "background_color": "#262626",
+    "description": "Univox est un site web axé pour les étudiants qui leur permet de partager leur horaire, trouver des livres usagés ainsi que de trouver un partenaire de casier.",
+    "dir": "ltr",
+    "display": "standalone",
+    "name": "Univox",
+    "orientation": "any",
+    "scope": "/",
+    "short_name": "Univox",
+    "start_url": "/",
+    "theme_color": "#36a7b3",
+    "categories": ["books", "education", "productivity", "utilities"],
+    "screenshots": [],
+    "icons": [
+        {
+            "src": "./favicon.png",
+            "type": "image/png",
+            "sizes": "128x128"
+        }
+    ],
+    "shortcuts": [],
+    "lang": "fr"
+}
