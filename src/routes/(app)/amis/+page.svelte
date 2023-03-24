@@ -85,12 +85,25 @@
         </div>
     </div>
 
-    <a class="col-start-3" href="/amis/ajouter-ami"> Ajouter un ami </a>
+    <div class="col-start-3 grid-justify-item-strech">
+        <a class="col-start-3" href="/amis/ajouter-ami"> Groupes </a>
+
+        <a class="col-start-2" href="/amis/ajouter-ami"> Ajouter un ami </a>
+
+    </div>
+    
 </div>
 
 <div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
 
 <ul>
+    {#each searchResults as user}
+    <div>
+        {user.lastName + ", " + user.firstName}
+    </div>
+
+{/each}
+
     {#each $friends as ami}
         <li>
             <div class="flex items-center">
@@ -135,21 +148,5 @@
         </li>
     {/each}
 </ul>
-
-{#each searchResults as user}
-    <div>
-        {user.firstName}
-
-        <button
-            on:click={() => {
-                query = "";
-                searchResults = [];
-                friends.add(user._id);
-            }}
-        >
-            ajouter en ami
-        </button>
-    </div>
-{/each}
 
 <!-- TODO: faire en sorte que les demandes d'amis soient réciproquent + choisir par le DA + pouvoir enlever des amis + faire des menus déroulants pour les options d'amis + régler le bazar quand on rapetisse la page -->

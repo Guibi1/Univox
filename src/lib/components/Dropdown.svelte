@@ -24,6 +24,12 @@
         }
     }
 
+    function clique(action: Action)
+    {
+        action.onClick(); /* Ça marche, mais pas content */
+        toggle();
+    }
+
     function toggle() {
         open = !open;
     }
@@ -69,41 +75,11 @@
                         class={`px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
                             action
                         )}`}
-                        on:click={action.onClick}>{action.title}</button
+                        on:click={() => clique(action)}>{action.title}</button
                     >
                 {/each}
             </div>
         {/each}
-        <!-- <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-            <li>
-                <a
-                    href="/livres/achat"
-                    class="block px-4 py-2 hover:text-black hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >Dashboard</a
-                >
-            </li>
-            <li>
-                <a
-                    href="#"
-                    class="block px-4 py-2 hover:text-black hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >Settings</a
-                >
-            </li>
-            <li>
-                <a
-                    href="#"
-                    class="block px-4 py-2 hover:text-black hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >Earnings</a
-                >
-            </li>
-        </ul>
-
-        <div class="py-2">
-            <a
-                href="#"
-                class="block px-4 py-2 text-sm hover:text-black hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >Retirer l'ami.e</a
-            >
-        </div> -->
+        
     </div>
 </div>
