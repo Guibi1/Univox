@@ -34,7 +34,7 @@
                 <input bind:value={prix} required />
             </label>
 
-            <button type="submit">Créer l'annonce</button>
+            <button type="submit" class="filled">Créer l'annonce</button>
         </form>
     </main>
 </div>

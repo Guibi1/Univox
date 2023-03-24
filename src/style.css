@@ -67,11 +67,7 @@
         @apply block;
     }
 
-    button,
-    [role="button"],
-    [type="button"],
-    [type="reset"],
-    [type="submit"] {
+    button.filled {
         @apply h-12 rounded-lg bg-blue-primary text-white fill-white;
         @apply dark:bg-blue-primary dark:text-black dark:fill-black;
     }

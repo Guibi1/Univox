@@ -65,7 +65,7 @@
     <div>
         {user.lastName + ", " + user.firstName}
         
-            <button
+            <button class="filled"
                 on:click={() => {
                     query = "";
                     searchResults = [];
