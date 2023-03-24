@@ -1,27 +1,10 @@
-<script lang="ts">
-    import ScheduleView from "$lib/components/ScheduleView.svelte";
-    import Page from "../+page.svelte";
-    import { onMount } from "svelte";
-    
-    onMount(async () => {
-        fetch("https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Bourbon")
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-            })
-            .catch((error) => {
-                console.log(error);
-                return [];
-            });
-    });
-</script>
+
 
 <svelte:head>
     <title>Univox | Horaire</title>
 </svelte:head>
 
 <div class="flex justify-center">
-    <!-- <Page /> -->
     <div class="">
         <button
             type="button"
@@ -31,12 +14,4 @@
             <span class="ml-2">Évènement</span>
         </button>
     </div>
-</div>
-<div>
-    <h1>Whiskey Drinks Menu</h1>
-	<ul>
-	{#each $drinkNames as drinkName}
-		<li>{drinkName}</li>
-	{/each}
-	</ul>
 </div>
