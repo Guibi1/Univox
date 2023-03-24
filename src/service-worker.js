@@ -1,5 +1,5 @@
 /// <reference types="@sveltejs/kit" />
-import { build, files, version } from "$service-worker";
+import { build, files, prerendered, version } from "$service-worker";
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
@@ -7,6 +7,7 @@ const CACHE = `cache-${version}`;
 const ASSETS = [
     ...build, // the app itself
     ...files, // everything in `static`
+    ...prerendered,
 ];
 
 self.addEventListener("install", (event) => {
@@ -48,13 +49,14 @@ self.addEventListener("fetch", (event) => {
         try {
             const response = await fetch(event.request);
 
-            if (response.status === 200) {
-                cache.put(event.request, response.clone());
-            }
+            // if (response.status === 200) {
+            //     cache.put(event.request, response.clone());
+            // }
 
             return response;
         } catch {
-            return cache.match(event.request);
+            return cache.match("/offline");
+            // return cache.match(event.request);
         }
     }
 

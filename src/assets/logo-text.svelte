@@ -1,8 +1,13 @@
+<script lang="ts">
+    export let size = "";
+</script>
+
 <svg
     viewBox="0 5 59 16"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     version="1.1"
+    width={size}
 >
     <g fill="#f5f5f5">
         <path
