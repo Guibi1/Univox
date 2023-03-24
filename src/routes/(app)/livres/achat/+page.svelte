@@ -43,6 +43,13 @@
             on:click={handleSearch}
             on:keypress={handleSearch}
         />
+
+        <a
+    href=nouveau-livre
+    >
+        Vendre un livre
+        
+    </a>
     </div>
 </div>
 
