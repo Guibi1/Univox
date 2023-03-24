@@ -4,6 +4,9 @@ import type { UserConfig } from "vite";
 
 const config: UserConfig = {
     plugins: [sveltekit()],
+    define: {
+        "process.env.NODE_ENV": '"production"',
+    },
     resolve: {
         alias: {
             $lib: path.resolve("./src/lib"),

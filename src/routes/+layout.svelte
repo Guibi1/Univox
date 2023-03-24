@@ -1,6 +1,7 @@
 <script lang="ts">
     import colorScheme from "$lib/stores/colorScheme";
     import friends from "$lib/stores/friends";
+    import startWeekDate from "$lib/stores/startWeekDate";
     import user from "$lib/stores/user";
     import dayjs from "dayjs";
     import fr from "dayjs/locale/fr-ca";
@@ -14,6 +15,7 @@
 
     export let data: LayoutData;
     colorScheme.setInitial(data.storesInitialValue.colorScheme);
+    startWeekDate.setInitial(data.storesInitialValue.startWeekDate);
     user.set(JSON.parse(data.storesInitialValue.serializedUser));
     friends.set(JSON.parse(data.storesInitialValue.serializedFriends));
 

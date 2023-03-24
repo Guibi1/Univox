@@ -28,6 +28,10 @@
         <h1 class="pl-5 text-3xl text-white">Univox</h1>
 
         <ColorSchemeSwitch />
+
+        <a class="flex" href="/parametre">
+            <box-icon name="cog" class="h-8 w-8 " />
+        </a>
     </div>
 
     <ul class="flex h-full flex-row items-center justify-between">
