@@ -120,7 +120,7 @@
     </div>
 
     {#if !loading}
-        <button type="submit" class="w-7/12 self-center flex items-center justify-center">
+        <button type="submit" class="filled w-7/12 self-center flex items-center justify-center">
             {firstStep ? "Suivant" : "S'inscrire"} <box-icon name="chevron-right" />
         </button>
     {:else}
