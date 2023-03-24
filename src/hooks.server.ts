@@ -7,10 +7,12 @@ const userLocalsHandle = (async ({ event, resolve }) => {
     if (user) {
         event.locals.user = user;
         event.locals.friends = await db.getFriends(user);
+        event.locals.schedule = await db.getSchedule(user);
     } else {
         event.locals.user = null;
         event.locals.friends = [];
     }
+
     return resolve(event);
 }) satisfies Handle;
 

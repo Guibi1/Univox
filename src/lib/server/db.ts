@@ -149,6 +149,16 @@ export async function addFriend(user: User, friendId: mongoose.Types.ObjectId): 
 }
 
 // Helpers: Schedule
+export async function getSchedule(user: User): Promise<Schedule> {
+    // TODO: Raise error when null
+    return (
+        (await findScheduleById(user.scheduleId)) || {
+            _id: new mongoose.Types.ObjectId(),
+            periods: [],
+        }
+    );
+}
+
 export async function findScheduleById(
     scheduleId: mongoose.Types.ObjectId
 ): Promise<Schedule | null> {

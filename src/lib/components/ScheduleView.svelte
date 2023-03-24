@@ -39,13 +39,14 @@
 <!-- La section principale de la page -->
 <main>
     <!-- Affiche la semaine en cours avec le jour de début et de fin -->
-    Semaine du {currentWeek.weekday($weekdayOffset).format("D")} au {currentWeek
-        .weekday(6 + $weekdayOffset)
-        .format("D MMMM YYYY")}
-    <!-- Boutons pour naviguer vers la semaine précédente ou suivante -->
-    <button on:click={() => moveWeek(-1)}> Previous </button>
-    <button on:click={() => moveWeek(1)}> Next </button>
-
+    <div class="flex justify-center">
+        Semaine du {currentWeek.weekday($weekdayOffset).format("D")} au {currentWeek
+            .weekday(6 + $weekdayOffset)
+            .format("D MMMM YYYY")}
+        <!-- Boutons pour naviguer vers la semaine précédente ou suivante -->
+        <button on:click={() => moveWeek(-1)}> Previous </button>
+        <button on:click={() => moveWeek(1)}> Next </button>
+    </div>
     <!-- Tableau qui contiendra l'emploi du temps -->
     <table class="relative">
         <!-- Ligne pour les jours de la semaine -->

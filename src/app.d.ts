@@ -1,4 +1,4 @@
-import type { User } from "$lib/Types";
+import type { Schedule, User } from "$lib/Types";
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -9,6 +9,7 @@ declare global {
         interface Locals {
             user: User | null;
             friends: User[];
+            schedule: Schedule;
         }
         // interface Error {}
         // interface PageData {}
