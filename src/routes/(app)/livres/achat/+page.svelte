@@ -8,11 +8,12 @@
 
     let books: Book[] = [];
     let codes: string[] = [];
+    let query = "";
 
     let bookId: string | null;
     $: bookId = $page.url.searchParams.get("bookId");
 
-    async function handleSearch(query: string) {
+    async function handleSearch() {
         books = await (
             await fetch("/api/search/books", {
                 method: "POST",
@@ -35,7 +36,7 @@
     class="sticky top-0 z-50 flex justify-center border-b bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900"
 >
     <div class="ml-10 flex w-1/2 flex-row items-center gap-3">
-        <SearchBar {handleSearch} />
+        <SearchBar bind:query {handleSearch} />
 
         <box-icon
             name="search-alt"
@@ -44,17 +45,12 @@
             on:keypress={handleSearch}
         />
 
-        <a
-    href=nouveau-livre
-    >
-        Vendre un livre
-        
-    </a>
+        <a href="nouveau-livre"> Vendre un livre </a>
     </div>
 </div>
 
 <main class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8">
-    <BookFilter bind:codes onchange={handleSearch} />
+    <BookFilter bind:codes onChange={handleSearch} />
 
     <BookList {books} />
 

@@ -7,6 +7,7 @@
     let schedule: Class[] = [
         {
             _id: new mongoose.Types.ObjectId(),
+            code: "601-101-MQ",
             name: "Yey c'est le 2",
             group: 105,
             local: "B-105",
@@ -18,6 +19,7 @@
         },
         {
             _id: new mongoose.Types.ObjectId(),
+            code: "601-101-MQ",
             name: "aName",
             group: 105,
             local: "B-105",
@@ -29,6 +31,7 @@
         },
         {
             _id: new mongoose.Types.ObjectId(),
+            code: "601-101-MQ",
             name: "BName",
             group: 105,
             local: "B-105",
