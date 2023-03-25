@@ -1,15 +1,18 @@
 {
-    "background_color": "#262626",
-    "description": "Univox est un site web axé pour les étudiants qui leur permet de partager leur horaire, trouver des livres usagés ainsi que de trouver un partenaire de casier.",
-    "dir": "ltr",
-    "display": "standalone",
     "name": "Univox",
-    "orientation": "any",
-    "scope": "/",
     "short_name": "Univox",
-    "start_url": "/",
+    "description": "Univox est un site web axé pour les étudiants qui leur permet de partager leur horaire, trouver des livres usagés ainsi que de trouver un partenaire de casier.",
+    "background_color": "#262626",
     "theme_color": "#36a7b3",
+    "lang": "fr",
+    "dir": "ltr",
+    "orientation": "any",
+    "display": "standalone",
+    "display_override": ["window-controls-overlay"],
+    "scope": "/",
+    "start_url": "/",
     "categories": ["books", "education", "productivity", "utilities"],
+    "protocol_handlers": [{ "protocol": "univox", "url": "/amis?ajouter=%s" }],
     "screenshots": [],
     "icons": [
         {
@@ -42,6 +45,16 @@
             "purpose": "maskable"
         }
     ],
-    "shortcuts": [],
-    "lang": "fr"
+    "shortcuts": [
+        {
+            "name": "Horaire",
+            "url": "/horaire",
+            "description": "Voir mon horaire et celui de mes amis"
+        },
+        {
+            "name": "Amis",
+            "url": "/amis",
+            "description": "Voir ma liste d'amis"
+        }
+    ]
 }
