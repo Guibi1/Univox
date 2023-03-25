@@ -79,9 +79,7 @@
         &.outlined {
             @apply fill-black text-black;
             @apply rounded border-2 border-blue-primary py-2 text-center;
-            @apply dark:border-blue-primary dark:text-white;
-            @apply rounded border-2 border-blue-primary py-2 text-center;
-            @apply dark:border-blue-primary dark:text-white;
+            @apply dark:border-blue-darkPrimary dark:text-white;
         }
     }
 
