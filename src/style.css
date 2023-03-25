@@ -32,7 +32,7 @@
     input {
         @apply h-12 rounded-lg border-2 border-neutral-600 bg-transparent p-4 text-center text-black outline-none;
         @apply focus-visible:border-black dark:focus-visible:border-white;
-        @apply dark:border-neutral-300 dark:text-white;
+        @apply dark:bg-neutral-300 dark:text-black;
 
         &:not(:placeholder-shown) {
             @apply invalid:border-red-500;
@@ -73,12 +73,12 @@
     }
 
     a {
-        @apply cursor-pointer fill-blue-primary text-blue-primary;
+        @apply cursor-pointer fill-white text-black dark:text-white;
 
         &.outlined {
             @apply fill-black text-black;
-            @apply rounded border-2 border-black py-2 text-center;
-            @apply dark:border-white dark:text-white;
+            @apply rounded border-2 border-blue-primary py-2 text-center;
+            @apply dark:border-blue-primary dark:text-white;
         }
     }
 
