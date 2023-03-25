@@ -5,7 +5,7 @@
     export let books: Book[];
 
     function openBook(book: Book) {
-        goto(`?bookId=${book.id}`);
+        goto(`?bookId=${book._id}`);
     }
 </script>
 
@@ -42,7 +42,7 @@
 
             <small class="italic">ISBN: {book.ISBN}</small>
 
-            <a href={`?bookId=${book.id}`} class="text-right">Détails ></a>
+            <a href={`?bookId=${book._id}`} class="text-right">Détails ></a>
         </li>
     {/each}
 </ul>
