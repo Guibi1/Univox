@@ -22,14 +22,14 @@
 </div>
 
 <nav
-    class="absolute inset-0 grid h-14 grid-cols-[1fr_min-content_1fr] items-center justify-between bg-zinc-600 dark:bg-neutral-800"
+    class="fixed z-50 inset-0 grid h-14 grid-cols-[1fr_min-content_1fr] items-center justify-between bg-zinc-600 dark:bg-blue-secondary"
 >
     <div class="flex h-full flex-row items-center gap-2">
         <h1 class="pl-5 text-3xl text-white">Univox</h1>
 
         <ColorSchemeSwitch />
 
-        <a class="flex" href="/parametre">
+        <a class="flex hover:fill-blue-primary transition ease-in-out duration-300" href="/parametre">
             <box-icon name="cog" class="h-8 w-8 " />
         </a>
     </div>
@@ -39,19 +39,14 @@
             <li class="relative h-full">
                 <a
                     href={page.href}
-                    class={`flex h-full items-center px-4 text-center text-lg text-white hover:bg-zinc-400 hover:text-black dark:text-white dark:hover:bg-neutral-600 ${
+                    class={`transition ease-in-out duration-300  flex h-full items-center px-4 text-center text-lg text-white dark:hover:text-blue-primary dark:text-white ${
                         i === currentPage ? "" : ""
                     }`}
                 >
                     {page.title}
                     {#if i === currentPage}
                         <span class="absolute bottom-0 left-1/2 -translate-x-1/2 transform">
-                            <svg viewBox="0 0 10 10" class="h-4">
-                                <polygon
-                                    points="0,8 5,4 10,8"
-                                    class="fill-current text-blue-primary"
-                                />
-                            </svg>
+                            <hr class="border-2 w-16 !border-blue-primary transition ease-in-out duration-300" />
                         </span>
                     {/if}
                 </a>
@@ -62,10 +57,10 @@
     <div class="flex h-full justify-end">
         <a
             href="/deconnexion"
-            class="flex h-full items-center gap-2 px-4 text-center text-lg text-orange-primary hover:bg-zinc-400 hover:text-black dark:text-white dark:hover:bg-neutral-600"
+            class="flex h-full items-center gap-2 px-4 text-center text-lg transition ease-in-out duration-300 hover:text-red-500"
         >
             Déconnexion
-            <box-icon name="log-out" class="h-8 w-8 -scale-x-100 fill-orange-primary" />
+            <box-icon name="log-out" class="h-8 w-8 -scale-x-100 fill-red-500" />
         </a>
     </div>
 </nav>

@@ -114,7 +114,7 @@
 </svg>
 
 <style lang="scss">
-    $wave-colors: (#ffb319, #e88d17, #ff7f25, #e85017, #ff3619);
+    $wave-colors: (#2E66BF, #1F4480, #0F2240, #0C1B33, #0A1629);
 
     @for $i from 1 through length($wave-colors) {
         svg path:nth-child(#{length($wave-colors)}n + #{$i}) {
