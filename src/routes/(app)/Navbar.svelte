@@ -22,11 +22,7 @@
 >
     <div class="flex h-full flex-row items-center gap-2">
         <a href="/">
-            <h1
-                class="pl-5 text-3xl text-white transition duration-300 ease-in-out hover:text-blue-darkPrimary"
-            >
-                Univox
-            </h1>
+            <h1 class="pl-5 text-3xl text-white hover:text-blue-darkPrimary transition ease-in-out duration-300">Univox</h1>
         </a>
 
         <ColorSchemeSwitch />
