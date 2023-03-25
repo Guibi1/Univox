@@ -18,7 +18,7 @@
 </script>
 
 <nav
-    class="grid h-14 grid-cols-[1fr_min-content_1fr] items-center justify-between bg-blue-secondary"
+    class="fixed z-50 inset-0 grid h-14 grid-cols-[1fr_min-content_1fr] items-center justify-between bg-zinc-600 dark:bg-blue-secondary"
 >
     <div class="flex h-full flex-row items-center gap-2">
         <a href="/">
@@ -31,10 +31,7 @@
 
         <ColorSchemeSwitch />
 
-        <a
-            class="flex transition duration-300 ease-in-out hover:fill-blue-primary"
-            href="/parametre"
-        >
+        <a class="flex hover:fill-blue-primary transition ease-in-out duration-300" href="/parametre">
             <box-icon name="cog" class="h-8 w-8 " />
         </a>
     </div>
@@ -44,15 +41,15 @@
             <li class="relative h-full">
                 <a
                     href={page.href}
-                    class="flex h-full items-center px-4 text-center text-lg text-white transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
+                    class={`transition ease-in-out duration-300  flex h-full items-center px-4 text-center text-lg text-white dark:hover:text-blue-primary dark:text-white ${
+                        i === currentPage ? "" : ""
+                    }`}
                 >
                     {page.title}
 
                     {#if i === currentPage}
-                        <span class="absolute bottom-0 left-1/2 -translate-x-1/2">
-                            <hr
-                                class="w-16 border-2 !border-blue-primary transition duration-300 ease-in-out"
-                            />
+                        <span class="absolute bottom-0 left-1/2 -translate-x-1/2 transform">
+                            <hr class="border-2 w-16 !border-blue-primary transition ease-in-out duration-300" />
                         </span>
                     {/if}
                 </a>
@@ -63,7 +60,7 @@
     <div class="flex h-full justify-end">
         <a
             href="/deconnexion"
-            class="flex h-full items-center gap-2 px-4 text-center text-lg text-white transition duration-300 ease-in-out hover:text-red-500"
+            class="flex h-full items-center gap-2 px-4 text-center text-lg transition ease-in-out duration-300 hover:text-red-500"
         >
             Déconnexion
             <box-icon name="log-out" class="h-8 w-8 -scale-x-100 fill-red-500" />
