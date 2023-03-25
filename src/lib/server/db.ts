@@ -2,7 +2,7 @@ import { MONGODB_URI } from "$env/static/private";
 import type { Book, Period, Schedule, User } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
-import { BookSchema, ScheduleSchema, TokenSchema, UserSchema, type ServerUser } from "./schemas";
+import { BookSchema, ScheduleSchema, TokenSchema, UserSchema } from "./schemas";
 
 // Connection
 mongoose.set("strictQuery", false);
@@ -75,14 +75,14 @@ export async function compareUserPassword(da: string, password: string): Promise
     return null;
 }
 
-export async function createUser(user: ServerUser): Promise<boolean> {
+export async function createUser(user: User, password: string): Promise<boolean> {
     if (await findUser({ da: user.da })) {
         console.error("A user with this 'da' already exists.");
         return false;
     }
 
     await Schedules.create({ _id: user.scheduleId, periods: [] });
-    await Users.create(user);
+    await Users.create({ ...user, passwordHash: await bcryptjs.hash(password ?? "", 11) });
     return true;
 }
 
