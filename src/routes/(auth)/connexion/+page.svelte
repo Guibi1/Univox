@@ -3,6 +3,8 @@
     import { page } from "$app/stores";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
+    import LogoText from "$src/assets/logo-text.svelte";
+    import Logo from "$src/assets/logo.svelte";
 
     export let form: ActionData;
     let loading = false;
@@ -23,7 +25,13 @@
     <title>Univox | Connexion</title>
 </svelte:head>
 
-<h1 class="pb-4 text-center">Bienvenue sur Univox</h1>
+<h1 class="pb-1 self-center">
+    Bienvenue sur
+</h1>
+
+<div class="flex gap-4 self-center pb-4">
+    <LogoText size="9rem" /> <Logo size="4rem" />
+</div>
 
 <form
     use:enhance={handleSubmit}

@@ -25,7 +25,9 @@
     class="fixed z-50 inset-0 grid h-14 grid-cols-[1fr_min-content_1fr] items-center justify-between bg-zinc-600 dark:bg-blue-secondary"
 >
     <div class="flex h-full flex-row items-center gap-2">
-        <h1 class="pl-5 text-3xl text-white">Univox</h1>
+        <a href="/">
+            <h1 class="pl-5 text-3xl text-white hover:text-blue-darkPrimary transition ease-in-out duration-300">Univox</h1>
+        </a>
 
         <ColorSchemeSwitch />
 
