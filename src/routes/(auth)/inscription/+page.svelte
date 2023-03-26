@@ -34,12 +34,12 @@
 
 <form
     use:enhance={handleSubmit}
-    class="m-auto w-9/12 flex flex-col gap-6"
+    class="m-auto flex w-9/12 flex-col gap-6"
     method="post"
     action={firstStep ? "?/firstStep" : "?/secondStep"}
 >
     <div
-        class="relative w-[250%] grid grid-cols-2 gap-[20%] transition-[right]"
+        class="relative grid w-[250%] grid-cols-2 gap-[20%] transition-[right]"
         style="right: {firstStep ? '0' : '150'}%;"
     >
         <div class="grid gap-4">
@@ -84,7 +84,7 @@
                 <input
                     name="email"
                     type="email"
-                    pattern={"[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+(\\.[a-zA-Z]+)+"}
+                    pattern="^[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+$"
                     required={!firstStep}
                     placeholder=" "
                     value={form?.email ?? ""}
@@ -108,26 +108,23 @@
                 />
             </label>
 
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a
-                on:click={() => (firstStep = true)}
-                class="self-left flex items-center"
-                href="javascript:void()"
-            >
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <a on:click={() => (firstStep = true)} class="self-left flex items-center">
                 <box-icon name="chevron-left" /> Retour
             </a>
         </div>
     </div>
 
     {#if !loading}
-        <button type="submit" class="filled w-7/12 self-center flex items-center justify-center">
+        <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
             {firstStep ? "Suivant" : "S'inscrire"} <box-icon name="chevron-right" />
         </button>
     {:else}
         <box-icon
             name="loader-circle"
             animation="spin"
-            class="h-10 my-6 flex items-center w-full"
+            class="my-6 flex h-10 w-full items-center"
         />
     {/if}
 </form>
@@ -139,7 +136,7 @@
         <hr class="w-full" />
     </div>
 
-    <div class="m-auto w-9/12 flex">
+    <div class="m-auto flex w-9/12">
         <a href={"/connexion" + $page.data.params} class="outlined m-auto w-7/12"> Se connecter </a>
     </div>
 {/if}

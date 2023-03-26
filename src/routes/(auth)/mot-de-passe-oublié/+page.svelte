@@ -27,7 +27,7 @@
 
 <form
     use:enhance={handleSubmit}
-    class="m-auto w-9/12 flex flex-col gap-6"
+    class="m-auto flex w-9/12 flex-col gap-6"
     method="post"
     action="?/reset"
 >
@@ -83,14 +83,14 @@
     </div>
 
     {#if !loading}
-        <button type="submit" class="filled w-7/12 self-center flex items-center justify-center">
+        <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
             Suivant <box-icon name="chevron-right" />
         </button>
     {:else}
         <box-icon
             name="loader-circle"
             animation="spin"
-            class="h-10 my-6 flex items-center w-full"
+            class="my-6 flex h-10 w-full items-center"
         />
     {/if}
 </form>

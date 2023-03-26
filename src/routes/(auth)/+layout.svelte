@@ -16,14 +16,14 @@
 
 <WavesBackground />
 
-<div class="h-screen flex justify-center items-center">
+<div class="flex h-screen items-center justify-center">
     <div
-        class="relative w-[32rem] overflow-hidden rounded bg-stone-200 dark:bg-neutral-900 !bg-opacity-60 backdrop-blur-xl transition-[height]"
+        class="bg-glass relative w-full overflow-hidden transition-[height] max-tablet:!h-full tablet:w-[32rem] tablet:rounded-2xl"
         style="height: {height}px;"
     >
         <main
             bind:clientHeight={height}
-            class="absolute w-full py-12 px-10 flex flex-col gap-2 items-stretch"
+            class="flex h-full w-full flex-col items-stretch gap-2 px-4 py-12 tablet:absolute tablet:h-auto tablet:px-10"
         >
             <slot />
         </main>

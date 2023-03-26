@@ -1,22 +1,15 @@
 <script lang="ts" async>
     import Dropdown from "$lib/components/Dropdown.svelte";
+    import SearchBar from "$lib/components/SearchBar.svelte";
     import friends from "$lib/stores/friends";
     import type { User } from "$lib/Types";
 
     let query = "";
     let searchResults: User[] = [];
 
-    async function handleSearch() {
+    async function handleSearch(query: string) {
         searchResults =
             query.length > 3 ? await (await fetch("/api/search/users/" + query)).json() : [];
-    }
-
-    let timeout: NodeJS.Timeout | null;
-    function timedSearch() {
-        if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            handleSearch();
-        }, 500);
     }
 </script>
 
@@ -24,85 +17,42 @@
     <title>Univox | Amis</title>
 </svelte:head>
 
-<h1 class="text-center pt-2 dark:bg-neutral-900">Amis</h1>
+<h1 class="pt-2 text-center dark:bg-neutral-900">Amis</h1>
 
-<!-- <div
-    class="sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500"
+<div
+    class="sticky top-0 z-50 flex justify-center border-b bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900"
 >
-    <div class="w-1/2 flex flex-row gap-3 items-center ml-10">
-        <input
-            type="text"
-            bind:value={query}
-            on:keypress={(e) => {
-                if (e.key == "Enter") handleSearch();
-            }}
-            on:input={timedSearch}
-            placeholder="Rechercher"
-            class="w-full h-12 rounded-lg text-lg"
-        />
+    <div class="ml-10 flex w-1/2 flex-row items-center gap-3">
+        <SearchBar bind:query {handleSearch} />
 
         <box-icon
             name="search-alt"
-            class="w-10 h-10 cursor-pointer"
+            class="h-10 w-10 cursor-pointer"
             on:click={handleSearch}
             on:keypress={handleSearch}
         />
     </div>
 
-    
-    <a
-    href=amis/ajouter-ami
-    >
-        Ajouter des amis
-        
-    </a>
-</div> -->
+    <a href="amis/ajouter-ami"> Ajouter des amis </a>
+</div>
+-->
 
 <div
-    class="top-0 z-50 p-6 grid grid-cols-2 gap-2 grid-justify-item-stretch border-b bg-white dark:bg-neutral-900 dark:border-neutral-500"
+    class="grid-justify-item-stretch top-0 z-50 grid grid-cols-2 gap-2 border-b bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900"
 >
+    <SearchBar bind:query {handleSearch} />
+
     <!-- "sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500" -->
-    <div class="grid grid-cols-2 gap-2 grid-justify-item-strech w-[1024px]">
-        <!-- "w-1/2 flex flex-row gap-3 items-center ml-10" -->
-        <input
-            type="text"
-            bind:value={query}
-            on:keypress={(e) => {
-                if (e.key == "Enter") handleSearch();
-            }}
-            on:input={timedSearch}
-            placeholder="Rechercher"
-            class="w-full h-12 rounded-lg text-lg "
-        />
-
-        <div>
-            <box-icon
-                name="search-alt"
-                class="col-start-1 col-end-3 w-10 h-10 cursor-pointer"
-                on:click={handleSearch}
-                on:keypress={handleSearch}
-            />
-        </div>
-    </div>
-
-    <div class="col-start-3 grid-justify-item-strech">
-        <a class="col-start-3" href="/amis/ajouter-ami"> Groupes </a>
-
-        <a class="col-start-2" href="/amis/ajouter-ami"> Ajouter un ami </a>
-
-    </div>
-    
 </div>
 
 <div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
 
 <ul>
     {#each searchResults as user}
-    <div>
-        {user.lastName + ", " + user.firstName}
-    </div>
-
-{/each}
+        <div>
+            {user.lastName + ", " + user.firstName}
+        </div>
+    {/each}
 
     {#each $friends as ami}
         <li>

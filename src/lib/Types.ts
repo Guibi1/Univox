@@ -13,6 +13,8 @@ export interface User {
 
 export interface Book {
     _id: mongoose.Types.ObjectId;
+    code: string;
+    sellerId: mongoose.Types.ObjectId;
     title: string;
     ISBN: string;
     src: string;
@@ -27,28 +29,19 @@ export interface Schedule {
 }
 
 export interface Period {
+    _id: mongoose.Types.ObjectId;
     name: string;
     timeStart: Dayjs;
     timeEnd: Dayjs;
 }
 
 export interface Class extends Period {
-    _id: mongoose.Types.ObjectId;
     code: string;
     group: number;
     local: string;
     type: "T" | "L";
     teacher: string;
     virtual: boolean;
-    weekday: Weekday;
-}
-
-export enum Weekday {
-    Monday = 0,
-    Tuesday = 1,
-    Wednesday = 2,
-    Thursday = 3,
-    Friday = 4,
-    Saturday = 5,
-    Sunday = 6,
+    timeStart: Dayjs;
+    timeEnd: Dayjs;
 }

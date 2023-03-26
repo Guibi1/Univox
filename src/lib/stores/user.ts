@@ -1,4 +1,5 @@
 import { browser } from "$app/environment";
+import { invalidate } from "$app/navigation";
 import type { User } from "$lib/Types";
 import { writable } from "svelte/store";
 
@@ -9,7 +10,10 @@ function createUserStore() {
     // This syncs the different tabs' user
     if (browser) {
         bc = new BroadcastChannel("New user data");
-        bc.addEventListener("message", (e) => setStore(e.data));
+        bc.addEventListener("message", (e) => {
+            setStore(e.data);
+            if (!e.data) invalidate("app:user");
+        });
     }
 
     const set: typeof setStore = (user) => {
