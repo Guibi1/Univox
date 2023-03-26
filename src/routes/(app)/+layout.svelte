@@ -11,6 +11,10 @@
     });
 </script>
 
-<Navbar />
+<div class="grid h-[100vh] grid-rows-[min-content_1fr] overflow-hidden">
+    <Navbar />
 
-<slot />
+    <div class="overflow-y-auto">
+        <slot />
+    </div>
+</div>
