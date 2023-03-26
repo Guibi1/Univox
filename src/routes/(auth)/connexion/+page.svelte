@@ -31,7 +31,7 @@
     method="post"
     action="?/login"
 >
-    <div class="grid grid-rows-2 gap-4">
+    <div class="flex flex-col gap-4">
         <label>
             No de DA
             <input
@@ -61,7 +61,7 @@
             {/if}
         </label>
 
-        <a href={"/mot-de-passe-oublié" + $page.data.params} class="text-right">
+        <a href={"/mot-de-passe-oublié" + $page.data.params} class="self-end">
             Mot de passe oublié ?
         </a>
     </div>
