@@ -24,19 +24,13 @@
         }
     }
 
-    function clique(action: Action)
-    {
-        action.onClick(); /* Ça marche, mais pas content */
-        toggle();
-    }
-
     function toggle() {
         open = !open;
     }
 
     function closeOnClickOutside(node: HTMLElement, enabled: boolean) {
         const handleOutsideClick = ({ target }: Event) => {
-            if (!node.contains(target as Node)) {
+            if (!node.contains(target as Node) || (target as Node).nodeName === "BUTTON") {
                 open = false;
             }
         };
@@ -57,15 +51,15 @@
 <div use:closeOnClickOutside={open}>
     <button
         on:click={toggle}
-        class="flex self-start p-2 text-sm font-medium text-center hover:gray-100"
+        class="hover:gray-100 flex self-start p-2 text-center text-sm font-medium"
         type="button"
     >
-        <box-icon name="dots-vertical-rounded" class="w-6 hover:text-black-600" />
+        <box-icon name="dots-vertical-rounded" class="hover:text-black-600 w-6" />
     </button>
 
     <!-- Dropdown menu -->
     <div
-        class="absolute z-10 bg-gray-200 divide-y divide-gray-100 rounded dark:bg-neutral-700 dark:divide-neutral-300"
+        class="absolute z-10 divide-y divide-gray-100 rounded bg-gray-200 dark:divide-neutral-300 dark:bg-neutral-700"
         hidden={!open}
     >
         {#each actions as section}
@@ -75,11 +69,12 @@
                         class={`px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
                             action
                         )}`}
-                        on:click={() => clique(action)}>{action.title}</button
+                        on:click={action.onClick}
                     >
+                        {action.title}
+                    </button>
                 {/each}
             </div>
         {/each}
-        
     </div>
 </div>
