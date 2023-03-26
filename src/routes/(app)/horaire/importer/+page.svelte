@@ -54,5 +54,5 @@
         {/if}
     </label>
 
-    <button type="submit">Importer l'horaire</button>
+    <button type="submit" class="filled">Importer l'horaire</button>
 </form>

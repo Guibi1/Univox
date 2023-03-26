@@ -1,4 +1,5 @@
-<script lang="ts" async>
+<script lang="ts">
+    import Dropdown from "$lib/components/Dropdown.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
     import friends from "$lib/stores/friends";
     import type { User } from "$lib/Types";
@@ -31,29 +32,60 @@
             on:keypress={handleSearch}
         />
     </div>
+
+    <a href="/amis/ajouter-ami"> Ajouter des amis </a>
 </div>
 
-<div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
+<ul>
+    {#each searchResults as user}
+        <div>
+            {user.lastName + ", " + user.firstName}
+        </div>
+    {/each}
 
-{#each $friends as ami, i}
-    <div>
-        {ami.lastName}{i}
-    </div>
-{/each}
+    {#each $friends as ami}
+        <li>
+            <div class="flex items-center">
+                {ami.lastName + ", " + ami.firstName}
 
-{#each searchResults as user}
-    <div>
-        {user.firstName}
-        <button
-            on:click={() => {
-                query = "";
-                searchResults = [];
-                friends.add(user._id);
-            }}
-        >
-            add
-        </button>
-    </div>
-{/each}
+                <!-- <box-icon
+                    id="friend-option-menu"
+                    data-dropdown-toggle="dropdown"
+                    name="dots-vertical-rounded"
+                    class="self-baseline w-6 pb-0 cursor-pointer"
+                /> -->
+                <Dropdown
+                    actions={[
+                        [
+                            {
+                                title: "Consulter l'horaire",
+                                onClick: () => {
+                                    console.log("TODO: afficher l'horaire");
+                                },
+                            },
 
-<!-- TODO: faire en sorte que les demandes d'amis soient réciproquent + choisir par le DA + pouvoir enlever des amis -->
+                            {
+                                title: "Horaire commun",
+                                onClick: () => {
+                                    console.log("TODO: afficher l'horaire");
+                                },
+                            },
+                        ],
+
+                        [
+                            {
+                                title: "Retirer l'ami.e",
+                                color: "red",
+                                onClick: () => {
+                                    friends.remove(ami._id);
+                                },
+                            },
+                        ],
+                    ]}
+                />
+            </div>
+        </li>
+    {/each}
+</ul>
+
+<!-- TODO: faire en sorte que les demandes d'amis soient réciproquent + choisir par le DA + pouvoir enlever des amis + faire des menus déroulants pour les options d'amis + régler le bazar quand on rapetisse la page -->
