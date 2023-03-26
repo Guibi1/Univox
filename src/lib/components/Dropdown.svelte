@@ -49,12 +49,12 @@
 </script>
 
 <div use:closeOnClickOutside={open}>
-    <button
-        on:click={toggle}
-        class="hover:gray-100 flex self-start p-2 text-center text-sm font-medium"
-        type="button"
-    >
-        <box-icon name="dots-vertical-rounded" class="hover:text-black-600 w-6" />
+    <button on:click={toggle} class="hover:gray-100 flex p-2" type="button">
+        {#if $$slots}
+            <slot />
+        {:else}
+            <box-icon name="dots-vertical-rounded" />
+        {/if}
     </button>
 
     <!-- Dropdown menu -->
