@@ -3,11 +3,12 @@
 </script>
 
 <button
+    aria-label="thème du site"
     on:click={colorScheme.toggle}
-    class="rounded-lg p-1 h-8 aspect-square !bg-transparent border-2 border-blue-primary dark:border-blue-primary"
+    class="aspect-square h-8 rounded-lg border-2 border-blue-primary !bg-transparent p-1 dark:border-blue-primary"
 >
     <box-icon
         name={$colorScheme === "dark" ? "sun" : "moon"}
-        class="w-full h-full fill-blue-primary dark:fill-blue-primary"
+        class="h-full w-full fill-blue-primary dark:fill-blue-primary"
     />
 </button>
