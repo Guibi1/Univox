@@ -1,4 +1,4 @@
-<script lang="ts" async>
+<script lang="ts">
     import Dropdown from "$lib/components/Dropdown.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
     import friends from "$lib/stores/friends";
@@ -33,19 +33,8 @@
         />
     </div>
 
-    <a href="amis/ajouter-ami"> Ajouter des amis </a>
+    <a href="/amis/ajouter-ami"> Ajouter des amis </a>
 </div>
--->
-
-<div
-    class="grid-justify-item-stretch top-0 z-50 grid grid-cols-2 gap-2 border-b bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900"
->
-    <SearchBar bind:query {handleSearch} />
-
-    <!-- "sticky top-0 z-50 p-6 flex justify-center border-b bg-white dark:bg-neutral-900 dark:border-neutral-500" -->
-</div>
-
-<div class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8" />
 
 <ul>
     {#each searchResults as user}
