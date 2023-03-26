@@ -83,7 +83,7 @@
     </div>
 
     {#if !loading}
-        <button type="submit" class="flex w-7/12 items-center justify-center self-center">
+        <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
             Suivant <box-icon name="chevron-right" />
         </button>
     {:else}

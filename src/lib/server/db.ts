@@ -109,6 +109,7 @@ export async function searchUsers(user: User, query: string): Promise<User[]> {
     return await Users.find({
         $and: [
             { _id: { $ne: user._id } },
+            { _id: { $not: { $in: user.friendsId } } },
             {
                 $or: [
                     { da: { $eq: query } },
@@ -144,6 +145,23 @@ export async function addFriend(user: User, friendId: mongoose.Types.ObjectId): 
     });
     await Users.findByIdAndUpdate(friendId, {
         $push: { friendsId: user._id },
+    });
+    return true;
+}
+
+export async function deleteFriend(
+    user: User,
+    friendId: mongoose.Types.ObjectId
+): Promise<boolean> {
+    //Faut voir si pop fonctionne
+    if (user._id === friendId) return false;
+    if (user.friendsId.includes(friendId)) return false;
+
+    await Users.findByIdAndUpdate(user, {
+        $pull: { friendsId: friendId },
+    });
+    await Users.findByIdAndUpdate(friendId, {
+        $pull: { friendsId: user._id },
     });
     return true;
 }

@@ -9,7 +9,9 @@ const ColorSchemeCheck = () => {
         await expect(page.locator("html")).toHaveAttribute("data-colorscheme", "dark");
 
         // Click on <button> [aria-label="thème du site"] and wait for the PUT request
-        const colorschemeAPI = page.waitForResponse(univox.getAbsoluteURI("/api/settings/colorScheme"));
+        const colorschemeAPI = page.waitForResponse(
+            univox.getAbsoluteURI("/api/settings/colorScheme")
+        );
         await page.click('[aria-label="thème du site"]');
         await expect(page.locator("html")).toHaveAttribute("data-colorscheme", "light");
         await colorschemeAPI;
