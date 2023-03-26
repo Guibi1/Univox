@@ -4,7 +4,7 @@
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
-    let firstStep = !true;
+    let firstStep = true;
     let loading = false;
 
     const handleSubmit = (({ data }) => {
