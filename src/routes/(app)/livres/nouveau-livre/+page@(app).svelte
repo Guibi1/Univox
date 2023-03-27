@@ -17,31 +17,23 @@
         };
     }) satisfies SubmitFunction;
 
+    const maxImagesCount = 4;
     let images: string[] = [];
-    let currentImageIndex = 0;
-    $: currentImage = images[currentImageIndex];
+    let selectedIndex = 0;
 
-    function changeCurrentImage(newIndex: number) {
-        currentImageIndex = newIndex;
-    }
-
-    function removeCurrentImage() {
-        images.splice(currentImageIndex, 1);
-        for (let i = currentImageIndex; i < 4; i++) {
-            if (images[i+2]) {
-                images[i] = images[i+1];
-            }
-        }
-        currentImageIndex = !images[currentImageIndex] && currentImageIndex != 0 ? currentImageIndex-1 : currentImageIndex;
-        currentImage = images[currentImageIndex];
-        images = images; // This is to tell the compiler to update so that the preview images element updates 
-        console.log(currentImageIndex);
+    function removeImage(index: number) {
+        images.splice(index, 1);
+        images = images; // This is to tell the compiler to update so that the preview images element updates
+        selectedIndex =
+            !images[selectedIndex] && selectedIndex > 0 ? selectedIndex - 1 : selectedIndex;
     }
 
     function dropFiles(node: HTMLElement, onDrop: (e: DragEvent) => any) {
         const dragOver = (e: DragEvent) => {
             e.preventDefault();
-            if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
+            if (e.dataTransfer && images.length < maxImagesCount) {
+                e.dataTransfer.effectAllowed = "move";
+            }
         };
         node.addEventListener("dragover", dragOver);
         node.addEventListener("drop", onDrop);
@@ -68,8 +60,10 @@
     function readImages(files: FileList) {
         for (let file of files) {
             if (file.type !== "image/png" && file.type !== "image/jpeg") return;
+            if (images.length >= maxImagesCount) return;
             let reader = new FileReader();
             reader.addEventListener("loadend", (e) => {
+                if (images.length >= maxImagesCount) return;
                 let newImage = e.target?.result as string;
                 if (!images.includes(newImage) && images.length < 5) {
                     images = [...images, newImage];
@@ -78,7 +72,6 @@
             reader.readAsDataURL(file);
         }
     }
-
 </script>
 
 <svelte:head>
@@ -117,50 +110,72 @@
             Prix de vente
             <input name="price" type="text" maxlength="3" required placeholder=" " />
         </label>
-        
+
         <label>
             ISBN
             <input name="isbn" type="text" placeholder=" " />
         </label>
     </div>
-    
-    <div class="flex flex-col items-stretch gap-5">
-        <div class="grid h-[20rem] flex-col rounded-xl relative">
-            <label use:dropFiles={handleDrop} class="cursor-pointer bg-neutral-500 flex items-center justify-center h-[15rem]">
-                <img alt="" class="object-cover h-full w-full" src={currentImage}/>
-                {#if !currentImage}
-                    <box-icon class="absolute" name="plus" size="3rem"/>
-                    <!--TODO Make the file window not pop up when deleting the last image-->
-                    <input type="file" multiple class="hidden" accept="image/png, image/jpeg" on:change={handleUpload}/>
-                    {:else}
-                    <box-icon class="absolute top-0 right-0 fill-red-500" name='trash' size="3rem" on:click={() => removeCurrentImage()}></box-icon>
-                {/if}
-                
-            </label>
-            <div class="grid grid-cols-5 h-[5rem]">
-                {#each images as image, i} 
-                    {#if i == currentImageIndex}
-                        <img src={image} on:click={() => changeCurrentImage(i)} class="cursor-pointer object-cover h-[5rem] w-[5rem] hover:h-[6rem] hover:w-[6rem] hover:-translate-x-[0.5rem] border-2 border-blue-primary" alt=""/>
-                        {:else}
-                        <img src={image} on:click={() => changeCurrentImage(i)} class="cursor-pointer object-cover h-[5rem] w-[5rem] hover:h-[6rem] hover:w-[6rem] hover:-translate-x-[0.5rem] border-2 border-neutral-300" alt=""/>
-                    {/if}
-                {/each}
 
-                {#if !images[4]}
-                    <label use:dropFiles={handleDrop} class="cursor-pointer bg-neutral-500 flex items-center justify-center h-[5rem] w-[5rem] hover:h-[6rem] hover:w-[6rem] hover:-translate-x-[0.5rem] border-2 border-neutral-300">
-                        <input type="file" multiple class="hidden" accept="image/png, image/jpeg" on:change={handleUpload}/>
-                        <box-icon class="absolute" name="plus" size="3rem"/>
+    <div class="flex flex-col items-stretch gap-5">
+        <div class="relative grid h-[20rem] flex-col rounded-xl">
+            <div use:dropFiles={handleDrop} class="flex h-[15rem] bg-neutral-500">
+                {#if images.length === 0}
+                    <label class="flex cursor-pointer items-center justify-center">
+                        <box-icon class="absolute" name="plus" size="3rem" />
+                        <input
+                            type="file"
+                            multiple
+                            class="hidden"
+                            accept="image/png, image/jpeg"
+                            on:change={handleUpload}
+                        />
                     </label>
-                {/if}                
+                {:else}
+                    <img
+                        src={images[selectedIndex]}
+                        alt="Livre"
+                        class="h-full w-full object-cover"
+                    />
+                    <button
+                        class="absolute top-0 right-0 fill-red-500"
+                        on:click={() => removeImage(selectedIndex)}
+                    >
+                        <box-icon name="trash" size="3rem" />
+                    </button>
+                {/if}
             </div>
 
+            <div class="flex items-center justify-start gap-2">
+                {#each images as image, i}
+                    <button on:click={() => (selectedIndex = i)}>
+                        <img
+                            src={image}
+                            class={`aspect-square w-20 cursor-pointer border-2 object-cover hover:scale-110 ${
+                                selectedIndex === i ? "border-blue-primary" : "border-neutral-300"
+                            }`}
+                            alt=""
+                        />
+                    </button>
+                {/each}
+
+                {#if images.length < maxImagesCount}
+                    <label
+                        class="flex aspect-square w-20 cursor-pointer items-center justify-center border-2 border-neutral-300 bg-neutral-500 object-cover hover:scale-110"
+                    >
+                        <box-icon class="absolute" name="plus" size="3rem" />
+                        <input
+                            type="file"
+                            multiple
+                            class="hidden"
+                            accept="image/png, image/jpeg"
+                            on:change={handleUpload}
+                        />
+                    </label>
+                {/if}
+            </div>
         </div>
 
-        <button
-            class="hover:bg-blue-secondary focus:ring focus:ring-gray-500 active:bg-cyan-900    "
-            type="submit"
-        >
-            Créer l'annonce
-        </button>
+        <button class="filled" type="submit"> Créer l'annonce </button>
     </div>
 </form>
