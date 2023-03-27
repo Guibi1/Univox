@@ -4,6 +4,8 @@
     export let selectedIndex = 0;
     export let readOnly = false;
 
+    let isDragginOver = false;
+
     function removeImage(index: number) {
         images.splice(index, 1);
         images = images; // This is to tell the compiler to update so that the preview images element updates
@@ -20,6 +22,7 @@
         e.preventDefault();
         if (!e.dataTransfer) return;
         readImages(e.dataTransfer.files);
+        isDragginOver = false;
     }
 
     function readImages(files: FileList) {
@@ -65,12 +68,15 @@
 <div class="relative py-4">
     <div
         use:dropFiles={images.length < maxImagesCount && !readOnly}
-        class="relative flex h-64 items-stretch bg-neutral-500"
+        on:dragenter={() => {isDragginOver = true}}
+        on:dragleave={() => {isDragginOver = false}}
+        class={`relative flex h-64 items-stretch transition ease-in-out duration-300 ${isDragginOver?"bg-blue-secondary":"bg-neutral-700"}`}
     >
         {#if images.length === 0}
-            <label class="flex cursor-pointer flex-col items-center justify-center">
-                <box-icon name="cloud-upload" size="4rem" />
-                Glissez ici des images de votre livre
+            <label class="flex cursor-pointer flex-col items-center justify-center break-normal whitespace-nowrap">
+                <box-icon name="cloud-upload" class={`pointer-events-none transition ease-in-out duration-300 ${isDragginOver?"opacity-50":"opacity-100"}`} size="4rem" />
+                <p class={`pointer-events-none transition ease-in-out duration-300 ${isDragginOver?"opacity-50":"opacity-100"}`}>Glissez ici des images de votre livre</p>
+                
 
                 <input
                     type="file"
