@@ -103,7 +103,7 @@ export const actions = {
         await db.createUser(user, password);
         const token = await db.createToken(user);
 
-        cookies.set("token", token, { path: "/", httpOnly: true });
+        cookies.set("token", token, { path: "/", httpOnly: true, secure: true, sameSite: true });
 
         return { success: true };
     },
