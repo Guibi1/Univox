@@ -2,19 +2,16 @@ import { MONGODB_URI } from "$env/static/private";
 import type { Book, Period, Schedule, User } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
-import { BookSchema, ScheduleSchema, TokenSchema, UserSchema } from "./schemas";
+import Books from "./models/books";
+import Schedules from "./models/schedules";
+import Tokens from "./models/tokens";
+import Users from "./models/users";
 
 // Connection
 mongoose.set("strictQuery", false);
 if (mongoose.connection.readyState !== 1) {
     mongoose.connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox");
 }
-
-// Models
-const Tokens = mongoose.models["tokens"] ?? mongoose.model("tokens", TokenSchema);
-const Users = mongoose.models["users"] ?? mongoose.model("users", UserSchema);
-const Schedules = mongoose.models["schedules"] ?? mongoose.model("schedules", ScheduleSchema);
-const Books = mongoose.models["books"] ?? mongoose.model("books", BookSchema);
 
 // Helpers: Token
 export async function createToken(user: User) {
