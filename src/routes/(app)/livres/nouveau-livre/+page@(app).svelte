@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
+    import Carousel from "$lib/components/Carousel.svelte";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
 
@@ -16,62 +17,6 @@
             update();
         };
     }) satisfies SubmitFunction;
-
-    const maxImagesCount = 4;
-    let images: string[] = [];
-    let selectedIndex = 0;
-
-    function removeImage(index: number) {
-        images.splice(index, 1);
-        images = images; // This is to tell the compiler to update so that the preview images element updates
-        selectedIndex =
-            !images[selectedIndex] && selectedIndex > 0 ? selectedIndex - 1 : selectedIndex;
-    }
-
-    function dropFiles(node: HTMLElement, onDrop: (e: DragEvent) => any) {
-        const dragOver = (e: DragEvent) => {
-            e.preventDefault();
-            if (e.dataTransfer && images.length < maxImagesCount) {
-                e.dataTransfer.effectAllowed = "move";
-            }
-        };
-        node.addEventListener("dragover", dragOver);
-        node.addEventListener("drop", onDrop);
-
-        return {
-            destroy: () => {
-                node.removeEventListener("dragover", dragOver);
-                node.removeEventListener("drop", onDrop);
-            },
-        };
-    }
-
-    function handleUpload(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
-        if (!e.currentTarget.files) return;
-        readImages(e.currentTarget.files);
-    }
-
-    function handleDrop(e: DragEvent) {
-        e.preventDefault();
-        if (!e.dataTransfer) return;
-        readImages(e.dataTransfer.files);
-    }
-
-    function readImages(files: FileList) {
-        for (let file of files) {
-            if (file.type !== "image/png" && file.type !== "image/jpeg") return;
-            if (images.length >= maxImagesCount) return;
-            let reader = new FileReader();
-            reader.addEventListener("loadend", (e) => {
-                if (images.length >= maxImagesCount) return;
-                let newImage = e.target?.result as string;
-                if (!images.includes(newImage) && images.length < 5) {
-                    images = [...images, newImage];
-                }
-            });
-            reader.readAsDataURL(file);
-        }
-    }
 </script>
 
 <svelte:head>
@@ -118,63 +63,7 @@
     </div>
 
     <div class="flex flex-col items-stretch gap-5">
-        <div class="relative grid h-[20rem] flex-col rounded-xl">
-            <div use:dropFiles={handleDrop} class="flex h-[15rem] bg-neutral-500">
-                {#if images.length === 0}
-                    <label class="flex cursor-pointer items-center justify-center">
-                        <box-icon class="absolute" name="plus" size="3rem" />
-                        <input
-                            type="file"
-                            multiple
-                            class="hidden"
-                            accept="image/png, image/jpeg"
-                            on:change={handleUpload}
-                        />
-                    </label>
-                {:else}
-                    <img
-                        src={images[selectedIndex]}
-                        alt="Livre"
-                        class="h-full w-full object-cover"
-                    />
-                    <button
-                        class="absolute top-0 right-0 fill-red-500"
-                        on:click={() => removeImage(selectedIndex)}
-                    >
-                        <box-icon name="trash" size="3rem" />
-                    </button>
-                {/if}
-            </div>
-
-            <div class="flex items-center justify-start gap-2">
-                {#each images as image, i}
-                    <button on:click={() => (selectedIndex = i)}>
-                        <img
-                            src={image}
-                            class={`aspect-square w-20 cursor-pointer border-2 object-cover hover:scale-110 ${
-                                selectedIndex === i ? "border-blue-primary" : "border-neutral-300"
-                            }`}
-                            alt=""
-                        />
-                    </button>
-                {/each}
-
-                {#if images.length < maxImagesCount}
-                    <label
-                        class="flex aspect-square w-20 cursor-pointer items-center justify-center border-2 border-neutral-300 bg-neutral-500 object-cover hover:scale-110"
-                    >
-                        <box-icon class="absolute" name="plus" size="3rem" />
-                        <input
-                            type="file"
-                            multiple
-                            class="hidden"
-                            accept="image/png, image/jpeg"
-                            on:change={handleUpload}
-                        />
-                    </label>
-                {/if}
-            </div>
-        </div>
+        <Carousel />
 
         <button class="filled" type="submit"> Créer l'annonce </button>
     </div>
