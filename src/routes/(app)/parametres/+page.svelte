@@ -1,23 +1,17 @@
 <script lang="ts">
-    import firstDayOfTheWeek, { type FirstDayOfTheWeek } from "$lib/stores/firstDayOfTheWeek";
-
-    function setDate(event: Event & { currentTarget: HTMLSelectElement }) {
-        firstDayOfTheWeek.set(event.currentTarget.value as FirstDayOfTheWeek);
-    }
+    import firstDayOfTheWeek from "$lib/stores/firstDayOfTheWeek";
+    import ColorSchemeSwitch from "$lib/components/ColorSchemeSwitch.svelte";
 </script>
 
-<h1 class="text-center">PARAMÈTRES</h1>
+<h1 class="text-center">Paramètres</h1>
 
-<div>
+<ColorSchemeSwitch />
+
+<label>
     Jour de commencement de la semaine
-    <select
-        on:change={(value) => {
-            setDate(value);
-        }}
-        bind:value={$firstDayOfTheWeek}
-    >
+    <select bind:value={$firstDayOfTheWeek}>
         <option value="Samedi">Samedi</option>
         <option value="Dimanche">Dimanche</option>
         <option value="Lundi">Lundi</option>
     </select>
-</div>
+</label>
