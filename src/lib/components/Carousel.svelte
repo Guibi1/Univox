@@ -65,11 +65,13 @@
 <div class="relative py-4">
     <div
         use:dropFiles={images.length < maxImagesCount && !readOnly}
-        class="relative flex h-64 bg-neutral-500"
+        class="relative flex h-64 items-stretch bg-neutral-500"
     >
         {#if images.length === 0}
-            <label class="flex cursor-pointer items-center justify-center">
-                <box-icon class="absolute" name="plus" size="3rem" />
+            <label class="flex cursor-pointer flex-col items-center justify-center">
+                <box-icon name="cloud-upload" size="4rem" />
+                Glissez ici des images de votre livre
+
                 <input
                     type="file"
                     multiple
@@ -111,7 +113,7 @@
                 <label
                     class="flex aspect-square w-20 cursor-pointer items-center justify-center border-2 border-neutral-300 bg-neutral-500 object-cover hover:scale-110"
                 >
-                    <box-icon class="absolute" name="plus" size="3rem" />
+                    <box-icon class="absolute" name="image-add" size="2rem" />
                     <input
                         type="file"
                         multiple
