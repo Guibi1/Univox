@@ -5,11 +5,7 @@
     import { onDestroy, onMount } from "svelte";
 
     let timer: NodeJS.Timer;
-    function startTimer() {
-        timer = setInterval(() => invalidateAll().then(startTimer), 5000);
-    }
-
-    onMount(startTimer);
+    onMount(() => (timer = setInterval(() => invalidateAll(), 5000)));
     onDestroy(() => clearInterval(timer));
 </script>
 
