@@ -31,7 +31,7 @@ export const actions = {
             return fail(401, { da, incorrect: true });
         }
 
-        await db.updateUserPassword(user?._id, newPassword);
+        await db.updateUserPassword(user._id, newPassword);
 
         throw redirect(302, "/connexion?" + url.searchParams);
     },
