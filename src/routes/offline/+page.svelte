@@ -18,9 +18,9 @@
         <div class="flex flex-col items-center gap-4">
             <Logo size="6rem" />
             <hr class="w-7/12" />
-            <LogoText size="10rem" />
+            <LogoText width="10rem" />
         </div>
 
-        <h1 class="mt-10">Vous êtes hors ligne</h1>
+        <h1 class="mt-10 text-center">Vous êtes hors ligne</h1>
     </main>
 </div>
