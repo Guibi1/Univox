@@ -10,7 +10,7 @@
             event: Event & {
                 currentTarget: EventTarget;
             }
-        ) => any;
+        ) => any | null;
     };
 
     let open = false;
