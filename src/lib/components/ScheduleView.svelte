@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { weekdayOffset, dateAreTheSame } from "$lib/stores/startWeekDate";
+    import { weekdayOffset, dateAreTheSame } from "$lib/stores/firstDayOfTheWeek";
 
     // Importation des types et bibliothèques nécessaires
     import type { Class } from "$lib/Types";
@@ -70,7 +70,7 @@
                         <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
                         <Hoverable let:hovering>
                             <div
-                                class="absolute border-red-200 bg-sky-500 hover:border-2 "
+                                class="absolute border-red-200 bg-sky-500 hover:border-2"
                                 style={`top: ${
                                     rowHeight *
                                     (period.timeStart.hour() +

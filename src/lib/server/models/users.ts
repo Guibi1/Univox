@@ -3,6 +3,7 @@ import mongoose, { Schema } from "mongoose";
 
 export interface ServerUser extends User {
     passwordHash: string;
+    settingsId: mongoose.Types.ObjectId;
 }
 
 const UserSchema = new Schema<ServerUser>({
@@ -45,6 +46,11 @@ const UserSchema = new Schema<ServerUser>({
         ref: "users",
         required: true,
         default: [],
+    },
+    settingsId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "settings",
+        required: true,
     },
 });
 

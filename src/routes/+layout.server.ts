@@ -1,12 +1,12 @@
 import colorScheme, { type ColorScheme } from "$lib/stores/colorScheme";
+import startWeekDate, { type FirstDayOfTheWeek } from "$lib/stores/firstDayOfTheWeek";
 import friends from "$lib/stores/friends";
-import startWeekDate, { type StartWeekDate } from "$lib/stores/startWeekDate";
 import user from "$lib/stores/user";
 import type { LayoutServerLoad } from "./$types";
 
 export const load = (({ cookies, locals }) => {
     const color = (cookies.get("colorScheme") ?? "dark") as ColorScheme;
-    const startDate = (cookies.get("startWeekDate") ?? "Dimanche") as StartWeekDate;
+    const startDate = (cookies.get("startWeekDate") ?? "Dimanche") as FirstDayOfTheWeek;
 
     // Stores are up to date during SSR
     colorScheme.setInitial(color);
