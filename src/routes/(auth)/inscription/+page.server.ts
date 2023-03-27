@@ -97,6 +97,7 @@ export const actions = {
             firstName: firstName ?? "",
             lastName: lastName ?? "",
             scheduleId: new mongoose.Types.ObjectId(),
+            settingsId: new mongoose.Types.ObjectId(),
             friendsId: [],
         };
 

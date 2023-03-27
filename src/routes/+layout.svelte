@@ -1,6 +1,6 @@
 <script lang="ts">
     import colorScheme from "$lib/stores/colorScheme";
-    import startWeekDate from "$lib/stores/firstDayOfTheWeek";
+    import firstDayOfTheWeek from "$lib/stores/firstDayOfTheWeek";
     import dayjs from "dayjs";
     import fr from "dayjs/locale/fr-ca";
     import weekday from "dayjs/plugin/weekday";
@@ -13,7 +13,7 @@
 
     export let data: LayoutData;
     colorScheme.setInitial(data.storesInitialValue.colorScheme);
-    startWeekDate.setInitial(data.storesInitialValue.startWeekDate);
+    firstDayOfTheWeek.setInitial(data.storesInitialValue.firstDayOfTheWeek);
 
     onMount(() => {
         // @ts-ignore

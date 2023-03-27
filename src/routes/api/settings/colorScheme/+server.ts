@@ -1,13 +1,13 @@
 import { error, type RequestHandler } from "@sveltejs/kit";
 
 export const PUT = (async ({ request, cookies }) => {
-    const text = await request.text();
+    const colorScheme = await request.text();
 
-    if (text != "light" && text != "dark") {
+    if (colorScheme != "light" && colorScheme != "dark") {
         throw error(400, "Invalid color scheme. Expected type 'light' | 'dark'.");
     }
 
-    cookies.set("colorScheme", text, { path: "/" });
+    cookies.set("colorScheme", colorScheme, { path: "/" });
 
     return new Response();
 }) satisfies RequestHandler;
