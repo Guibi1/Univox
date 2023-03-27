@@ -7,7 +7,7 @@ import type { User } from "$lib/Types";
 declare global {
     namespace App {
         interface Locals {
-            user: User | null;
+            user: User;
             friends: User[];
         }
         // interface Error {}
