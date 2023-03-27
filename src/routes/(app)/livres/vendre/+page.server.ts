@@ -1,34 +1,33 @@
 import * as db from "$lib/server/db";
 import { fail } from "@sveltejs/kit";
-import type { Actions } from "./$types";
 import mongoose from "mongoose";
+import type { Actions } from "./$types";
 
 export const actions = {
-    default: async ({ request }) => {
+    default: async ({ request, locals }) => {
         const data = await request.formData();
         const title = data.get("title")?.toString();
         const author = data.get("author")?.toString();
         const state = data.get("state")?.toString();
-        const priceString = data.get("price")?.toString ?? "";
-        const price = +priceString;
+        const price = +(data.get("price")?.toString() ?? "0");
         const isbn = data.get("isbn")?.toString();
 
         // TODO idk what it is now but there will be something here at some point on this branch
 
         if (!title || !author || !state || !price || !isbn) {
-            return fail(400, {title, missing: true}); //! I just copied this from another page and change da to title :P
+            return fail(400, { title, author, state, price, isbn, missing: true }); //! I just copied this from another page and change da to title :P
         }
 
         const book = {
             _id: new mongoose.Types.ObjectId(),
             code: "idk",
-            sellerId: new mongoose.Types.ObjectId(), // TODO mettre le vrai ID de l'utilisateur
+            sellerId: locals.user._id,
             title: title,
             ISBN: isbn,
             src: "src",
             author: author,
             price: price,
-            state: state
+            state: state,
         };
         await db.addBookListing(book);
 

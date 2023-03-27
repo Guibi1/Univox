@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-    <title>Univox | Livres | Nouveau livre</title>
+    <title>Univox | Vendre un livre</title>
 </svelte:head>
 
 <h1 class="text-center">Vendre un livre</h1>

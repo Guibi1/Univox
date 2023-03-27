@@ -45,7 +45,7 @@
             on:keypress={handleSearch}
         />
 
-        <a href="nouveau-livre"> Vendre un livre </a>
+        <a href="/livres/vendre"> Vendre un livre </a>
     </div>
 </div>
 
