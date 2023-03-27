@@ -17,9 +17,26 @@
         };
     }) satisfies SubmitFunction;
 
-    let images: string[] = [];  // TODO maximum images has to be 5
+    let images: string[] = [];
     let currentImageIndex = 0;
     $: currentImage = images[currentImageIndex];
+
+    function changeCurrentImage(newIndex: number) {
+        currentImageIndex = newIndex;
+    }
+
+    function removeCurrentImage() {
+        images.splice(currentImageIndex, 1);
+        for (let i = currentImageIndex; i < 4; i++) {
+            if (images[i+2]) {
+                images[i] = images[i+1];
+            }
+        }
+        currentImageIndex = !images[currentImageIndex] && currentImageIndex != 0 ? currentImageIndex-1 : currentImageIndex;
+        currentImage = images[currentImageIndex];
+        images = images; // This is to tell the compiler to update so that the preview images element updates 
+        console.log(currentImageIndex);
+    }
 
     function dropFiles(node: HTMLElement, onDrop: (e: DragEvent) => any) {
         const dragOver = (e: DragEvent) => {
@@ -54,7 +71,9 @@
             let reader = new FileReader();
             reader.addEventListener("loadend", (e) => {
                 let newImage = e.target?.result as string;
-                if (!images.includes(newImage)) images = [...images, newImage];
+                if (!images.includes(newImage) && images.length < 5) {
+                    images = [...images, newImage];
+                }
             });
             reader.readAsDataURL(file);
         }
@@ -106,20 +125,33 @@
     </div>
     
     <div class="flex flex-col items-stretch gap-5">
-        <div class="grid h-[20rem] flex-col rounded-xl">
+        <div class="grid h-[20rem] flex-col rounded-xl relative">
             <label use:dropFiles={handleDrop} class="cursor-pointer bg-neutral-500 flex items-center justify-center h-[15rem]">
-                <input type="file" multiple class="hidden" accept="image/png, image/jpeg" on:change={handleUpload}/>
-                <!--TODO make the image fit the gray rectangle, whatever the initial resolution is-->
-                <img alt="" class="object-cover" src={currentImage}/>
+                <img alt="" class="object-cover h-full w-full" src={currentImage}/>
                 {#if !currentImage}
                     <box-icon class="absolute" name="plus" size="3rem"/>
+                    <!--TODO Make the file window not pop up when deleting the last image-->
+                    <input type="file" multiple class="hidden" accept="image/png, image/jpeg" on:change={handleUpload}/>
+                    {:else}
+                    <box-icon class="absolute top-0 right-0 fill-red-500" name='trash' size="3rem" on:click={() => removeCurrentImage()}></box-icon>
                 {/if}
+                
             </label>
             <div class="grid grid-cols-5 h-[5rem]">
-                {#each images as image} 
-                    <!--TODO make the selected image have the green (or other color) border-->
-                    <img src={image} class="object-cover h-[5rem] w-[5rem] hover:h-[6rem] hover:w-[6rem] hover:-translate-x-[0.5rem] border-2 border-blue-primary" alt=""/>
+                {#each images as image, i} 
+                    {#if i == currentImageIndex}
+                        <img src={image} on:click={() => changeCurrentImage(i)} class="cursor-pointer object-cover h-[5rem] w-[5rem] hover:h-[6rem] hover:w-[6rem] hover:-translate-x-[0.5rem] border-2 border-blue-primary" alt=""/>
+                        {:else}
+                        <img src={image} on:click={() => changeCurrentImage(i)} class="cursor-pointer object-cover h-[5rem] w-[5rem] hover:h-[6rem] hover:w-[6rem] hover:-translate-x-[0.5rem] border-2 border-neutral-300" alt=""/>
+                    {/if}
                 {/each}
+
+                {#if !images[4]}
+                    <label use:dropFiles={handleDrop} class="cursor-pointer bg-neutral-500 flex items-center justify-center h-[5rem] w-[5rem] hover:h-[6rem] hover:w-[6rem] hover:-translate-x-[0.5rem] border-2 border-neutral-300">
+                        <input type="file" multiple class="hidden" accept="image/png, image/jpeg" on:change={handleUpload}/>
+                        <box-icon class="absolute" name="plus" size="3rem"/>
+                    </label>
+                {/if}                
             </div>
 
         </div>
