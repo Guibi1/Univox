@@ -62,10 +62,10 @@
     }
 </script>
 
-<div class="relative grid h-[20rem] flex-col rounded-xl">
+<div class="relative py-4">
     <div
         use:dropFiles={images.length < maxImagesCount && !readOnly}
-        class="flex h-[15rem] bg-neutral-500"
+        class="relative flex h-64 bg-neutral-500"
     >
         {#if images.length === 0}
             <label class="flex cursor-pointer items-center justify-center">
@@ -93,32 +93,34 @@
         {/if}
     </div>
 
-    <div class="flex items-center justify-start gap-2">
-        {#each images as image, i}
-            <button type="button" on:click={() => (selectedIndex = i)}>
-                <img
-                    src={image}
-                    class={`aspect-square w-20 cursor-pointer border-2 object-cover hover:scale-110 ${
-                        selectedIndex === i ? "border-blue-primary" : "border-neutral-300"
-                    }`}
-                    alt=""
-                />
-            </button>
-        {/each}
+    <div class="relative h-10">
+        <div class="absolute -top-8 flex w-full items-center justify-center gap-2">
+            {#each images as image, i}
+                <button type="button" on:click={() => (selectedIndex = i)}>
+                    <img
+                        src={image}
+                        class={`aspect-square w-20 cursor-pointer border-2 object-cover hover:scale-110 ${
+                            selectedIndex === i ? "border-blue-primary" : "border-neutral-300"
+                        }`}
+                        alt=""
+                    />
+                </button>
+            {/each}
 
-        {#if images.length < maxImagesCount && images.length > 0 && !readOnly}
-            <label
-                class="flex aspect-square w-20 cursor-pointer items-center justify-center border-2 border-neutral-300 bg-neutral-500 object-cover hover:scale-110"
-            >
-                <box-icon class="absolute" name="plus" size="3rem" />
-                <input
-                    type="file"
-                    multiple
-                    class="hidden"
-                    accept="image/png, image/jpeg"
-                    on:change={handleUpload}
-                />
-            </label>
-        {/if}
+            {#if images.length < maxImagesCount && !readOnly}
+                <label
+                    class="flex aspect-square w-20 cursor-pointer items-center justify-center border-2 border-neutral-300 bg-neutral-500 object-cover hover:scale-110"
+                >
+                    <box-icon class="absolute" name="plus" size="3rem" />
+                    <input
+                        type="file"
+                        multiple
+                        class="hidden"
+                        accept="image/png, image/jpeg"
+                        on:change={handleUpload}
+                    />
+                </label>
+            {/if}
+        </div>
     </div>
 </div>
