@@ -13,7 +13,7 @@ export interface User {
 
 export interface Book {
     _id: mongoose.Types.ObjectId;
-    code: string;
+    code: string; //! WTF IS THIS?
     sellerId: mongoose.Types.ObjectId;
     title: string;
     ISBN: string;
