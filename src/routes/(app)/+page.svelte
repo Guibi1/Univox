@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { Class } from "$lib/Types";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
+    import type { Class } from "$lib/Types";
     import dayjs from "dayjs";
     import mongoose from "mongoose";
 

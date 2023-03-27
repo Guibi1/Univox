@@ -25,12 +25,11 @@
     <title>Univox | Connexion</title>
 </svelte:head>
 
-<h1 class="pb-1 self-center">
-    Bienvenue sur
-</h1>
+<h1 class="self-center pb-1">Bienvenue sur</h1>
 
 <div class="flex gap-4 self-center pb-4">
-    <LogoText size="9rem" /> <Logo size="4rem" />
+    <LogoText width="9rem" />
+    <Logo size="4rem" />
 </div>
 
 <form
