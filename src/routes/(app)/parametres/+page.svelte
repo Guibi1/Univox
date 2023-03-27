@@ -1,8 +1,8 @@
 <script lang="ts">
-    import startWeekDate, { type StartWeekDate } from "$lib/stores/startWeekDate";
+    import firstDayOfTheWeek, { type FirstDayOfTheWeek } from "$lib/stores/firstDayOfTheWeek";
 
     function setDate(event: Event & { currentTarget: HTMLSelectElement }) {
-        startWeekDate.set(event.currentTarget.value as StartWeekDate);
+        firstDayOfTheWeek.set(event.currentTarget.value as FirstDayOfTheWeek);
     }
 </script>
 
@@ -14,7 +14,7 @@
         on:change={(value) => {
             setDate(value);
         }}
-        bind:value={$startWeekDate}
+        bind:value={$firstDayOfTheWeek}
     >
         <option value="Samedi">Samedi</option>
         <option value="Dimanche">Dimanche</option>

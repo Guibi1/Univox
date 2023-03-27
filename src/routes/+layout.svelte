@@ -1,6 +1,6 @@
 <script lang="ts">
     import colorScheme from "$lib/stores/colorScheme";
-    import startWeekDate from "$lib/stores/startWeekDate";
+    import startWeekDate from "$lib/stores/firstDayOfTheWeek";
     import dayjs from "dayjs";
     import fr from "dayjs/locale/fr-ca";
     import weekday from "dayjs/plugin/weekday";
