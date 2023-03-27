@@ -3,7 +3,6 @@ import mongoose, { Schema } from "mongoose";
 
 export interface ServerUser extends User {
     passwordHash: string;
-    settingsId: mongoose.Types.ObjectId;
 }
 
 const UserSchema = new Schema<ServerUser>({

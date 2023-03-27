@@ -1,13 +1,24 @@
+import * as db from "$lib/server/db";
 import { error, type RequestHandler } from "@sveltejs/kit";
 
-export const PUT = (async ({ request, cookies }) => {
-    const text = await request.text();
+export const PUT = (async ({ locals, request, cookies }) => {
+    if (!locals.user) throw error(401);
 
-    if (text != "Samedi" && text != "Dimanche" && text != "Lundi") {
+    const firstDayOfTheWeek = await request.text();
+
+    if (
+        firstDayOfTheWeek != "Samedi" &&
+        firstDayOfTheWeek != "Dimanche" &&
+        firstDayOfTheWeek != "Lundi"
+    ) {
         throw error(400, "Invalid start week date. Expected type 'Samedi' | 'Dimanche' | 'Lundi'.");
     }
 
-    cookies.set("startWeekDate", text, { path: "/" });
+    if (!(await db.setSettings(locals.user, { firstDayOfTheWeek }))) {
+        throw error(500, "Couldn't save the user's settings.");
+    }
+
+    cookies.set("firstDayOfTheWeek", firstDayOfTheWeek, { path: "/" });
 
     return new Response();
 }) satisfies RequestHandler;
