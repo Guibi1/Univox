@@ -5,7 +5,8 @@
     type Action = {
         title: string;
         color?: "normal" | "red" | "blue";
-        onClick: (
+        href?: string;
+        onClick?: (
             event: Event & {
                 currentTarget: EventTarget;
             }
@@ -17,9 +18,9 @@
     function getColor(action: Action) {
         switch (action.color) {
             case "red":
-                return "text-red-400";
+                return "text-red-400 dark:text-red-400";
             case "blue":
-                return "text-blue-400";
+                return "text-blue-400 dark:text-blue-400";
             default:
                 return "text-neutral";
         }
@@ -60,7 +61,7 @@
     <!-- Dropdown menu -->
     {#if open}
         <div
-            class={`absolute z-[999] divide-y divide-gray-100 rounded bg-gray-200 dark:divide-neutral-300 dark:bg-neutral-700 ${
+            class={`absolute z-[200] min-w-[13ch] divide-y divide-gray-100 rounded bg-gray-200 dark:divide-neutral-300 dark:bg-neutral-700 ${
                 position == "bottom-right"
                     ? "top-full left-0"
                     : position == "bottom-left"
@@ -71,15 +72,27 @@
             {#each actions as section}
                 <div class="flex flex-col py-2">
                     {#each section as action}
-                        <button
-                            class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                                action
-                            )}`}
-                            on:click={action.onClick}
-                            data-closeOnClick
-                        >
-                            {action.title}
-                        </button>
+                        {#if action.href}
+                            <a
+                                class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                                    action
+                                )}`}
+                                href={action.href}
+                                data-closeOnClick
+                            >
+                                {action.title}
+                            </a>
+                        {:else}
+                            <button
+                                class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                                    action
+                                )}`}
+                                on:click={action.onClick}
+                                data-closeOnClick
+                            >
+                                {action.title}
+                            </button>
+                        {/if}
                     {/each}
                 </div>
             {/each}
