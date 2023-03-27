@@ -1,45 +1,36 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import ColorSchemeSwitch from "$lib/components/ColorSchemeSwitch.svelte";
+    import Dropdown from "$lib/components/Dropdown.svelte";
+    import LogoText from "$src/assets/logo-text.svelte";
 
     const pages = [
-        { href: "/", title: "Accueil" },
-        { href: "/livres", title: "Livres" },
-        { href: "/horaire", title: "Horaires" },
-        { href: "/amis", title: "Amis" },
+        { title: "Accueil", href: "/" },
+        { title: "Livres", href: "/livres" },
+        { title: "Horaires", href: "/horaire" },
+        { title: "Amis", href: "/amis" },
     ];
 
-    let currentPage = 0;
-    $: {
-        for (let [i, { href }] of pages.entries()) {
-            if ($page.url.pathname.startsWith(href)) currentPage = i;
-        }
-    }
+    $: currentPage = pages.reduce(
+        (prev, { href }, i) => ($page.url.pathname.startsWith(href) ? i : prev),
+        0
+    );
 </script>
 
-<nav
-    class="grid h-14 grid-cols-[1fr_min-content_1fr] items-center justify-between bg-blue-secondary"
->
-    <div class="flex h-full flex-row items-center gap-2">
-        <a href="/">
-            <h1
-                class="pl-5 text-3xl text-white transition duration-300 ease-in-out hover:text-blue-darkPrimary"
-            >
-                Univox
-            </h1>
-        </a>
+<nav class="flex h-14 items-stretch justify-between bg-blue-secondary">
+    <div class="grid aspect-square tablet:hidden">
+        <Dropdown actions={[pages]} position="bottom-right">
+            <box-icon name="menu" />
+        </Dropdown>
+    </div>
 
-        <ColorSchemeSwitch />
-
-        <a
-            class="flex transition duration-300 ease-in-out hover:fill-blue-primary"
-            href="/parametre"
-        >
-            <box-icon name="cog" class="h-8 w-8 " />
+    <div class="flex justify-center">
+        <a href="/" class="flex h-full items-center gap-4 px-4">
+            <!-- <Logo size="2.5rem" /> -->
+            <LogoText height="2rem" />
         </a>
     </div>
 
-    <ul class="relative flex h-full flex-row items-center justify-between">
+    <ul class="relative hidden h-full flex-row items-center justify-between tablet:flex">
         {#each pages as page, i}
             <li class="relative h-full">
                 <a
@@ -48,7 +39,7 @@
                 >
                     {page.title}
 
-                    {#if i === currentPage}
+                    {#if currentPage === i}
                         <span class="absolute bottom-0 left-1/2 -translate-x-1/2">
                             <hr
                                 class="w-16 border-2 !border-blue-primary transition duration-300 ease-in-out"
@@ -60,13 +51,26 @@
         {/each}
     </ul>
 
-    <div class="flex h-full justify-end">
-        <a
-            href="/deconnexion"
-            class="flex h-full items-center gap-2 px-4 text-center text-lg text-white transition duration-300 ease-in-out hover:text-red-500"
-        >
-            Déconnexion
-            <box-icon name="log-out" class="h-8 w-8 -scale-x-100 fill-red-500" />
-        </a>
+    <div class="flex flex-row">
+        <div class="grid aspect-square">
+            <Dropdown actions={[]} position="bottom-left">
+                <box-icon name="bell" />
+            </Dropdown>
+        </div>
+
+        <div class="grid aspect-square">
+            <Dropdown
+                actions={[
+                    [
+                        { title: "Mon Profil", href: "/profil" },
+                        { title: "Paramètres", href: "/parametres" },
+                    ],
+                    [{ title: "Se déconnecter", color: "red", href: "/deconnexion" }],
+                ]}
+                position="bottom-left"
+            >
+                <box-icon name="user" />
+            </Dropdown>
+        </div>
     </div>
 </nav>
