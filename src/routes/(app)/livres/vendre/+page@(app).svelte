@@ -60,6 +60,11 @@
             ISBN
             <input name="isbn" type="text" placeholder=" " />
         </label>
+
+        <label>
+            Cours
+            <input name="classCode" type="text" placeholder=" " required />
+        </label>
     </div>
 
     <div class="flex flex-col items-stretch gap-5">

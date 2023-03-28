@@ -11,16 +11,17 @@ export const actions = {
         const state = data.get("state")?.toString();
         const price = +(data.get("price")?.toString() ?? "0");
         const isbn = data.get("isbn")?.toString();
+        const classCode = data.get("classCode")?.toString();
 
         // TODO idk what it is now but there will be something here at some point on this branch
 
-        if (!title || !author || !state || !price || !isbn) {
-            return fail(400, { title, author, state, price, isbn, missing: true }); //! I just copied this from another page and change da to title :P
+        if (!title || !author || !state || !price || !isbn || !classCode) {
+            return fail(400, { title, author, state, price, isbn, classCode, missing: true }); //! I just copied this from another page and change da to title :P
         }
 
         const book = {
             _id: new mongoose.Types.ObjectId(),
-            code: "idk",
+            code: classCode,
             sellerId: locals.user._id,
             title: title,
             ISBN: isbn,
