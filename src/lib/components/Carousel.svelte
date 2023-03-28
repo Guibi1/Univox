@@ -84,11 +84,7 @@
     >
         {#if images.length === 0}
             <label class="flex cursor-pointer flex-col items-center justify-center">
-                <box-icon
-                    class="animate-arrow pointer-events-none"
-                    name="cloud-upload"
-                    size="4rem"
-                />
+                <box-icon class="pointer-events-none" name="cloud-upload" size="4rem" />
                 <p class="pointer-events-none">Glissez ici des images de votre livre</p>
 
                 <input
@@ -123,11 +119,7 @@
                 on:dragleave={() => (isDragginOver = false)}
                 class="absolute inset-0 z-10 flex cursor-pointer flex-col items-center justify-center gap-1 bg-blue-secondary"
             >
-                <box-icon
-                    class="pointer-events-none"
-                    name="cloud-upload"
-                    size="4rem"
-                />
+                <box-icon class="pointer-events-none" name="cloud-upload" size="4rem" />
                 <p class="pointer-events-none">Glissez ici des images de votre livre</p>
             </div>
         {/if}
