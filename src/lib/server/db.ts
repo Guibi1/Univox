@@ -2,19 +2,17 @@ import { MONGODB_URI } from "$env/static/private";
 import type { Book, Period, Schedule, User } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
-import { BookSchema, ScheduleSchema, TokenSchema, UserSchema } from "./schemas";
+import Books from "./models/books";
+import Schedules from "./models/schedules";
+import Settings from "./models/settings";
+import Tokens from "./models/tokens";
+import Users from "./models/users";
 
 // Connection
 mongoose.set("strictQuery", false);
 if (mongoose.connection.readyState !== 1) {
     mongoose.connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox");
 }
-
-// Models
-const Tokens = mongoose.models["tokens"] ?? mongoose.model("tokens", TokenSchema);
-const Users = mongoose.models["users"] ?? mongoose.model("users", UserSchema);
-const Schedules = mongoose.models["schedules"] ?? mongoose.model("schedules", ScheduleSchema);
-const Books = mongoose.models["books"] ?? mongoose.model("books", BookSchema);
 
 // Helpers: Token
 export async function createToken(user: User) {
@@ -82,6 +80,7 @@ export async function createUser(user: User, password: string): Promise<boolean>
     }
 
     await Schedules.create({ _id: user.scheduleId, periods: [] });
+    await Settings.create({ _id: user.settingsId });
     await Users.create({ ...user, passwordHash: await bcryptjs.hash(password ?? "", 11) });
     return true;
 }
@@ -228,6 +227,21 @@ export async function searchBooks(user: User, query: string, codes: string[]): P
 
 export async function addBookListing(book: Book): Promise<boolean> {
     await Books.create(book);
+    return true;
+}
+
+// Helpers: Settings
+export async function getSettings(user: User): Promise<Settings | null> {
+    const doc = await Settings.findById(user.settingsId);
+    if (!doc) {
+        return null;
+    }
+    return doc.toObject() as Settings;
+}
+
+export async function setSettings(user: User, settings: Settings): Promise<boolean> {
+    if (!settings) return false;
+    await Settings.findByIdAndUpdate(user.settingsId, { $set: settings });
     return true;
 }
 

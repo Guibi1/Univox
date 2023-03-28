@@ -97,13 +97,14 @@ export const actions = {
             firstName,
             lastName,
             scheduleId: new mongoose.Types.ObjectId(),
+            settingsId: new mongoose.Types.ObjectId(),
             friendsId: [],
         };
 
         await db.createUser(user, password);
         const token = await db.createToken(user);
 
-        cookies.set("token", token, { path: "/", httpOnly: true });
+        cookies.set("token", token, { path: "/", httpOnly: true, secure: true, sameSite: true });
 
         return { firstName, lastName, success: true };
     },

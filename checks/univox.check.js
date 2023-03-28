@@ -30,8 +30,6 @@ test.describe("Logged in", () => {
 
     test.afterAll(async ({ page }) => {
         const univox = new UnivoxPage(page);
-        await univox.goto("/");
-
-        await page.click('a[href="/deconnexion"]');
+        await univox.goto("/deconnexion");
     });
 });
