@@ -19,7 +19,7 @@
 <nav class="flex h-14 items-stretch justify-between bg-blue-secondary">
     <div class="grid aspect-square tablet:hidden">
         <Dropdown actions={[pages]} position="bottom-right">
-            <box-icon name="menu" />
+            <i class="bx bx-menu" />
         </Dropdown>
     </div>
 
@@ -54,7 +54,7 @@
     <div class="flex flex-row">
         <div class="grid aspect-square">
             <Dropdown actions={[]} position="bottom-left">
-                <i class="bx bx-bell" />
+                <i class="bx bx-bell text-2xl" />
             </Dropdown>
         </div>
 
@@ -69,7 +69,7 @@
                 ]}
                 position="bottom-left"
             >
-                <i class="bx bx-user" />
+                <i class="bx bx-user text-2xl" />
             </Dropdown>
         </div>
     </div>
