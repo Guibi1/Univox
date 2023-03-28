@@ -3,31 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-    @font-face {
-        font-family: boxicons;
-        font-weight: 400;
-        font-style: normal;
-        src: url(/fonts/boxicons.eot);
-        src: url(/fonts/boxicons.eot) format("embedded-opentype"),
-            url("/fonts/boxicons.woff2") format("woff2"), url(/fonts/boxicons.woff) format("woff"),
-            url(/fonts/boxicons.ttf) format("truetype"),
-            url(/fonts/boxicons.svg?#boxicons) format("svg");
-    }
-
-    .bx {
-        font-family: boxicons !important;
-        font-weight: 400;
-        font-style: normal;
-        font-variant: normal;
-        line-height: 1;
-        text-rendering: auto;
-        display: inline-block;
-        text-transform: none;
-        speak: none;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-
     html {
         font-family: Arial, Helvetica, sans-serif;
         min-height: 100vh;

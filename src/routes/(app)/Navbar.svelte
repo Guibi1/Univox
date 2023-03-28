@@ -35,7 +35,7 @@
             class="flex transition duration-300 ease-in-out hover:fill-blue-primary"
             href="/parametre"
         >
-            <box-icon name="cog" class="h-8 w-8 " />
+            <i class="bx bx-cog h-8 w-8" />
         </a>
     </div>
 
@@ -66,7 +66,7 @@
             class="flex h-full items-center gap-2 px-4 text-center text-lg text-white transition duration-300 ease-in-out hover:text-red-500"
         >
             Déconnexion
-            <box-icon name="log-out" class="h-8 w-8 -scale-x-100 fill-red-500" />
+            <i class="bx bx-log-out -scale-x-100 text-3xl text-red-500" />
         </a>
     </div>
 </nav>

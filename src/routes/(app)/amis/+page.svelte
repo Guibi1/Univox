@@ -25,7 +25,7 @@
     <div class="ml-10 flex w-1/2 flex-row items-center gap-3">
         <SearchBar bind:query {handleSearch} />
 
-        <box-icon
+        <i
             name="search-alt"
             class="h-10 w-10 cursor-pointer"
             on:click={handleSearch}
@@ -48,7 +48,7 @@
             <div class="flex items-center">
                 {ami.lastName + ", " + ami.firstName}
 
-                <!-- <box-icon
+                <!-- <i
                     id="friend-option-menu"
                     data-dropdown-toggle="dropdown"
                     name="dots-vertical-rounded"

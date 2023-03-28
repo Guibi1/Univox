@@ -1,4 +1,5 @@
 <script lang="ts">
+    import "$assets/boxicons/boxicons.css";
     import colorScheme from "$lib/stores/colorScheme";
     import friends from "$lib/stores/friends";
     import startWeekDate from "$lib/stores/startWeekDate";
@@ -6,7 +7,6 @@
     import dayjs from "dayjs";
     import fr from "dayjs/locale/fr-ca";
     import weekday from "dayjs/plugin/weekday";
-    import { onMount } from "svelte";
     import "../style.css";
     import type { LayoutData } from "./$types";
 
@@ -18,11 +18,6 @@
     startWeekDate.setInitial(data.storesInitialValue.startWeekDate);
     user.set(JSON.parse(data.storesInitialValue.serializedUser));
     friends.set(JSON.parse(data.storesInitialValue.serializedFriends));
-
-    onMount(() => {
-        // @ts-ignore
-        import("boxicons");
-    });
 </script>
 
 <slot />

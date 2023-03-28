@@ -24,7 +24,7 @@
     <div class="ml-10 flex w-1/2 flex-row items-center gap-3">
         <SearchBar bind:query {handleSearch} />
 
-        <box-icon
+        <i
             name="search-alt"
             class="h-10 w-10 cursor-pointer"
             on:click={handleSearch}

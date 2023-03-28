@@ -25,12 +25,11 @@
     <title>Univox | Connexion</title>
 </svelte:head>
 
-<h1 class="pb-1 self-center">
-    Bienvenue sur
-</h1>
+<h1 class="self-center pb-1">Bienvenue sur</h1>
 
 <div class="flex gap-4 self-center pb-4">
-    <LogoText size="9rem" /> <Logo size="4rem" />
+    <LogoText size="9rem" />
+    <Logo size="4rem" />
 </div>
 
 <form
@@ -76,14 +75,12 @@
 
     {#if !loading}
         <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
-            Se connecter <box-icon name="chevron-right" />
+            Se connecter <i class="bx bx-chevron-right text-lg" />
         </button>
     {:else}
-        <box-icon
-            name="loader-circle"
-            animation="spin"
-            class="my-6 flex h-10 w-full items-center"
-        />
+        <div class="flex items-center justify-center">
+            <i class="bx bx-loader-circle bx-spin my-2 text-5xl" />
+        </div>
     {/if}
 </form>
 

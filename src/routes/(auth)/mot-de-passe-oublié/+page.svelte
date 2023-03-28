@@ -77,20 +77,18 @@
         </label>
 
         <a href={"/connexion" + $page.data.params} class="flex self-start">
-            <box-icon name="chevron-left" />
+            <i class="bx bx-chevron-left text-lg" />
             Retour
         </a>
     </div>
 
     {#if !loading}
         <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
-            Suivant <box-icon name="chevron-right" />
+            Suivant <i class="bx bx-chevron-right" />
         </button>
     {:else}
-        <box-icon
-            name="loader-circle"
-            animation="spin"
-            class="my-6 flex h-10 w-full items-center"
-        />
+        <div class="flex items-center justify-center">
+            <i class="bx bx-loader-circle bx-spin my-2 text-5xl" />
+        </div>
     {/if}
 </form>

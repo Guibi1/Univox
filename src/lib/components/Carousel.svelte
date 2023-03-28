@@ -84,7 +84,7 @@
     >
         {#if images.length === 0}
             <label class="flex cursor-pointer flex-col items-center justify-center">
-                <box-icon class="pointer-events-none" name="cloud-upload" size="4rem" />
+                <i class="bx bx-cloud-upload pointer-events-none text-7xl" />
                 <p class="pointer-events-none">Glissez ici des images de votre livre</p>
 
                 <input
@@ -106,9 +106,9 @@
                 <button
                     type="button"
                     on:click={() => removeImage(selectedIndex)}
-                    class="absolute top-2 right-2 fill-red-500"
+                    class="absolute top-2 right-2"
                 >
-                    <box-icon name="trash" size="2rem" />
+                    <i class="bx bx-trash text-3xl text-red-500" />
                 </button>
             {/if}
         {/if}
@@ -119,7 +119,7 @@
                 on:dragleave={() => (isDragginOver = false)}
                 class="absolute inset-0 z-10 flex cursor-pointer flex-col items-center justify-center gap-1 bg-blue-secondary"
             >
-                <box-icon class="pointer-events-none" name="cloud-upload" size="4rem" />
+                <i class="bx bx-cloud-upload pointer-events-none text-7xl" />
                 <p class="pointer-events-none">Glissez ici des images de votre livre</p>
             </div>
         {/if}
@@ -143,7 +143,7 @@
                 <label
                     class="flex aspect-square w-20 cursor-pointer items-center justify-center border-2 border-neutral-300 bg-neutral-500 object-cover transition-[scale] hover:scale-110"
                 >
-                    <box-icon class="absolute" name="image-add" size="2rem" />
+                    <i class="bx bx-image-add absolute text-4xl" />
                     <input
                         type="file"
                         multiple

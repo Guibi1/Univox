@@ -53,7 +53,7 @@
         {#if $$slots}
             <slot />
         {:else}
-            <box-icon name="dots-vertical-rounded" />
+            <i class="bx bx-dots-vertical-rounded text-4xl" />
         {/if}
     </button>
 

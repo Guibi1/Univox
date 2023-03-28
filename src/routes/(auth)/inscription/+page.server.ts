@@ -92,10 +92,10 @@ export const actions = {
         // Everything it good!
         const user = {
             _id: new mongoose.Types.ObjectId(),
-            da: da,
-            email: email ?? "",
-            firstName: firstName ?? "",
-            lastName: lastName ?? "",
+            da,
+            email,
+            firstName,
+            lastName,
             scheduleId: new mongoose.Types.ObjectId(),
             friendsId: [],
         };
@@ -105,6 +105,6 @@ export const actions = {
 
         cookies.set("token", token, { path: "/", httpOnly: true });
 
-        return { success: true };
+        return { firstName, lastName, success: true };
     },
 } satisfies Actions;
