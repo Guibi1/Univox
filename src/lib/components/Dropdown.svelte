@@ -1,21 +1,38 @@
-<script lang="ts">
-    export let position: "side-right" | "bottom-left" | "bottom-right" = "side-right";
-    export let actions: Action[][];
-
-    type Action = {
-        title: string;
-        color?: "normal" | "red" | "blue";
+<script context="module" lang="ts">
+    type DropdownOption = {
+        text: string;
+        color?: DropdownColor;
         href?: string;
         onClick?: (
             event: Event & {
                 currentTarget: EventTarget;
             }
-        ) => any | null;
+        ) => any;
     };
+
+    export type DropdownContext = { addOption: (a: DropdownOption) => void; separate: () => void };
+    export type DropdownColor = "normal" | "red" | "blue";
+</script>
+
+<script lang="ts">
+    import { setContext } from "svelte";
+
+    export let position: "side-right" | "bottom-left" | "bottom-right" = "side-right";
+    export let fullWith = false;
+    export let actions: DropdownOption[][] = [[]];
 
     let open = false;
 
-    function getColor(action: Action) {
+    setContext<DropdownContext>("dropdown", {
+        addOption: (action: DropdownOption) => {
+            console.log("test");
+            actions[actions.length - 1].push(action);
+            actions = actions;
+        },
+        separate: () => (actions = [...actions, []]),
+    });
+
+    function getColor(action: DropdownOption) {
         switch (action.color) {
             case "red":
                 return "text-red-400 dark:text-red-400";
@@ -51,8 +68,8 @@
 
 <div use:closeOnClickOutside={open} class="relative grid">
     <button on:click={() => (open = !open)} class="hover:gray-100 flex items-center justify-center">
-        {#if $$slots.default}
-            <slot />
+        {#if $$slots.button}
+            <slot name="button" />
         {:else}
             <box-icon name="dots-vertical-rounded" />
         {/if}
@@ -61,13 +78,16 @@
     <!-- Dropdown menu -->
     {#if open}
         <div
-            class={`absolute z-[200] min-w-[13ch] divide-y divide-gray-100 rounded bg-gray-200 dark:divide-neutral-300 dark:bg-neutral-700 ${
-                position == "bottom-right"
-                    ? "top-full left-0"
-                    : position == "bottom-left"
-                    ? "top-full right-0"
-                    : "left-full"
-            }`}
+            class={`absolute z-[200] min-w-[13ch] divide-y divide-gray-100 rounded-lg bg-gray-200 dark:divide-neutral-300 dark:bg-neutral-700 ${
+                fullWith ? "w-full" : ""
+            }
+                ${
+                    position == "bottom-right"
+                        ? "top-full left-0"
+                        : position == "bottom-left"
+                        ? "top-full right-0"
+                        : "left-full"
+                }`}
         >
             {#each actions as section}
                 <div class="flex flex-col py-2">
@@ -80,7 +100,7 @@
                                 href={action.href}
                                 data-closeOnClick
                             >
-                                {action.title}
+                                {action.text}
                             </a>
                         {:else}
                             <button
@@ -90,7 +110,7 @@
                                 on:click={action.onClick}
                                 data-closeOnClick
                             >
-                                {action.title}
+                                {action.text}
                             </button>
                         {/if}
                     {/each}
@@ -98,4 +118,8 @@
             {/each}
         </div>
     {/if}
+</div>
+
+<div hidden>
+    <slot />
 </div>
