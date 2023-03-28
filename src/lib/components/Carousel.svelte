@@ -3,7 +3,7 @@
 
     export const maxImagesCount = 4;
     export let images: string[] = [];
-    export let selectedIndex = 0;
+    export let selectedIndex = -1;
     export let readOnly = false;
 
     let isDragginOver = false;
@@ -11,8 +11,7 @@
     function removeImage(index: number) {
         images.splice(index, 1);
         images = images; // This is to tell the compiler to update so that the preview images element updates
-        selectedIndex =
-            !images[selectedIndex] && selectedIndex > 0 ? selectedIndex - 1 : selectedIndex;
+        selectedIndex = !images[selectedIndex] ? selectedIndex - 1 : selectedIndex;
     }
 
     function handleUpload(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
@@ -37,6 +36,7 @@
                 let newImage = e.target?.result as string;
                 if (!images.includes(newImage) && images.length < 5) {
                     images = [...images, newImage];
+                    selectedIndex += 1;
                 }
             });
             reader.readAsDataURL(file);

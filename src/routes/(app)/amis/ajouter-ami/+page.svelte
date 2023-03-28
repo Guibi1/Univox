@@ -25,8 +25,7 @@
         <SearchBar bind:query {handleSearch} />
 
         <i
-            name="search-alt"
-            class="h-10 w-10 cursor-pointer"
+            class="bx bx-search-alt h-10 w-10 cursor-pointer text-4xl"
             on:click={handleSearch}
             on:keypress={handleSearch}
         />

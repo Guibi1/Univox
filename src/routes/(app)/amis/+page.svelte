@@ -7,7 +7,7 @@
     let query = "";
     let searchResults: User[] = [];
 
-    async function handleSearch(query: string) {
+    async function handleSearch() {
         searchResults =
             query.length > 3 ? await (await fetch("/api/search/users/" + query)).json() : [];
     }
@@ -26,8 +26,7 @@
         <SearchBar bind:query {handleSearch} />
 
         <i
-            name="search-alt"
-            class="h-10 w-10 cursor-pointer"
+            class="bx bx-search-alt h-10 w-10 cursor-pointer text-4xl"
             on:click={handleSearch}
             on:keypress={handleSearch}
         />
@@ -47,13 +46,6 @@
         <li>
             <div class="flex items-center">
                 {ami.lastName + ", " + ami.firstName}
-
-                <!-- <i
-                    id="friend-option-menu"
-                    data-dropdown-toggle="dropdown"
-                    name="dots-vertical-rounded"
-                    class="self-baseline w-6 pb-0 cursor-pointer"
-                /> -->
                 <Dropdown
                     actions={[
                         [

@@ -50,10 +50,10 @@
 
 <div use:closeOnClickOutside={open}>
     <button on:click={toggle} class="hover:gray-100 flex p-2" type="button">
-        {#if $$slots}
+        {#if $$slots.default}
             <slot />
         {:else}
-            <i class="bx bx-dots-vertical-rounded text-4xl" />
+            <i class="bx bx-dots-vertical-rounded text-2xl" />
         {/if}
     </button>
 
