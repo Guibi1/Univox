@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { cubicInOut } from "svelte/easing";
+
     export const maxImagesCount = 4;
     export let images: string[] = [];
     export let selectedIndex = 0;
@@ -63,39 +65,31 @@
             destroy: () => setActive(false),
         };
     }
+
+    function fade(node: HTMLElement) {
+        const o = +getComputedStyle(node).opacity;
+        return {
+            duration: 250,
+            easing: cubicInOut,
+            css: (t: number) => `opacity: ${t * o}`,
+        };
+    }
 </script>
 
 <div class="relative py-4">
     <div
         use:dropFiles={images.length < maxImagesCount && !readOnly}
-        on:dragenter={() => {
-            isDragginOver = true;
-        }}
-        on:dragleave={() => {
-            isDragginOver = false;
-        }}
-        class={`relative flex h-64 items-stretch transition duration-300 ease-in-out ${
-            isDragginOver ? "bg-blue-secondary" : "bg-neutral-700"
-        }`}
+        on:dragenter={() => (isDragginOver = images.length < maxImagesCount && !readOnly)}
+        class="relative flex h-64 items-stretch bg-neutral-700"
     >
         {#if images.length === 0}
-            <label
-                class="flex cursor-pointer flex-col items-center justify-center whitespace-nowrap break-normal"
-            >
+            <label class="flex cursor-pointer flex-col items-center justify-center">
                 <box-icon
+                    class="animate-arrow pointer-events-none"
                     name="cloud-upload"
-                    class={`pointer-events-none transition duration-300 ease-in-out ${
-                        isDragginOver ? "opacity-50" : "opacity-100"
-                    }`}
                     size="4rem"
                 />
-                <p
-                    class={`pointer-events-none duration-300 ease-in-out ${
-                        isDragginOver ? "opacity-50" : "opacity-100"
-                    }`}
-                >
-                    Glissez ici des images de votre livre
-                </p>
+                <p class="pointer-events-none">Glissez ici des images de votre livre</p>
 
                 <input
                     type="file"
@@ -111,41 +105,36 @@
                 alt="Livre"
                 class={`pointer-events-none h-full w-full object-cover`}
             />
-            <div
-                class={`absolute z-10 flex h-full w-full flex-col items-center justify-center whitespace-nowrap break-normal bg-blue-secondary transition duration-300 ease-in-out ${
-                    isDragginOver ? "opacity-100" : "opacity-0"
-                }`}
-            >
-                <box-icon
-                    name="cloud-upload"
-                    class={`pointer-events-none transition duration-300 ease-in-out ${
-                        isDragginOver ? "opacity-50" : "opacity-100"
-                    }`}
-                    size="4rem"
-                />
-                <p
-                    class={`pointer-events-none duration-300 ease-in-out ${
-                        isDragginOver ? "opacity-20" : "opacity-100"
-                    }`}
-                >
-                    Glissez ici des images de votre livre
-                </p>
-            </div>
 
             {#if !readOnly}
                 <button
                     type="button"
                     on:click={() => removeImage(selectedIndex)}
-                    class="pointer-events-auto absolute top-2 right-2 z-20 fill-red-500"
+                    class="absolute top-2 right-2 fill-red-500"
                 >
                     <box-icon name="trash" size="2rem" />
                 </button>
             {/if}
         {/if}
+
+        {#if isDragginOver && !readOnly}
+            <div
+                transition:fade
+                on:dragleave={() => (isDragginOver = false)}
+                class="absolute inset-0 z-10 flex cursor-pointer flex-col items-center justify-center gap-1 bg-blue-secondary"
+            >
+                <box-icon
+                    class="pointer-events-none"
+                    name="cloud-upload"
+                    size="4rem"
+                />
+                <p class="pointer-events-none">Glissez ici des images de votre livre</p>
+            </div>
+        {/if}
     </div>
 
-    <div class="relative h-10">
-        <div class="absolute -top-8 z-20 flex w-full items-center justify-center gap-2">
+    <div class="flex h-12 items-center justify-center">
+        <div class="z-20 flex gap-2">
             {#each images as image, i}
                 <button type="button" on:click={() => (selectedIndex = i)}>
                     <img
@@ -158,10 +147,9 @@
                 </button>
             {/each}
 
-            <!--TODO the problem with having the images half in the big rectangle is the drag and drop animaiton can bug if you leave by this square-->
             {#if images.length < maxImagesCount && !readOnly}
                 <label
-                    class="z-20 flex aspect-square w-20 cursor-pointer items-center justify-center border-2 border-neutral-300 bg-neutral-500 object-cover transition duration-100 ease-in-out hover:scale-110"
+                    class="flex aspect-square w-20 cursor-pointer items-center justify-center border-2 border-neutral-300 bg-neutral-500 object-cover transition-[scale] hover:scale-110"
                 >
                     <box-icon class="absolute" name="image-add" size="2rem" />
                     <input
