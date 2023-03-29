@@ -12,8 +12,7 @@ export const actions = {
         const price = +(data.get("price")?.toString() ?? "0");
         const isbn = data.get("isbn")?.toString();
         const classCode = data.get("classCode")?.toString();
-
-        // TODO idk what it is now but there will be something here at some point on this branch
+        // TODO images
 
         if (!title || !author || !state || !price || !isbn || !classCode) {
             return fail(400, { title, author, state, price, isbn, classCode, missing: true }); //! I just copied this from another page and change da to title :P
@@ -25,7 +24,7 @@ export const actions = {
             sellerId: locals.user._id,
             title: title,
             ISBN: isbn,
-            src: "src",
+            src: "Images Need To Be Added Here :P",
             author: author,
             price: price,
             state: state,
