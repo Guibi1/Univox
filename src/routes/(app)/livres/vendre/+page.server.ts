@@ -12,7 +12,7 @@ export const actions = {
         const price = +(data.get("price")?.toString() ?? "0");
         const isbn = data.get("isbn")?.toString();
         const classCode = data.get("classCode")?.toString();
-        // TODO images
+        const images = data.get("images")?.toString().split("*-*");
 
         if (!title || !author || !state || !price || !isbn || !classCode) {
             return fail(400, { title, author, state, price, isbn, classCode, missing: true }); //! I just copied this from another page and change da to title :P

@@ -6,9 +6,12 @@
 
     export let form: ActionData;
     let loading = false;
+    let images: string[] = [];
 
-    const handleSubmit = (() => {
+    const handleSubmit = (({ data }) => {
         loading = true;
+        data.append("images", images.join("*-*"));
+
         return async ({ result, update }) => {
             if (result.type === "redirect") {
                 user.refresh();
@@ -68,7 +71,7 @@
     </div>
 
     <div class="flex flex-col items-stretch gap-5">
-        <Carousel />
+        <Carousel bind:images />
 
         <button class="filled" type="submit"> Créer l'annonce </button>
     </div>
