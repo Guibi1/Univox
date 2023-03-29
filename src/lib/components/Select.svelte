@@ -30,7 +30,7 @@
         <span>
             {options.find((o) => o.value === value)?.text ?? (value || "Choisir une option")}
         </span>
-        <box-icon name="chevron-down" class="aspect-square h-full text-xl text-white" />
+        <i class="bx bx-chevron-down aspect-square text-xl text-white" />
     </div>
 
     {#each options as option}
