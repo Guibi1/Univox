@@ -33,7 +33,7 @@ const AuthCheck = () => {
         await page.click('[type="submit"]');
         await expect(page).toHaveURL(univox.getAbsoluteURI("/"));
 
-        await page.click("nav .grid:nth-child(2) box-icon");
+        await page.click("nav .grid:nth-child(2) i");
 
         // Click on <a> "Déconnexion"
         await page.click('a[href="/deconnexion"]');
