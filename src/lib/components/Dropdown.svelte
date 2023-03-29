@@ -66,7 +66,11 @@
 </script>
 
 <div use:closeOnClickOutside={open} class="relative grid">
-    <button on:click={() => (open = !open)} class="hover:gray-100 flex items-center justify-center">
+    <button
+        on:click={() => (open = !open)}
+        type="button"
+        class="hover:gray-100 flex items-center justify-center"
+    >
         {#if $$slots.button}
             <slot name="button" />
         {:else}

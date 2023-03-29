@@ -8,13 +8,14 @@
 </script>
 
 <script lang="ts">
-    import { setContext } from "svelte";
+    import { createEventDispatcher, setContext } from "svelte";
     import Dropdown from "./Dropdown.svelte";
     import Option from "./Option.svelte";
 
     export let value: string = "";
     export let name: string = "";
 
+    const dispatch = createEventDispatcher();
     let options: SelectOption[] = [];
 
     setContext<SelectContext>("select", {
@@ -34,7 +35,13 @@
     </div>
 
     {#each options as option}
-        <Option text={option.text} onClick={() => (value = option.value ?? option.text)} />
+        <Option
+            text={option.text}
+            onClick={() => {
+                value = option.value ?? option.text;
+                dispatch("change", value);
+            }}
+        />
     {/each}
 </Dropdown>
 
