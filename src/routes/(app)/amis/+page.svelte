@@ -1,5 +1,6 @@
 <script lang="ts">
     import Dropdown from "$lib/components/Dropdown.svelte";
+    import Option from "$lib/components/Option.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
     import friends from "$lib/stores/friends";
     import type { User } from "$lib/Types";
@@ -46,35 +47,22 @@
         <li>
             <div class="flex items-center">
                 {ami.lastName + ", " + ami.firstName}
-                <Dropdown
-                    actions={[
-                        [
-                            {
-                                title: "Consulter l'horaire",
-                                onClick: () => {
-                                    console.log("TODO: afficher l'horaire");
-                                },
-                            },
-
-                            {
-                                title: "Horaire commun",
-                                onClick: () => {
-                                    console.log("TODO: afficher l'horaire");
-                                },
-                            },
-                        ],
-
-                        [
-                            {
-                                title: "Retirer l'ami.e",
-                                color: "red",
-                                onClick: () => {
-                                    friends.remove(ami._id);
-                                },
-                            },
-                        ],
-                    ]}
-                />
+                <Dropdown>
+                    <Option
+                        text="Consulter l'horaire"
+                        onClick={() => console.log("TODO: afficher l'horaire")}
+                    />
+                    <Option
+                        text="Horaire commun"
+                        onClick={() => console.log("TODO: afficher l'horaire")}
+                    />
+                    <Option
+                        separate
+                        text="Retirer l'ami.e"
+                        color="red"
+                        onClick={() => friends.remove(ami._id)}
+                    />
+                </Dropdown>
             </div>
         </li>
     {/each}

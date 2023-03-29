@@ -1,13 +1,14 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import Dropdown from "$lib/components/Dropdown.svelte";
+    import Option from "$lib/components/Option.svelte";
     import LogoText from "$src/assets/logo-text.svelte";
 
     const pages = [
-        { title: "Accueil", href: "/" },
-        { title: "Livres", href: "/livres" },
-        { title: "Horaires", href: "/horaire" },
-        { title: "Amis", href: "/amis" },
+        { text: "Accueil", href: "/" },
+        { text: "Livres", href: "/livres" },
+        { text: "Horaires", href: "/horaire" },
+        { text: "Amis", href: "/amis" },
     ];
 
     $: currentPage = pages.reduce(
@@ -19,7 +20,7 @@
 <nav class="flex h-14 items-stretch justify-between bg-blue-secondary">
     <div class="grid aspect-square tablet:hidden">
         <Dropdown actions={[pages]} position="bottom-right">
-            <i class="bx bx-menu" />
+            <i slot="button" class="bx bx-menu" />
         </Dropdown>
     </div>
 
@@ -37,7 +38,7 @@
                     href={page.href}
                     class="flex h-full items-center px-4 text-center text-lg text-white transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
                 >
-                    {page.title}
+                    {page.text}
 
                     {#if currentPage === i}
                         <span class="absolute bottom-0 left-1/2 -translate-x-1/2">
@@ -53,23 +54,18 @@
 
     <div class="flex flex-row">
         <div class="grid aspect-square">
-            <Dropdown actions={[]} position="bottom-left">
-                <i class="bx bx-bell text-2xl" />
+            <Dropdown position="bottom-left">
+                <i slot="button" class="bx bx-bell text-2xl" />
             </Dropdown>
         </div>
 
         <div class="grid aspect-square">
-            <Dropdown
-                actions={[
-                    [
-                        { title: "Mon Profil", href: "/profil" },
-                        { title: "Paramètres", href: "/parametres" },
-                    ],
-                    [{ title: "Se déconnecter", color: "red", href: "/deconnexion" }],
-                ]}
-                position="bottom-left"
-            >
-                <i class="bx bx-user text-2xl" />
+            <Dropdown position="bottom-left">
+                <i slot="button" class="bx bx-user text-2xl" />
+
+                <Option text="Mon Profil" href="/profil" />
+                <Option text="Paramètres" href="/parametres" />
+                <Option text="Se déconnecter" href="/deconnexion" color="red" separate />
             </Dropdown>
         </div>
     </div>
