@@ -1,6 +1,8 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
     import Carousel from "$lib/components/Carousel.svelte";
+    import Option from "$lib/components/Option.svelte";
+    import Select from "$lib/components/Select.svelte";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
 
@@ -34,39 +36,93 @@
     method="post"
 >
     <div class="flex flex-col items-stretch gap-5">
-        <label data-error={form?.missing}>
+        <label data-error={form?.invalidTitle}>
             Nom du livre
-            <input name="title" type="text" required placeholder=" " />
+            <input
+                name="title"
+                type="text"
+                required
+                value={form?.title ?? ""}
+                placeholder=" "
+                on:input={() => form && (form.invalidTitle = false)}
+            />
+            {#if form?.invalidTitle}
+                <span>non</span>
+            {/if}
         </label>
 
-        <label>
+        <label data-error={form?.invalidAuthor}>
             Nom de(s) l'auteur(s)
-            <input name="author" type="text" required placeholder=" " />
+            <input
+                name="author"
+                type="text"
+                required
+                value={form?.author ?? ""}
+                placeholder=" "
+                on:input={() => form && (form.invalidAuthor = false)}
+            />
+            {#if form?.invalidAuthor}
+                <span>non</span>
+            {/if}
         </label>
 
-        <label>
+        <div class="label" data-error={form?.invalidState}>
             L'état du livre
-            <select name="state" required>
-                <option>Neuf</option>
-                <option>Usagé - Comme neuf</option>
-                <option>Usagé - Bon état</option>
-                <option>Usagé - Endommagé</option>
-            </select>
-        </label>
+            <Select name="state" on:change={() => form && (form.invalidState = false)}>
+                <Option text="Neuf" />
+                <Option text="Usagé - Comme neuf" />
+                <Option text="Usagé - Bon état" />
+                <Option text="Usagé - Endommagé" />
+            </Select>
+            {#if form?.invalidState}
+                <span>non</span>
+            {/if}
+        </div>
 
-        <label>
+        <label data-error={form?.invalidPrice}>
             Prix de vente
-            <input name="price" type="text" maxlength="3" required placeholder=" " />
+            <input
+                name="price"
+                type="text"
+                maxlength="3"
+                required
+                value={form?.price ?? ""}
+                placeholder=" "
+                on:input={() => form && (form.invalidPrice = false)}
+            />
+            {#if form?.invalidPrice}
+                <span>non</span>
+            {/if}
         </label>
 
-        <label>
+        <label data-error={form?.invalidISBN}>
             ISBN
-            <input name="isbn" type="text" placeholder=" " required/>
+            <input
+                name="isbn"
+                type="text"
+                required
+                value={form?.isbn ?? ""}
+                placeholder=" "
+                on:input={() => form && (form.invalidISBN = false)}
+            />
+            {#if form?.invalidISBN}
+                <span>non</span>
+            {/if}
         </label>
 
-        <label>
+        <label data-error={form?.invalidClassCode}>
             Cours
-            <input name="classCode" type="text" placeholder=" " required />
+            <input
+                name="classCode"
+                type="text"
+                required
+                value={form?.classCode ?? ""}
+                placeholder=" "
+                on:input={() => form && (form.invalidClassCode = false)}
+            />
+            {#if form?.invalidClassCode}
+                <span>non</span>
+            {/if}
         </label>
     </div>
 
