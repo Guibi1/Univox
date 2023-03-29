@@ -20,7 +20,7 @@
 <nav class="flex h-14 items-stretch justify-between bg-blue-secondary">
     <div class="grid aspect-square tablet:hidden">
         <Dropdown actions={[pages]} position="bottom-right">
-            <i slot="button" class="bx bx-menu" />
+            <i slot="button" class="bx bx-menu text-2xl" />
         </Dropdown>
     </div>
 

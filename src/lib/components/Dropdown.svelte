@@ -25,7 +25,6 @@
 
     setContext<DropdownContext>("dropdown", {
         addOption: (action: DropdownOption) => {
-            console.log("test");
             actions[actions.length - 1].push(action);
             actions = actions;
         },
