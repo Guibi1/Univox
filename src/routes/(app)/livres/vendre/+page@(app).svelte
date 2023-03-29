@@ -61,7 +61,7 @@
 
         <label>
             ISBN
-            <input name="isbn" type="text" placeholder=" " />
+            <input name="isbn" type="text" placeholder=" " required/>
         </label>
 
         <label>
