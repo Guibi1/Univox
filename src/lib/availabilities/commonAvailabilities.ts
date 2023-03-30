@@ -79,12 +79,12 @@ let schedule1Con: Class[] = [
 let schedule1: Schedule = { _id: new mongoose.Types.ObjectId(), periods: schedule1Con };
 
 //Comment faire pour run cette partie code
-for (let i = 0; i < findAvailabilities(schedule, schedule1).periods.length; i++) {
-    console.log(findAvailabilities(schedule, schedule1).periods[i].timeStart);
-    console.log(findAvailabilities(schedule, schedule1).periods[i].timeEnd);
+for (let i = 0; i < findTimeUnavailable(schedule, schedule1).periods.length; i++) {
+    console.log(findTimeUnavailable(schedule, schedule1).periods[i].timeStart);
+    console.log(findTimeUnavailable(schedule, schedule1).periods[i].timeEnd);
 }
 
-function findAvailabilities(ownSchedule: Schedule, theirSchedule: Schedule) {
+function findTimeUnavailable(ownSchedule: Schedule, theirSchedule: Schedule) {
     let timeStartFinal;
     let timeEndFinal;
     let scheduleFinal = <Schedule>{};
