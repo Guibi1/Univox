@@ -39,6 +39,8 @@
             timeEnd: dayjs().weekday(6).hour(20).minute(0),
         },
     ];
+
+    console.log()
 </script>
 
 <svelte:head>
