@@ -19,9 +19,9 @@
 <h1 class="pt-2 text-center dark:bg-neutral-900">Ajouter des amis</h1>
 
 <div
-    class="sticky top-0 z-50 flex justify-center border-b bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900"
+class="grid grid-cols-3 border-b bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900"
 >
-    <div class="ml-10 flex w-1/2 flex-row items-center gap-3">
+    <div class="col-span-2 flex w-1/2 flex-row items-center gap-3">
         <SearchBar bind:query {handleSearch} />
 
         <box-icon
@@ -32,7 +32,8 @@
         />
     </div>
 
-    <a href="/amis"> Liste d'amis </a>
+    <a class="justify-self-end" 
+    href="/amis"> Liste d'amis </a>
 </div>
 
 {#each searchResults as user}
