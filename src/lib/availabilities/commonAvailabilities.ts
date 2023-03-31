@@ -66,6 +66,17 @@ const periods1Test: Class[] = [
         timeStart: dayjs().hour(12).minute(0),
         timeEnd: dayjs().hour(20).minute(0),
     },
+    {
+        _id: new mongoose.Types.ObjectId(),
+        name: "aName",
+        group: 105,
+        local: "B-105",
+        type: "L",
+        teacher: "asdjkfwlbk",
+        virtual: false,
+        timeStart: dayjs().hour(20).minute(0),
+        timeEnd: dayjs().hour(24).minute(0),
+    },
 ];
 const schedule1Test: Schedule = { _id: new mongoose.Types.ObjectId(), periods: periods1Test };
 
@@ -75,6 +86,7 @@ export function show() {
         console.log(periodsFinal[i].timeStart);
         console.log(periodsFinal[i].timeEnd);
     }
+    console.log("----------------------------------------------");
     const periodsCom = findCommonAvailability(periodsFinal);
     for (let i = 0; i < periodsCom.length; i++) {
         console.log(periodsCom[i].timeStart);
@@ -90,7 +102,17 @@ function findCommonAvailability(periods: Period[]) {
     let timeEndCom = periods[0].timeStart;
     const periodsCom: Period[] = [];
 
-    if (!timeStartCom.isSame(timeEndCom)) {
+    //Beginning of day
+    /*The if is supposed to have a isSame, but because some
+    computers are slower than others, we might have a period
+    of, for example : 20:00:05 to 20:00:06.
+    So the add 1 minute helps to check if timeStartCom and
+    timeEndCom only have a difference of 1 minute; they will
+    not be counted as a period.
+    (We don't use time offSet so that our program
+    works for everyone, and to keep the original
+    value of timeStartCom)*/
+    if (timeStartCom.add(1, "minute").isBefore(timeEndCom)) {
         periodsCom.push({
             name: "Indisponible",
             timeStart: timeStartCom,
@@ -98,22 +120,44 @@ function findCommonAvailability(periods: Period[]) {
         });
     }
 
+    //Everything inbetween
     for (let i = 0; i < periods.length; i++) {
         if (i === periods.length - 1) {
             break;
         }
         timeStartCom = periods[i].timeEnd;
         timeEndCom = periods[i + 1].timeStart;
-        periodsCom.push({
-            name: "Indisponible",
-            timeStart: timeStartCom,
-            timeEnd: timeEndCom,
-        });
+        /*The if is supposed to have a isSame, but because some
+        computers are slower than others, we might have a period
+        of, for example : 20:00:05 to 20:00:06.
+        So the add 1 minute helps to check if timeStartCom and
+        timeEndCom only have a difference of 1 minute; they will
+        not be counted as a period.
+        (We don't use time offSet so that our program
+        works for everyone, and to keep the original
+        value of timeStartCom)*/
+        if (timeStartCom.add(1, "minute").isBefore(timeEndCom)) {
+            periodsCom.push({
+                name: "Indisponible",
+                timeStart: timeStartCom,
+                timeEnd: timeEndCom,
+            });
+        }
     }
 
+    //Ending of day
     timeStartCom = periods[periods.length - 1].timeEnd;
-    timeEndCom = dayjs().hour(24).minute(0);
-    if (!timeStartCom.isSame(timeEndCom)) {
+    timeEndCom = dayjs().hour(24).minute(0).second(0);
+    /*The if is supposed to have a isSame, but because some
+    computers are slower than others, we might have a period
+    of, for example : 20:00:05 to 20:00:06.
+    So the add 1 minute helps to check if timeStartCom and
+    timeEndCom only have a difference of 1 minute; they will
+    not be counted as a period.
+    (We don't use time offSet so that our program
+    works for everyone, and to keep the original
+    value of timeStartCom)*/
+    if (timeStartCom.add(1, "minute").isBefore(timeEndCom)) {
         periodsCom.push({
             name: "Indisponible",
             timeStart: timeStartCom,
@@ -170,5 +214,19 @@ function findTimeUnavailable(ownPeriods: Period[], theirPeriods: Period[]) {
             }
         }
     }
+
+    //Checks if their are more periods in theirPeriods (to automaticly put them in finals)
+    for (let i = 0; i < theirPeriods.length; i++) {
+        if (!theirPeriods[i].timeStart.isBefore(timeEndFinal)) {
+            timeStartFinal = theirPeriods[i].timeStart;
+            timeEndFinal = theirPeriods[i].timeEnd;
+            periodsFinal.push({
+                name: "Indisponible",
+                timeStart: timeStartFinal,
+                timeEnd: timeEndFinal,
+            });
+        }
+    }
+
     return periodsFinal;
 }
