@@ -1,6 +1,6 @@
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
-import type { RequestHandler } from "./[query]/$types";
+import type { RequestHandler } from "./$types";
 
 export const POST = (async ({ locals, request }) => {
     if (!locals.user) throw error(401);

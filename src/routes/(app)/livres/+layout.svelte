@@ -31,7 +31,7 @@
 </a>
 
 <a
-    href={data[current].href}
+    href="nouveau-livre"
     class="fixed left-8 bottom-8 flex items-center gap-0.5 rounded-full bg-cyan-300 p-2 px-4 text-2xl text-black"
 >
     <box-icon name="book-add" class="h-8 w-8 fill-black" />

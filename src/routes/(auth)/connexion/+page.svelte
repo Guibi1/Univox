@@ -3,6 +3,8 @@
     import { page } from "$app/stores";
     import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
+    import LogoText from "$src/assets/logo-text.svelte";
+    import Logo from "$src/assets/logo.svelte";
 
     export let form: ActionData;
     let loading = false;
@@ -23,7 +25,12 @@
     <title>Univox | Connexion</title>
 </svelte:head>
 
-<h1 class="pb-4 text-center">Bienvenue sur Univox</h1>
+<h1 class="self-center pb-1">Bienvenue sur</h1>
+
+<div class="flex gap-4 self-center pb-4">
+    <LogoText width="9rem" />
+    <Logo size="4rem" />
+</div>
 
 <form
     use:enhance={handleSubmit}
@@ -31,7 +38,7 @@
     method="post"
     action="?/login"
 >
-    <div class="grid grid-rows-2 gap-4">
+    <div class="flex flex-col gap-4">
         <label>
             No de DA
             <input
@@ -61,13 +68,13 @@
             {/if}
         </label>
 
-        <a href={"/mot-de-passe-oublié" + $page.data.params} class="text-right">
+        <a href={"/mot-de-passe-oublié" + $page.data.params} class="self-end">
             Mot de passe oublié ?
         </a>
     </div>
 
     {#if !loading}
-        <button type="submit" class="flex w-7/12 items-center justify-center self-center">
+        <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
             Se connecter <box-icon name="chevron-right" />
         </button>
     {:else}

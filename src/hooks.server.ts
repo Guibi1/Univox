@@ -1,6 +1,6 @@
 import * as db from "$lib/server/db";
+import type { Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
-import type { Handle } from "@sveltejs/kit/types/internal";
 
 const userLocalsHandle = (async ({ event, resolve }) => {
     const user = await db.getUserFromToken(event.cookies.get("token"));
@@ -8,11 +8,7 @@ const userLocalsHandle = (async ({ event, resolve }) => {
         event.locals.user = user;
         event.locals.friends = await db.getFriends(user);
         event.locals.schedule = await db.getSchedule(user);
-    } else {
-        event.locals.user = null;
-        event.locals.friends = [];
     }
-
     return resolve(event);
 }) satisfies Handle;
 
@@ -24,4 +20,4 @@ const colorSchemeHandle = (async ({ event, resolve }) => {
     });
 }) satisfies Handle;
 
-export const handle = sequence(userLocalsHandle, colorSchemeHandle);
+export const handle = sequence(userLocalsHandle, settingsHandle, colorSchemeHandle);

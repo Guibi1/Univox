@@ -1,7 +1,6 @@
 import * as db from "$lib/server/db";
 import * as omnivox from "$lib/server/omnivox";
-import { fail, redirect } from "@sveltejs/kit";
-import bcryptjs from "bcryptjs";
+import { fail } from "@sveltejs/kit";
 import mongoose from "mongoose";
 import type { Actions } from "./$types";
 
@@ -33,7 +32,8 @@ export const actions = {
             return fail(401, { da, omnivoxIncorrect: true });
         }
     },
-    secondStep: async ({ request, url }) => {
+
+    secondStep: async ({ request, cookies }) => {
         const data = await request.formData();
         const da = data.get("da")?.toString();
         const omnivoxPassword = data.get("omnivoxPassword")?.toString();
@@ -44,21 +44,17 @@ export const actions = {
         }
 
         // Second step data
-        const firstName = data.get("firstName")?.toString();
-        const lastName = data.get("lastName")?.toString();
+        let firstName = data.get("firstName")?.toString();
+        let lastName = data.get("lastName")?.toString();
         const email = data.get("email")?.toString();
         const password = data.get("password")?.toString();
 
         // Validate second step input
         if (
-            !firstName ||
-            !/\D{2,}/.test(firstName) ||
-            !lastName ||
-            !/\D{2,}/.test(lastName) ||
             !password ||
-            !/.{8,}/.test(password) ||
+            !/^.{8,}$/.test(password) ||
             !email ||
-            /^[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+$/i.test(email)
+            !/^[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+$/.test(email)
         ) {
             return fail(400, {
                 da,
@@ -68,6 +64,17 @@ export const actions = {
                 email,
                 missing: true,
             });
+        }
+
+        // Login via Omnivox to verify the user's identity
+        try {
+            const cookie = await omnivox.login(da, omnivoxPassword);
+            const html = await omnivox.fetchSchedulePageHTML(cookie, 2023, omnivox.Semester.Winter);
+            const info = omnivox.schedulePageToName(html);
+            firstName = info.firstName;
+            lastName = info.lastName;
+        } catch (e) {
+            return fail(401, { da, omnivoxIncorrect: true });
         }
 
         // Make sure the DA doesn't already has an account
@@ -82,30 +89,23 @@ export const actions = {
             });
         }
 
-        // Login via Omnivox to verify the user's identity
-        try {
-            await omnivox.login(da, omnivoxPassword);
-        } catch (e) {
-            return fail(401, { da, omnivoxIncorrect: true });
-        }
-
-        // Make sure the DA doesn't already has an account
-        if (await db.findUser({ da })) {
-            return fail(400, { da, daExists: true });
-        }
-
         // Everything it good!
-        await db.createUser({
+        const user = {
             _id: new mongoose.Types.ObjectId(),
             da: da,
-            passwordHash: await bcryptjs.hash(password ?? "", 11),
             email: email ?? "",
             firstName: firstName ?? "",
             lastName: lastName ?? "",
             scheduleId: new mongoose.Types.ObjectId(),
+            settingsId: new mongoose.Types.ObjectId(),
             friendsId: [],
-        });
+        };
 
-        throw redirect(302, "/connexion?" + url.searchParams);
+        await db.createUser(user, password);
+        const token = await db.createToken(user);
+
+        cookies.set("token", token, { path: "/", httpOnly: true, secure: true, sameSite: true });
+
+        return { success: true };
     },
 } satisfies Actions;

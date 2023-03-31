@@ -42,7 +42,7 @@
         class="relative grid w-[250%] grid-cols-2 gap-[20%] transition-[right]"
         style="right: {firstStep ? '0' : '150'}%;"
     >
-        <div class="grid gap-4">
+        <div class="flex flex-col gap-4">
             <label data-error={form?.daExists}>
                 No de DA
                 <input
@@ -76,7 +76,7 @@
             </label>
         </div>
 
-        <div hidden={firstStep} class="grid gap-4">
+        <div hidden={firstStep} class="flex flex-col gap-4">
             <span>Il manque quelques information pour finaliser votre compte :</span>
 
             <label data-error={form?.emailExists}>
@@ -108,16 +108,19 @@
                 />
             </label>
 
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <a on:click={() => (firstStep = true)} class="self-left flex items-center">
-                <box-icon name="chevron-left" /> Retour
-            </a>
+            <button
+                class="flex items-center self-start"
+                type="button"
+                on:click={() => (firstStep = true)}
+            >
+                <box-icon name="chevron-left" />
+                Retour
+            </button>
         </div>
     </div>
 
     {#if !loading}
-        <button type="submit" class="flex w-7/12 items-center justify-center self-center">
+        <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
             {firstStep ? "Suivant" : "S'inscrire"} <box-icon name="chevron-right" />
         </button>
     {:else}

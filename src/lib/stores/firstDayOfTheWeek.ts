@@ -2,24 +2,24 @@ import { browser } from "$app/environment";
 import dayjs, { Dayjs } from "dayjs";
 import { derived, writable } from "svelte/store";
 
-export type StartWeekDate = "Samedi" | "Dimanche" | "Lundi";
+export type FirstDayOfTheWeek = "Samedi" | "Dimanche" | "Lundi";
 
-function createStartWeekDateStore() {
-    const { subscribe, set: setStore } = writable<StartWeekDate>("Dimanche");
+function createFirstDayOfTheWeekStore() {
+    const { subscribe, set: setStore } = writable<FirstDayOfTheWeek>("Dimanche");
     let bc: BroadcastChannel;
 
     if (browser) {
-        bc = new BroadcastChannel("New startWeekDate data");
+        bc = new BroadcastChannel("New FirstDayOfTheWeek data");
         bc.addEventListener("message", (e) => setStore(e.data));
     }
 
-    function set(date: StartWeekDate) {
-        setStore(date);
-        fetch("/api/settings/startWeekDate", {
+    function set(day: FirstDayOfTheWeek) {
+        setStore(day);
+        fetch("/api/settings/firstDayOfTheWeek", {
             method: "PUT",
-            body: date,
+            body: day,
         });
-        if (bc) bc.postMessage(date);
+        if (bc) bc.postMessage(day);
     }
 
     return {
@@ -29,13 +29,13 @@ function createStartWeekDateStore() {
     };
 }
 
-const startWeekDate = createStartWeekDateStore();
-export default startWeekDate;
+const firstDayOfTheWeek = createFirstDayOfTheWeekStore();
+export default firstDayOfTheWeek;
 
-export const weekdayOffset = derived(startWeekDate, ($startWeekDate) => {
+export const weekdayOffset = derived(firstDayOfTheWeek, ($firstDayOfTheWeek) => {
     const currentDate = dayjs().day();
 
-    let offset = $startWeekDate === "Samedi" ? -1 : $startWeekDate === "Lundi" ? 1 : 0;
+    let offset = $firstDayOfTheWeek === "Samedi" ? -1 : $firstDayOfTheWeek === "Lundi" ? 1 : 0;
 
     if (offset == 1 && currentDate == 0) {
         offset -= 7;

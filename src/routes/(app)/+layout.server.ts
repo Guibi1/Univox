@@ -4,8 +4,13 @@ import type { LayoutServerLoad } from "./$types";
 export const load = (({ locals, url, depends }) => {
     depends("app:user");
     if (!locals.user) {
-        throw redirect(307, `/connexion?ref=${url.pathname}`);
+        throw redirect(302, `/connexion?ref=${url.pathname}`);
     }
 
-    return { storesInitialValue: null };
+    return {
+        storesInitialValue: {
+            serializedUser: JSON.stringify(locals.user),
+            serializedFriends: JSON.stringify(locals.friends),
+        },
+    };
 }) satisfies LayoutServerLoad;
