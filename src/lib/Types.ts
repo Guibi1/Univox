@@ -40,7 +40,7 @@ export interface Class extends Period {
     code?: string;
     group: number;
     local: string;
-    type: "T" | "L";
+    theory: boolean;
     teacher: string;
     virtual: boolean;
     timeStart: Dayjs;

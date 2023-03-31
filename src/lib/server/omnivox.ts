@@ -208,7 +208,7 @@ export function schedulePageToClasses(HTML: string): Class[] {
                 code: match[2],
                 group: Number(match[3]),
                 local: match[4],
-                type: match[5] === "T" ? "T" : "L",
+                theory: match[5] === "T",
                 teacher: match[6],
                 virtual: match[7] === "Présentiel",
                 timeStart: timeStart.weekday(day),
