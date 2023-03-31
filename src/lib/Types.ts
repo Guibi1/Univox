@@ -13,6 +13,12 @@ export interface User {
     settingsId: mongoose.Types.ObjectId;
 }
 
+export interface Group {
+    _id: mongoose.Types.ObjectId;
+    name: string;
+    usersId: mongoose.Types.ObjectId[];
+}
+
 export interface Book {
     _id: mongoose.Types.ObjectId;
     code: string;

@@ -1,9 +1,9 @@
-import type { User } from "$lib/Types";
+import type { Group } from "$lib/Types";
 import type mongoose from "mongoose";
 import { writable } from "svelte/store";
 
 function createGroupsStore() {
-    const { subscribe, set } = writable<User[]>();
+    const { subscribe, set } = writable<Group[]>();
 
     async function refresh() {
         const groups = await (await fetch("/api/groups")).json();
@@ -32,7 +32,7 @@ function createGroupsStore() {
         refresh();
     }
 
-    async function remove(id: mongoose.Types.ObjectId) {
+    async function quit(id: mongoose.Types.ObjectId) {
         await fetch("/api/groups", {
             method: "DELETE",
             headers: {
@@ -47,7 +47,7 @@ function createGroupsStore() {
         subscribe,
         set,
         create,
-        remove,
+        quit,
         refresh,
     };
 }
