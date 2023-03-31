@@ -29,7 +29,6 @@ export interface Schedule {
 }
 
 export interface Period {
-    _id: mongoose.Types.ObjectId;
     name: string;
     timeStart: Dayjs;
     timeEnd: Dayjs;

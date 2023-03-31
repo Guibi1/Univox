@@ -178,6 +178,7 @@ export async function addPeriodsToSchedule(
         return false;
     }
 
+    console.log("🚀 ~ file: db.ts:183 ~ periods:", periods)
     await Schedules.findByIdAndUpdate(scheduleId, {
         $push: { periods: periods },
     });

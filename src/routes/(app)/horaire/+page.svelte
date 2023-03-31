@@ -4,21 +4,24 @@
     import mongoose from "mongoose";
     import type { User } from "$lib/Types";
     import horaire from "$lib/stores/horaire";
+    import ScheduleView from "$lib/components/ScheduleView.svelte";
+    import type { Class } from "$lib/Types";
 
-    let schedule : User[] = [];
-    async function getPeriod() {
-        schedule = await (await fetch("/api/horaire")).json();
-    }
-
-
+    // fetch the user schedule from the server
     async function addPeriod() {
         await horaire.add({
             name: "Period 1",
             timeStart: dayjs().hour(14).minute(0),
             timeEnd: dayjs().hour(16).minute(0),
-            _id: new mongoose.Types.ObjectId(),
         });
     }
+
+
+    let schedule: Class[] = [];
+    async function getPeriod() {
+        schedule = await (await fetch("/api/schedule")).json();
+    }
+
 </script>
 
 <svelte:head>
@@ -35,7 +38,11 @@
             <box-icon name="plus" />
             <span class="ml-2">Évènement</span>
         </button>
-        <!-- {#each $currentHoraire as period}
+
+        <ScheduleView {schedule}/>
+
+
+        <!-- {#eachsche as period}
       <div>{period.name} - {period.timeStart.format('hh:mm A')} to {period.timeEnd.format('hh:mm A')}</div>
     {/each} -->
     </div>
