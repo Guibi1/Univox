@@ -86,6 +86,7 @@
                 type="text"
                 maxlength="3"
                 required
+                pattern={"\\d{1,3}"}
                 value={form?.price ?? ""}
                 placeholder=" "
                 on:input={() => form && (form.invalidPrice = false)}

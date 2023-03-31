@@ -84,7 +84,7 @@
                 <input
                     name="email"
                     type="email"
-                    pattern="^[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+$"
+                    pattern="[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+"
                     required={!firstStep}
                     placeholder=" "
                     value={form?.email ?? ""}
