@@ -8,11 +8,13 @@
 
     export let form: ActionData;
     let loading = false;
-    let images: string[] = [];
+    let images: File[] = [];
 
     const handleSubmit = (({ data }) => {
         loading = true;
-        data.append("images", images.join("*-*"));
+        for (const i in images) {
+            data.append("image" + i, images[i]);
+        }
 
         return async ({ result, update }) => {
             if (result.type === "redirect") {
@@ -128,7 +130,7 @@
     </div>
 
     <div class="flex flex-col items-stretch gap-5">
-        <Carousel bind:images />
+        <Carousel bind:files={images} />
 
         <button class="filled" type="submit"> Créer l'annonce </button>
     </div>

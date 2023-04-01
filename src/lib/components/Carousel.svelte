@@ -3,6 +3,7 @@
 
     export const maxImagesCount = 4;
     export let images: string[] = [];
+    export let files: File[] = [];
     export let selectedIndex = -1;
     export let readOnly = false;
 
@@ -10,6 +11,7 @@
 
     function removeImage(index: number) {
         images.splice(index, 1);
+        files.splice(index, 1);
         images = images; // This is to tell the compiler to update so that the preview images element updates
         selectedIndex = !images[selectedIndex] ? selectedIndex - 1 : selectedIndex;
     }
@@ -26,8 +28,8 @@
         isDragginOver = false;
     }
 
-    function readImages(files: FileList) {
-        for (let file of files) {
+    function readImages(filelist: FileList) {
+        for (let file of filelist) {
             if (file.type !== "image/png" && file.type !== "image/jpeg") return;
             if (images.length >= maxImagesCount) return;
             let reader = new FileReader();
@@ -36,6 +38,7 @@
                 let newImage = e.target?.result as string;
                 if (!images.includes(newImage) && images.length < 5) {
                     images = [...images, newImage];
+                    files.push(file);
                     selectedIndex += 1;
                 }
             });
