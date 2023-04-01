@@ -17,7 +17,9 @@ type Metadata = {
     mimeType: string;
 };
 
-export async function uploadBookImage(blob: Blob, filename: string) {
+export async function uploadBookImage(blob: Blob, filename: string): Promise<boolean> {
+    if (!blob.type.startsWith("image")) return false;
+
     const stream = bookBucket.openUploadStream(filename, {
         metadata: { mimeType: blob.type } as Metadata,
     });
@@ -39,10 +41,10 @@ export async function uploadBookImage(blob: Blob, filename: string) {
     });
     readable.pipe(stream);
 
-    return new Promise<void>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+        readable.on("error", reject);
         stream.on("error", reject);
-        stream.on("finish", resolve);
-        stream.on("error", reject);
+        stream.on("finish", () => resolve(true));
     });
 }
 
