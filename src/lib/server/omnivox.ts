@@ -56,11 +56,14 @@ export async function fetchSchedulePageHTML(
     );
 
     // Fetch the actual schedule data
-    const visualiseRes = await fetch("https://bdeb-estd.omnivox.ca:443/estd/hrre/" + visualiseURL, {
-        headers: {
-            Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
-        },
-    });
+    const visualiseRes = await fetch(
+        "https://bdeb-estd.omnivox.ca:443/estd/hrre/" + visualiseURL + "&typeHoraire=Session",
+        {
+            headers: {
+                Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
+            },
+        }
+    );
 
     const buffer = await visualiseRes.arrayBuffer();
     const decoder = new TextDecoder("iso-8859-1");
