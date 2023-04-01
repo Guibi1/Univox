@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { Readable } from "stream";
 
 function connect() {
-    if (!mongoose.connection) return;
+    if (mongoose.connection.readyState != 1) return;
     bookBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
         bucketName: "bookImages",
     });
