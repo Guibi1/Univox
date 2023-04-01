@@ -75,14 +75,12 @@
 
     {#if !loading}
         <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
-            Se connecter <box-icon name="chevron-right" />
+            Se connecter <i class="bx bx-chevron-right text-lg" />
         </button>
     {:else}
-        <box-icon
-            name="loader-circle"
-            animation="spin"
-            class="my-6 flex h-10 w-full items-center"
-        />
+        <div class="flex items-center justify-center">
+            <i class="bx bx-loader-circle bx-spin my-2 text-5xl" />
+        </div>
     {/if}
 </form>
 

@@ -4,12 +4,12 @@
     const data = {
         vendre: {
             href: "mes-livres",
-            iconName: "book-open",
+            iconName: "bx-book-open",
             text: "Mes livres",
         },
         acheter: {
             href: "achat",
-            iconName: "book-heart",
+            iconName: "bx-book-heart",
             text: "Acheter",
         },
     };
@@ -22,17 +22,17 @@
 
 <a
     href={data[current].href}
-    class="fixed right-8 bottom-8 flex w-48 items-center gap-0.5 rounded-full bg-blue-300 !fill-black p-2 px-4 text-2xl !text-black"
+    class="fixed right-8 bottom-8 flex w-48 items-center gap-0.5 rounded-full bg-blue-primary p-2 px-4 text-2xl !text-black"
 >
-    <box-icon name={data[current].iconName} class="h-8 w-8 fill-black" />
+    <i class={`${data[current].iconName} bx text-3xl`} />
     <span class="flex-1 text-center">
         {data[current].text}
     </span>
 </a>
 
 <a
-    href="nouveau-livre"
-    class="fixed left-8 bottom-8 flex items-center gap-0.5 rounded-full bg-cyan-300 p-2 px-4 text-2xl text-black"
+    href="vendre"
+    class="fixed left-8 bottom-8 flex items-center gap-0.5 rounded-full bg-blue-primary p-2 px-4 text-2xl !text-black"
 >
-    <box-icon name="book-add" class="h-8 w-8 fill-black" />
+    <i class="bx bx-book-add text-3xl" />
 </a>

@@ -17,3 +17,6 @@
         <Option text="Dimanche" />
     </Select>
 </div>
+
+<!--Pour donner un sens de sécurité aux utilisateurs-->
+<a href="/">Sauvgarder et quitter</a>

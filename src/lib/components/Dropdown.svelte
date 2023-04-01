@@ -25,7 +25,6 @@
 
     setContext<DropdownContext>("dropdown", {
         addOption: (action: DropdownOption) => {
-            console.log("test");
             actions[actions.length - 1].push(action);
             actions = actions;
         },
@@ -67,11 +66,15 @@
 </script>
 
 <div use:closeOnClickOutside={open} class="relative grid">
-    <button on:click={() => (open = !open)} class="hover:gray-100 flex items-center justify-center">
+    <button
+        on:click={() => (open = !open)}
+        type="button"
+        class="hover:gray-100 flex items-center justify-center"
+    >
         {#if $$slots.button}
             <slot name="button" />
         {:else}
-            <box-icon name="dots-vertical-rounded" />
+            <i class="bx bx-dots-vertical-rounded text-2xl" />
         {/if}
     </button>
 
