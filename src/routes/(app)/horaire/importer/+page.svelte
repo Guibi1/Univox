@@ -26,11 +26,7 @@
     <h1>Importer mon horaire de session depuis Omnivox</h1>
 
     {#if loading}
-        <box-icon
-            name="loader-circle"
-            animation="spin"
-            class="my-6 flex h-10 w-full items-center"
-        />
+        <i class="bx bx-loader-circle bx-spin my-6 flex h-10 w-full items-center" />
     {/if}
 </div>
 

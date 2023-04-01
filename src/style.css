@@ -40,21 +40,18 @@
         }
     }
 
-    label {
+    label,
+    div.label {
         @apply grid w-full grid-cols-1 grid-rows-[min-content_1fr] gap-1;
 
-        span {
+        & > span {
             @apply text-center text-red-600;
-            @apply hidden;
         }
 
         &[data-error="true"] {
-            input {
+            input,
+            button > div[slot="button"] {
                 @apply border-red-500 focus:valid:border-red-500;
-            }
-
-            span {
-                @apply block;
             }
         }
     }

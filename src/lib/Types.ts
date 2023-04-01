@@ -18,7 +18,7 @@ export interface Book {
     sellerId: mongoose.Types.ObjectId;
     title: string;
     ISBN: string;
-    src: string;
+    src: string[];
     author: string;
     price: number;
     state: string;
