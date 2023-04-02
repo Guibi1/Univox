@@ -11,14 +11,7 @@ function createFriendsStore() {
     }
 
     async function get(id: mongoose.Types.ObjectId) {
-        await fetch("/api/friends", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ friendId: id }),
-        });
-        refresh();
+        return await (await fetch(`/api/users/${id}`)).json();
     }
 
     async function add(id: mongoose.Types.ObjectId) {

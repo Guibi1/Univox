@@ -13,6 +13,8 @@
         "prepare": "husky install"
     },
     "devDependencies": {
+        "@dicebear/collection": "^6.0.2",
+        "@dicebear/core": "^6.0.2",
         "@playwright/test": "^1.32.0",
         "@sveltejs/adapter-vercel": "^2.4.1",
         "@sveltejs/kit": "^1.14.0",
