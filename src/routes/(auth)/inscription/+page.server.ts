@@ -1,3 +1,4 @@
+import type { User } from "$lib/Types";
 import * as db from "$lib/server/db";
 import * as omnivox from "$lib/server/omnivox";
 import { fail } from "@sveltejs/kit";
@@ -90,12 +91,13 @@ export const actions = {
         }
 
         // Everything it good!
-        const user = {
+        const user: User = {
             _id: new mongoose.Types.ObjectId(),
             da,
             email,
             firstName,
             lastName,
+            avatar: firstName + da,
             scheduleId: new mongoose.Types.ObjectId(),
             settingsId: new mongoose.Types.ObjectId(),
             friendsId: [],

@@ -7,6 +7,7 @@ export interface User {
     email: string;
     firstName: string;
     lastName: string;
+    avatar: string;
     scheduleId: mongoose.Types.ObjectId;
     friendsId: mongoose.Types.ObjectId[];
     settingsId: mongoose.Types.ObjectId;

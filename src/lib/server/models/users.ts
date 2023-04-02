@@ -29,6 +29,10 @@ const UserSchema = new Schema<ServerUser>({
         type: String,
         required: true,
     },
+    avatar: {
+        type: String,
+        required: true,
+    },
     scheduleId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "schedules",
