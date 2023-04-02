@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import Avatar from "$lib/components/Avatar.svelte";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import Option from "$lib/components/Option.svelte";
     import LogoText from "$src/assets/logo-text.svelte";
@@ -17,7 +18,7 @@
     );
 </script>
 
-<nav class="flex h-14 items-stretch justify-between bg-blue-secondary">
+<nav class="flex h-16 items-stretch justify-between bg-blue-secondary">
     <div class="grid aspect-square tablet:hidden">
         <Dropdown actions={[pages]} position="bottom-right">
             <i slot="button" class="bx bx-menu text-2xl" />
@@ -27,7 +28,7 @@
     <div class="flex justify-center">
         <a href="/" class="flex h-full items-center gap-4 px-4">
             <!-- <Logo size="2.5rem" /> -->
-            <LogoText height="2rem" />
+            <LogoText height="2.5rem" />
         </a>
     </div>
 
@@ -61,7 +62,9 @@
 
         <div class="grid aspect-square">
             <Dropdown position="bottom-left">
-                <i slot="button" class="bx bx-user text-2xl" />
+                <div slot="button" class="h-12 rounded-full bg-blue-primary">
+                    <Avatar />
+                </div>
 
                 <Option text="Mon Profil" href="/profil" />
                 <Option text="Paramètres" href="/parametres" />
