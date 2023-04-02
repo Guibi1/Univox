@@ -5,6 +5,10 @@
     const refresh = () => user.setAvatar(Math.random() + $user.firstName + $user.da);
 </script>
 
+<svelte:head>
+    <title>Univox | Mon Profil</title>
+</svelte:head>
+
 <main class="m-auto flex w-fit gap-4">
     <div class="flex flex-col">
         <Avatar />
