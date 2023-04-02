@@ -100,6 +100,15 @@ export async function updateUserPassword(
     return true;
 }
 
+export async function updateUser(user: User, data: mongoose.AnyKeys<User>): Promise<boolean> {
+    if (!(await findUserById(user._id))) {
+        return false;
+    }
+
+    await Users.findByIdAndUpdate(user, { $set: data });
+    return true;
+}
+
 export async function searchUsers(user: User, query: string): Promise<User[]> {
     query = sanitizeQuery(query);
     if (query.length < 4) return [];
