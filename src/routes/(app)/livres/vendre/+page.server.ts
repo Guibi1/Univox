@@ -49,7 +49,7 @@ export const actions = {
             });
         }
 
-        const uploads: Promise<void>[] = [];
+        const uploads: Promise<boolean>[] = [];
         const images: string[] = [];
         for (let i = 0; ; i++) {
             const image = data.get("image" + i)?.valueOf();
