@@ -48,10 +48,10 @@ export interface Class extends Period {
 
 export interface Notification {
     _id: mongoose.Types.ObjectId;
-    kind: NotificationKind;
+    kind: keyof typeof NotificationKind;
     senderId: mongoose.Types.ObjectId;
 }
 
 export enum NotificationKind {
-    FriendRequest,
+    FriendRequest = "FriendRequest",
 }

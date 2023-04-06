@@ -3,6 +3,7 @@
     import Avatar from "$lib/components/Avatar.svelte";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import Option from "$lib/components/Option.svelte";
+    import notifications from "$lib/stores/notifications";
     import LogoText from "$src/assets/logo-text.svelte";
 
     const pages = [
@@ -57,6 +58,14 @@
         <div class="grid aspect-square">
             <Dropdown position="bottom-left">
                 <i slot="button" class="bx bx-bell text-2xl" />
+
+                {#each $notifications as notification}
+                    {#if notification.kind === "FriendRequest"}
+                        <span>
+                            {notification.senderId} veux vous ajouter en ami.
+                        </span>
+                    {/if}
+                {/each}
             </Dropdown>
         </div>
 
