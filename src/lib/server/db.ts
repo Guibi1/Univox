@@ -1,5 +1,5 @@
 import { MONGODB_URI } from "$env/static/private";
-import type { Book, Period, Schedule, User } from "$lib/Types";
+import type { Book, Notification, Period, Schedule, User } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
 import Books from "./models/books";
@@ -248,6 +248,29 @@ export async function getNotifications(user: User): Promise<Notification[] | nul
         return null;
     }
     return doc.toObject() as Notification[];
+}
+
+export async function sendNotification(
+    user: User,
+    notification: Notification,
+    receiverId: mongoose.Types.ObjectId
+): Promise<boolean> {
+    if (notification.senderId !== user._id) return false;
+
+    const notificationId = (await Notifications.create(notification))._id;
+    await Users.findByIdAndUpdate(receiverId, {
+        $push: { notificationsId: notificationId },
+    });
+
+    return true;
+}
+
+export async function removeNotification(user: User, notification: Notification): Promise<boolean> {
+    await Users.findByIdAndUpdate(user._id, {
+        $pull: { notificationsId: notification._id },
+    });
+
+    return true;
 }
 
 // Helpers: Settings
