@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 
 const NotificationSchema = new Schema<Notification>({
     kind: {
-        type: Number,
+        type: String,
         enum: NotificationKind,
         required: true,
     },

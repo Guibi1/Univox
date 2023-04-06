@@ -86,12 +86,14 @@
             }
                 ${
                     position == "bottom-right"
-                        ? "top-full left-0"
+                        ? "left-0 top-full"
                         : position == "bottom-left"
-                        ? "top-full right-0"
+                        ? "right-0 top-full"
                         : "left-full"
                 }`}
         >
+            <slot />
+
             {#each actions as section}
                 <div class="flex flex-col py-2">
                     {#each section as action}
@@ -121,8 +123,4 @@
             {/each}
         </div>
     {/if}
-</div>
-
-<div hidden>
-    <slot />
 </div>
