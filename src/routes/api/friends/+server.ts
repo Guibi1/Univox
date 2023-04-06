@@ -10,7 +10,10 @@ export const POST = (async ({ request, locals }) => {
         throw error(400, "Invalid data.");
     }
 
-    return json({ success: await db.addFriend(locals.user, friendId) });
+    return json({
+        success: await db.addFriend(locals.user, friendId),
+        friends: await db.getFriends(locals.user),
+    });
 }) satisfies RequestHandler;
 
 export const DELETE = (async ({ request, locals }) => {
@@ -21,10 +24,13 @@ export const DELETE = (async ({ request, locals }) => {
         throw error(400, "Invalid data.");
     }
 
-    return json({ success: await db.deleteFriend(locals.user, friendId) });
+    return json({
+        success: await db.deleteFriend(locals.user, friendId),
+        friends: await db.getFriends(locals.user),
+    });
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {
     if (!locals.user) throw error(401);
-    return json(locals.friends);
+    return json({ success: true, friends: locals.friends });
 }) satisfies RequestHandler;

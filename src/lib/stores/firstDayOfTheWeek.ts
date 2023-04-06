@@ -13,13 +13,13 @@ function createFirstDayOfTheWeekStore() {
         bc.addEventListener("message", (e) => setStore(e.data));
     }
 
-    function set(day: FirstDayOfTheWeek) {
+    async function set(day: FirstDayOfTheWeek) {
         setStore(day);
-        fetch("/api/settings/firstDayOfTheWeek", {
+        if (bc) bc.postMessage(day);
+        await fetch("/api/settings/firstDayOfTheWeek", {
             method: "PUT",
             body: day,
         });
-        if (bc) bc.postMessage(day);
     }
 
     return {
