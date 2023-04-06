@@ -241,12 +241,10 @@ export async function addBookListing(book: Book): Promise<boolean> {
 }
 
 // Heplers: Notifications
-export async function getNotifications(user: User): Promise<Notification[] | null> {
+export async function getNotifications(user: User): Promise<Notification[]> {
     const doc = (await Users.findById(user).populate("notificationsId")).notificationsId;
+    if (!doc) return [];
 
-    if (!doc) {
-        return null;
-    }
     return doc.toObject() as Notification[];
 }
 
@@ -265,7 +263,7 @@ export async function sendNotification(
     return true;
 }
 
-export async function removeNotification(user: User, notification: Notification): Promise<boolean> {
+export async function deleteNotification(user: User, notification: Notification): Promise<boolean> {
     await Users.findByIdAndUpdate(user._id, {
         $pull: { notificationsId: notification._id },
     });
