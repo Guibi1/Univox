@@ -18,6 +18,7 @@ const ScheduleSchema = new Schema<Schedule>({
             },
         ],
         required: true,
+        default: [],
     },
 });
 

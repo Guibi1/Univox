@@ -98,8 +98,6 @@ export const actions = {
             firstName,
             lastName,
             avatar: firstName + da,
-            scheduleId: new mongoose.Types.ObjectId(),
-            settingsId: new mongoose.Types.ObjectId(),
             friendsId: [],
         };
 

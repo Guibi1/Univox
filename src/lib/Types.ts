@@ -8,9 +8,7 @@ export interface User {
     firstName: string;
     lastName: string;
     avatar: string;
-    scheduleId: mongoose.Types.ObjectId;
     friendsId: mongoose.Types.ObjectId[];
-    settingsId: mongoose.Types.ObjectId;
 }
 
 export interface Book {
@@ -46,4 +44,13 @@ export interface Class extends Period {
     virtual: boolean;
     timeStart: Dayjs;
     timeEnd: Dayjs;
+}
+
+export interface Notification {
+    kind: NotificationKind;
+    senderId: mongoose.Types.ObjectId;
+}
+
+export enum NotificationKind {
+    FriendRequest,
 }
