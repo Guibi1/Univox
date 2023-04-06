@@ -24,7 +24,7 @@ export const actions = {
             );
             const schedule = omnivox.schedulePageToClasses(html);
 
-            await db.addPeriodsToSchedule(locals.user.scheduleId, schedule);
+            await db.addPeriodsToSchedule(locals.user, schedule);
         } catch (e) {
             return fail(401, { incorrect: true });
         }
