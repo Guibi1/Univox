@@ -25,13 +25,13 @@ function createColorSchemeStore() {
         set(color === "dark" ? "light" : "dark");
     }
 
-    function set(color: ColorScheme) {
+    async function set(color: ColorScheme) {
         apply(color);
-        fetch("/api/settings/colorScheme", {
+        if (bc) bc.postMessage(color);
+        await fetch("/api/settings/colorScheme", {
             method: "PUT",
             body: color,
         });
-        if (bc) bc.postMessage(color);
     }
 
     return {
