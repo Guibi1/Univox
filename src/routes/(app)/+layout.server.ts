@@ -11,6 +11,7 @@ export const load = (({ locals, url, depends }) => {
         storesInitialValue: {
             serializedUser: JSON.stringify(locals.user),
             serializedFriends: JSON.stringify(locals.friends),
+            serializedNotifications: JSON.stringify(locals.notifications),
         },
     };
 }) satisfies LayoutServerLoad;
