@@ -3,6 +3,7 @@ import type { Book, Period, Schedule, User } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
 import Books from "./models/books";
+import Notifications from "./models/notifications";
 import Schedules from "./models/schedules";
 import Settings from "./models/settings";
 import Tokens from "./models/tokens";
@@ -79,9 +80,16 @@ export async function createUser(user: User, password: string): Promise<boolean>
         return false;
     }
 
-    await Schedules.create({ _id: user.scheduleId, periods: [] });
-    await Settings.create({ _id: user.settingsId });
-    await Users.create({ ...user, passwordHash: await bcryptjs.hash(password ?? "", 11) });
+    const scheduleId = await Schedules.create();
+    const settingsId = await Settings.create();
+    const notificationsId = await Notifications.create();
+    await Users.create({
+        ...user,
+        scheduleId,
+        settingsId,
+        notificationsId,
+        passwordHash: await bcryptjs.hash(password ?? "", 11),
+    });
     return true;
 }
 
@@ -175,26 +183,19 @@ export async function deleteFriend(
 }
 
 // Helpers: Schedule
-export async function findScheduleById(
-    scheduleId: mongoose.Types.ObjectId
-): Promise<Schedule | null> {
-    const doc = await Schedules.findById(scheduleId);
+export async function getSchedule(user: User): Promise<Schedule | null> {
+    const doc = (await Users.findById(user).populate("scheduleId")).scheduleId;
     if (!doc) {
         return null;
     }
     return { ...doc.toObject() };
 }
 
-export async function addPeriodsToSchedule(
-    scheduleId: mongoose.Types.ObjectId,
-    periods: Period[]
-): Promise<boolean> {
-    if (!(await findScheduleById(scheduleId))) {
-        console.error("No schedule with this id was found.");
-        return false;
-    }
+export async function addPeriodsToSchedule(user: User, periods: Period[]): Promise<boolean> {
+    const serverUser = await Users.findById(user);
+    if (!serverUser.settingsId) return false;
 
-    await Schedules.findByIdAndUpdate(scheduleId, {
+    await Schedules.findByIdAndUpdate(serverUser.scheduleId, {
         $push: { periods: periods },
     });
     return true;
@@ -239,9 +240,20 @@ export async function addBookListing(book: Book): Promise<boolean> {
     return true;
 }
 
+// Heplers: Notifications
+export async function getNotifications(user: User): Promise<Notification[] | null> {
+    const doc = (await Users.findById(user).populate("notificationsId")).notificationsId;
+
+    if (!doc) {
+        return null;
+    }
+    return doc.toObject() as Notification[];
+}
+
 // Helpers: Settings
 export async function getSettings(user: User): Promise<Settings | null> {
-    const doc = await Settings.findById(user.settingsId);
+    const doc = (await Users.findById(user).populate("settingsId")).settingsId;
+
     if (!doc) {
         return null;
     }
@@ -249,8 +261,10 @@ export async function getSettings(user: User): Promise<Settings | null> {
 }
 
 export async function setSettings(user: User, settings: Settings): Promise<boolean> {
-    if (!settings) return false;
-    await Settings.findByIdAndUpdate(user.settingsId, { $set: settings });
+    const serverUser = await Users.findById(user);
+    if (!serverUser.settingsId) return false;
+
+    await Settings.findByIdAndUpdate(serverUser.settingsId, { $set: settings });
     return true;
 }
 
