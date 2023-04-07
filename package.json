@@ -17,7 +17,7 @@
         "@dicebear/core": "^6.0.2",
         "@playwright/test": "^1.32.0",
         "@sveltejs/adapter-vercel": "^2.4.1",
-        "@sveltejs/kit": "^1.15.1",
+        "@sveltejs/kit": "^1.15.2",
         "@types/bcryptjs": "^2.4.2",
         "@types/node": "^18.15.8",
         "@typescript-eslint/eslint-plugin": "^5.56.0",
