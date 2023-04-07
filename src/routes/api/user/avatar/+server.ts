@@ -5,6 +5,9 @@ import type { RequestHandler } from "./$types";
 export const POST = (async ({ locals, request }) => {
     if (!locals.user) throw error(401);
 
-    await db.updateUser(locals.user, { avatar: await request.text() });
-    return json(await db.getUser(locals.user._id));
+    const avatar = await request.text();
+
+    return json({
+        success: await db.updateUser(locals.user, { avatar }),
+    });
 }) satisfies RequestHandler;
