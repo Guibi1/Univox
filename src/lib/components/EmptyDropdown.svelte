@@ -42,16 +42,19 @@
     <!-- Dropdown menu -->
     {#if open}
         <div
-            class={`absolute z-[200] flex w-fit min-w-[13ch] flex-col divide-y divide-gray-100 rounded-lg bg-gray-200 dark:divide-neutral-300 dark:bg-neutral-700 
-                ${
-                    position == "bottom-right"
-                        ? "left-0 top-full"
-                        : position == "bottom-left"
-                        ? "right-0 top-full"
-                        : "left-full"
-                }`}
+            class={`absolute z-[200] overflow-hidden rounded-lg bg-gray-200 dark:bg-neutral-700 ${
+                position == "bottom-right"
+                    ? "left-0 top-full"
+                    : position == "bottom-left"
+                    ? "right-0 top-full"
+                    : "left-full"
+            }`}
         >
-            <slot />
+            <div
+                class="flex min-w-[13ch] flex-col divide-y divide-gray-100 dark:divide-neutral-300"
+            >
+                <slot />
+            </div>
         </div>
     {/if}
 </div>
