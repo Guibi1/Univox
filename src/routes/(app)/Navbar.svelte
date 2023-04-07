@@ -71,7 +71,7 @@
 
         <div class="grid aspect-square">
             <Dropdown position="bottom-left">
-                <div slot="button" class="h-12 rounded-full bg-blue-primary">
+                <div slot="button" class="m-2 rounded-full bg-blue-primary">
                     <Avatar />
                 </div>
 
