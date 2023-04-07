@@ -1,5 +1,13 @@
 import { MONGODB_URI } from "$env/static/private";
-import type { Book, Notification, Period, Schedule, ServerUser, User } from "$lib/Types";
+import type {
+    Book,
+    Notification,
+    NotificationKind,
+    Period,
+    Schedule,
+    ServerUser,
+    User,
+} from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
 import Books from "./models/books";
@@ -276,19 +284,17 @@ export async function addBookListing(book: Book): Promise<boolean> {
 export async function getNotifications(user: ServerUser): Promise<Notification[]> {
     const doc: mongoose.Document<Schedule>[] = await Notifications.find({
         _id: { $in: user.notificationsId },
-    });
+    }).populate("sender");
 
     return doc.map((n) => ({ ...n.toObject() }));
 }
 
 export async function sendNotification(
     user: ServerUser,
-    notification: Notification,
+    kind: NotificationKind,
     receiverId: mongoose.Types.ObjectId
 ): Promise<boolean> {
-    if (notification.senderId !== user._id) return false;
-
-    const notificationId = (await Notifications.create(notification))._id;
+    const notificationId = (await Notifications.create({ kind, sender: user._id }))._id;
     await Users.findByIdAndUpdate(receiverId, {
         $push: { notificationsId: notificationId },
     });
@@ -300,6 +306,8 @@ export async function deleteNotification(
     user: ServerUser,
     notification: Notification
 ): Promise<boolean> {
+    if (!user.notificationsId.some((id) => id.equals(notification._id))) return false;
+
     await Users.findByIdAndUpdate(user._id, {
         $pull: { notificationsId: notification._id },
     });
