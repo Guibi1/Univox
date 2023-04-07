@@ -14,15 +14,14 @@ const userLocalsHandle = (async ({ event, resolve }) => {
 }) satisfies Handle;
 
 const settingsHandle = (async ({ event, resolve }) => {
-    if (!event.locals.user) {
+    if (event.locals.user) {
+        event.cookies.set(
+            "firstDayOfTheWeek",
+            (await db.getSettings(event.locals.user))?.firstDayOfTheWeek ?? "Dimanche"
+        );
+    } else {
         event.cookies.delete("firstDayOfTheWeek");
-        return resolve(event);
     }
-
-    event.cookies.set(
-        "firstDayOfTheWeek",
-        (await db.getSettings(event.locals.user))?.firstDayOfTheWeek ?? "Dimanche"
-    );
 
     return resolve(event);
 }) satisfies Handle;

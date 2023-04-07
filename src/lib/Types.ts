@@ -10,6 +10,14 @@ export interface User {
     avatar: string;
 }
 
+export interface ServerUser extends User {
+    passwordHash: string;
+    friendsId: mongoose.Types.ObjectId[];
+    notificationsId: mongoose.Types.ObjectId[];
+    settingsId: mongoose.Types.ObjectId;
+    scheduleId: mongoose.Types.ObjectId;
+}
+
 export interface Book {
     _id: mongoose.Types.ObjectId;
     code: string;
