@@ -7,7 +7,7 @@ import Notifications from "./models/notifications";
 import Schedules from "./models/schedules";
 import Settings from "./models/settings";
 import Tokens from "./models/tokens";
-import Users from "./models/users";
+import Users, { type ServerUser } from "./models/users";
 
 // Connection
 mongoose.set("strictQuery", false);
@@ -29,7 +29,7 @@ export async function deleteToken(token: string) {
 export async function getUserFromToken(token: string | undefined): Promise<User | null> {
     const userId = await getUserIdFromToken(token);
     if (userId) {
-        return findUserById(userId);
+        return getUser(userId);
     }
     return null;
 }
@@ -47,22 +47,46 @@ export async function getUserIdFromToken(
 }
 
 // Helpers: User
+export function serverUserToUser(serverUser: ServerUser): User {
+    const cleanUser = serverUser as User & {
+        passwordHash?: string;
+        friendsId?: mongoose.Types.ObjectId[];
+        notificationsId?: mongoose.Types.ObjectId[];
+        settingsId?: mongoose.Types.ObjectId;
+        scheduleId?: mongoose.Types.ObjectId;
+    };
+
+    delete cleanUser.passwordHash;
+    delete cleanUser.friendsId;
+    delete cleanUser.notificationsId;
+    delete cleanUser.settingsId;
+    delete cleanUser.scheduleId;
+
+    return cleanUser;
+}
+
 export async function findUser(filter: FilterQuery<User>): Promise<User | null> {
     const doc = await Users.findOne(filter);
     if (!doc) {
         return null;
     }
-    const user = { ...doc.toObject(), passwordHash: null };
-    return user as User;
+    return serverUserToUser(doc.toObject());
 }
 
-export async function findUserById(id: mongoose.Types.ObjectId): Promise<User | null> {
+export async function getServerUser(user: User): Promise<ServerUser | null> {
+    const doc = await Users.findById(user._id);
+    if (!doc) {
+        return null;
+    }
+    return doc.toObject();
+}
+
+export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null> {
     const doc = await Users.findById(id);
     if (!doc) {
         return null;
     }
-    const user = { ...doc.toObject(), passwordHash: null };
-    return user as User;
+    return serverUserToUser(doc.toObject());
 }
 
 export async function compareUserPassword(da: string, password: string): Promise<User | null> {
@@ -80,14 +104,12 @@ export async function createUser(user: User, password: string): Promise<boolean>
         return false;
     }
 
-    const scheduleId = await Schedules.create();
-    const settingsId = await Settings.create();
-    const notificationsId = await Notifications.create();
+    const scheduleId: mongoose.Types.ObjectId = (await Schedules.create({}))._id;
+    const settingsId: mongoose.Types.ObjectId = (await Settings.create({}))._id;
     await Users.create({
         ...user,
         scheduleId,
         settingsId,
-        notificationsId,
         passwordHash: await bcryptjs.hash(password ?? "", 11),
     });
     return true;
@@ -97,7 +119,7 @@ export async function updateUserPassword(
     userId: mongoose.Types.ObjectId,
     password: string
 ): Promise<boolean> {
-    if (!(await findUserById(userId))) {
+    if (!(await getUser(userId))) {
         console.error("No user with this id was found.");
         return false;
     }
@@ -109,7 +131,7 @@ export async function updateUserPassword(
 }
 
 export async function updateUser(user: User, data: mongoose.AnyKeys<User>): Promise<boolean> {
-    if (!(await findUserById(user._id))) {
+    if (!(await getUser(user._id))) {
         return false;
     }
 
@@ -122,10 +144,12 @@ export async function searchUsers(user: User, query: string): Promise<User[]> {
     if (query.length < 4) return [];
     query = normalizeQuery(query);
 
+    const serverUser = await getServerUser(user);
+
     return await Users.find({
         $and: [
             { _id: { $ne: user._id } },
-            { _id: { $not: { $in: user.friendsId } } },
+            { _id: { $not: { $in: serverUser?.friendsId } } },
             {
                 $or: [
                     { da: { $eq: query } },
@@ -140,10 +164,17 @@ export async function searchUsers(user: User, query: string): Promise<User[]> {
 }
 
 // Helpers: Friends
+export async function getFriendsId(user: User): Promise<mongoose.Types.ObjectId[]> {
+    const friendsId: mongoose.Types.ObjectId[] = [];
+    Users.findById(user._id);
+
+    return friendsId;
+}
+
 export async function getFriends(user: User): Promise<User[]> {
     const friends: User[] = [];
-    for (const friendId of user.friendsId) {
-        const friend = await findUserById(friendId);
+    for (const friendId of (await getServerUser(user))?.friendsId ?? []) {
+        const friend = await getUser(friendId);
         if (friend) {
             friends.push(friend);
         }
@@ -154,7 +185,7 @@ export async function getFriends(user: User): Promise<User[]> {
 
 export async function addFriend(user: User, friendId: mongoose.Types.ObjectId): Promise<boolean> {
     if (user._id === friendId) return false;
-    if (user.friendsId.includes(friendId)) return false;
+    if ((await getServerUser(user))?.friendsId.includes(friendId)) return false;
 
     await Users.findByIdAndUpdate(user, {
         $push: { friendsId: friendId },
@@ -171,7 +202,7 @@ export async function deleteFriend(
 ): Promise<boolean> {
     //Faut voir si pop fonctionne
     if (user._id === friendId) return false;
-    if (user.friendsId.includes(friendId)) return false;
+    if ((await getServerUser(user))?.friendsId.includes(friendId)) return false;
 
     await Users.findByIdAndUpdate(user, {
         $pull: { friendsId: friendId },
