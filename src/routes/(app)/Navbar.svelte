@@ -72,12 +72,12 @@
                     {#each $notifications as notification}
                         {#if notification.kind === "FriendRequest"}
                             <span>
-                                {notification.senderId} veux vous ajouter en ami.
+                                {notification.sender.firstName} veux vous ajouter en ami.
 
                                 <div class="flex">
                                     <button
                                         on:click={async () => {
-                                            await friends.add(notification.senderId);
+                                            await friends.add(notification.sender._id);
                                             await notifications.remove(notification);
                                         }}
                                     >
