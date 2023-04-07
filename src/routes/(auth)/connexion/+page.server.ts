@@ -12,12 +12,12 @@ export const actions = {
             return fail(400, { da, missing: true });
         }
 
-        const user = await db.compareUserPassword(da, password);
-        if (!user) {
+        const passwordsMatch = await db.compareUserPassword(da, password);
+        if (!passwordsMatch) {
             return fail(401, { da, incorrect: true });
         }
 
-        const token = await db.createToken(user);
+        const token = await db.createToken(passwordsMatch);
         cookies.set("token", token, { path: "/", httpOnly: true, secure: true, sameSite: true });
 
         return { success: true };

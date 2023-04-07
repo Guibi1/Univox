@@ -1,13 +1,5 @@
-import type { User } from "$lib/Types";
+import type { ServerUser } from "$lib/Types";
 import mongoose, { Schema } from "mongoose";
-
-export interface ServerUser extends User {
-    passwordHash: string;
-    friendsId: mongoose.Types.ObjectId[];
-    notificationsId: mongoose.Types.ObjectId[];
-    settingsId: mongoose.Types.ObjectId;
-    scheduleId: mongoose.Types.ObjectId;
-}
 
 const UserSchema = new Schema<ServerUser>({
     da: {
