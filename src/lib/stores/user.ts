@@ -22,13 +22,15 @@ function createUserStore() {
     };
 
     async function refresh() {
-        const user = await (await fetch("/api/user")).json();
-        set(user);
+        const { success, user } = await (await fetch("/api/user")).json();
+        if (success) set(user);
     }
 
     async function setAvatar(seed: string) {
-        const user = await (await fetch("/api/user/avatar", { method: "POST", body: seed })).json();
-        set(user);
+        const { success } = await (
+            await fetch("/api/user/avatar", { method: "POST", body: seed })
+        ).json();
+        if (success) refresh();
     }
 
     return {

@@ -1,6 +1,5 @@
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
-import mongoose from "mongoose";
 import type { RequestHandler } from "./$types";
 
 export const POST = (async ({ request, locals }) => {
@@ -12,12 +11,7 @@ export const POST = (async ({ request, locals }) => {
     }
 
     return json({
-        success: await db.sendNotification(
-            locals.user,
-            { _id: new mongoose.Types.ObjectId(), kind, senderId: locals.user._id },
-            receiverId
-        ),
-        notifications: await db.getNotifications(locals.user),
+        success: await db.sendNotification(locals.user, kind, receiverId),
     });
 }) satisfies RequestHandler;
 
@@ -31,7 +25,6 @@ export const DELETE = (async ({ request, locals }) => {
 
     return json({
         success: await db.deleteNotification(locals.user, notification),
-        notifications: await db.getNotifications(locals.user),
     });
 }) satisfies RequestHandler;
 
