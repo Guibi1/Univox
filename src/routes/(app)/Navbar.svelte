@@ -2,7 +2,9 @@
     import { page } from "$app/stores";
     import Avatar from "$lib/components/Avatar.svelte";
     import Dropdown from "$lib/components/Dropdown.svelte";
+    import EmptyDropdown from "$lib/components/EmptyDropdown.svelte";
     import Option from "$lib/components/Option.svelte";
+    import friends from "$lib/stores/friends";
     import notifications from "$lib/stores/notifications";
     import LogoText from "$src/assets/logo-text.svelte";
 
@@ -56,17 +58,41 @@
 
     <div class="flex flex-row">
         <div class="grid aspect-square">
-            <Dropdown position="bottom-left">
-                <i slot="button" class="bx bx-bell text-2xl" />
+            <EmptyDropdown position="bottom-left">
+                <i
+                    slot="button"
+                    class={`bx ${
+                        $notifications.length === 0 ? "bx-bell" : "bxs-bell-ring"
+                    } text-2xl`}
+                />
 
-                {#each $notifications as notification}
-                    {#if notification.kind === "FriendRequest"}
-                        <span>
-                            {notification.senderId} veux vous ajouter en ami.
-                        </span>
-                    {/if}
-                {/each}
-            </Dropdown>
+                {#if $notifications.length === 0}
+                    <span class="w-fit p-6">Aucune notification</span>
+                {:else}
+                    {#each $notifications as notification}
+                        {#if notification.kind === "FriendRequest"}
+                            <span>
+                                {notification.senderId} veux vous ajouter en ami.
+
+                                <div class="flex">
+                                    <button
+                                        on:click={async () => {
+                                            await friends.add(notification.senderId);
+                                            await notifications.remove(notification);
+                                        }}
+                                    >
+                                        <i class="bx bx-check" />
+                                    </button>
+
+                                    <button on:click={() => notifications.remove(notification)}>
+                                        <i class="bx bx-x" />
+                                    </button>
+                                </div>
+                            </span>
+                        {/if}
+                    {/each}
+                {/if}
+            </EmptyDropdown>
         </div>
 
         <div class="grid aspect-square">

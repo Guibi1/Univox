@@ -43,9 +43,9 @@ function createFriendsStore() {
     return {
         subscribe,
         set,
-        add,
         remove,
         refresh,
+        add,
     };
 }
 

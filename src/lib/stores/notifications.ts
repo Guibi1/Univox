@@ -1,4 +1,5 @@
-import type { Notification } from "$lib/Types";
+import type { Notification, NotificationKind } from "$lib/Types";
+import type mongoose from "mongoose";
 import { writable } from "svelte/store";
 
 function createNotificationsStore() {
@@ -9,14 +10,14 @@ function createNotificationsStore() {
         if (success) set(notifications);
     }
 
-    async function add(notification: Notification) {
+    async function add(kind: NotificationKind, receiverId: mongoose.Types.ObjectId) {
         const { success, notifications } = await (
             await fetch("/api/notifications", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ notification }),
+                body: JSON.stringify({ kind, receiverId }),
             })
         ).json();
         if (success) set(notifications);
@@ -38,7 +39,7 @@ function createNotificationsStore() {
     return {
         subscribe,
         set,
-        add,
+        create: add,
         remove,
         refresh,
     };
