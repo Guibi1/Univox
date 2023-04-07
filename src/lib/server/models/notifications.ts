@@ -7,7 +7,7 @@ const NotificationSchema = new Schema<Notification>({
         enum: NotificationKind,
         required: true,
     },
-    senderId: {
+    sender: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
         required: true,
