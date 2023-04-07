@@ -1,4 +1,3 @@
-import type { User } from "$lib/Types";
 import * as db from "$lib/server/db";
 import * as omnivox from "$lib/server/omnivox";
 import { fail } from "@sveltejs/kit";
@@ -78,8 +77,21 @@ export const actions = {
             return fail(401, { da, omnivoxIncorrect: true });
         }
 
+        // Try to create the user
+        const user = await db.createUser(
+            {
+                _id: new mongoose.Types.ObjectId(),
+                da,
+                email,
+                firstName,
+                lastName,
+                avatar: firstName + da,
+            },
+            password
+        );
+
         // Make sure the DA doesn't already has an account
-        if (await db.findUser({ da })) {
+        if (!user) {
             return fail(400, {
                 da,
                 omnivoxPassword,
@@ -91,19 +103,7 @@ export const actions = {
         }
 
         // Everything it good!
-        const user: User = {
-            _id: new mongoose.Types.ObjectId(),
-            da,
-            email,
-            firstName,
-            lastName,
-            avatar: firstName + da,
-            friendsId: [],
-        };
-
-        await db.createUser(user, password);
         const token = await db.createToken(user);
-
         cookies.set("token", token, { path: "/", httpOnly: true, secure: true, sameSite: true });
 
         return { firstName, lastName, success: true };
