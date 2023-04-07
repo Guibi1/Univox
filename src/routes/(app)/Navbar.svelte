@@ -71,24 +71,32 @@
                 {:else}
                     {#each $notifications as notification}
                         {#if notification.kind === "FriendRequest"}
-                            <span>
-                                {notification.sender.firstName} veux vous ajouter en ami.
+                            <div class="flex flex-col gap-2 p-2">
+                                <div class="flex h-16 w-52 items-center gap-2">
+                                    <Avatar seed={notification.sender.avatar} />
 
-                                <div class="flex">
+                                    {notification.sender.firstName} veux vous ajouter en ami.
+                                </div>
+
+                                <div class="grid h-8 grid-cols-2 gap-2">
                                     <button
+                                        class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
                                         on:click={async () => {
                                             await friends.add(notification.sender._id);
                                             await notifications.remove(notification);
                                         }}
                                     >
-                                        <i class="bx bx-check" />
+                                        <i class="bx bx-check text-2xl" />
                                     </button>
 
-                                    <button on:click={() => notifications.remove(notification)}>
-                                        <i class="bx bx-x" />
+                                    <button
+                                        class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
+                                        on:click={() => notifications.remove(notification)}
+                                    >
+                                        <i class="bx bx-x text-2xl" />
                                     </button>
                                 </div>
-                            </span>
+                            </div>
                         {/if}
                     {/each}
                 {/if}
