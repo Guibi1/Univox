@@ -11,7 +11,7 @@ function createNotificationsStore() {
     }
 
     async function add(kind: NotificationKind, receiverId: mongoose.Types.ObjectId) {
-        const { success, notifications } = await (
+        const { success } = await (
             await fetch("/api/notifications", {
                 method: "POST",
                 headers: {
@@ -20,11 +20,11 @@ function createNotificationsStore() {
                 body: JSON.stringify({ kind, receiverId }),
             })
         ).json();
-        if (success) set(notifications);
+        if (success) refresh();
     }
 
     async function remove(notification: Notification) {
-        const { success, notifications } = await (
+        const { success } = await (
             await fetch("/api/notifications", {
                 method: "DELETE",
                 headers: {
@@ -33,7 +33,7 @@ function createNotificationsStore() {
                 body: JSON.stringify({ notification }),
             })
         ).json();
-        if (success) set(notifications);
+        if (success) refresh();
     }
 
     return {

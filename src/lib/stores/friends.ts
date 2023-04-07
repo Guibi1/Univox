@@ -15,7 +15,7 @@ function createFriendsStore() {
     }
 
     async function add(id: mongoose.Types.ObjectId) {
-        const { success, friends } = await (
+        const { success } = await (
             await fetch("/api/friends", {
                 method: "POST",
                 headers: {
@@ -24,11 +24,11 @@ function createFriendsStore() {
                 body: JSON.stringify({ friendId: id }),
             })
         ).json();
-        if (success) set(friends);
+        if (success) refresh();
     }
 
     async function remove(id: mongoose.Types.ObjectId) {
-        const { success, friends } = await (
+        const { success } = await (
             await fetch("/api/friends", {
                 method: "DELETE",
                 headers: {
@@ -37,7 +37,7 @@ function createFriendsStore() {
                 body: JSON.stringify({ friendId: id }),
             })
         ).json();
-        if (success) set(friends);
+        if (success) refresh();
     }
 
     return {

@@ -12,7 +12,6 @@ export const POST = (async ({ request, locals }) => {
 
     return json({
         success: await db.addFriend(locals.user, friendId),
-        friends: await db.getFriends(locals.user),
     });
 }) satisfies RequestHandler;
 
@@ -26,7 +25,6 @@ export const DELETE = (async ({ request, locals }) => {
 
     return json({
         success: await db.deleteFriend(locals.user, friendId),
-        friends: await db.getFriends(locals.user),
     });
 }) satisfies RequestHandler;
 
