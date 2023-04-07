@@ -8,7 +8,6 @@ export interface User {
     firstName: string;
     lastName: string;
     avatar: string;
-    friendsId: mongoose.Types.ObjectId[];
 }
 
 export interface Book {
@@ -48,7 +47,7 @@ export interface Class extends Period {
 
 export interface Notification {
     _id: mongoose.Types.ObjectId;
-    kind: keyof typeof NotificationKind;
+    kind: NotificationKind;
     senderId: mongoose.Types.ObjectId;
 }
 

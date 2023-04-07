@@ -3,7 +3,8 @@ import mongoose, { Schema } from "mongoose";
 
 export interface ServerUser extends User {
     passwordHash: string;
-    notificationsId: mongoose.Types.ObjectId;
+    friendsId: mongoose.Types.ObjectId[];
+    notificationsId: mongoose.Types.ObjectId[];
     settingsId: mongoose.Types.ObjectId;
     scheduleId: mongoose.Types.ObjectId;
 }
@@ -59,9 +60,10 @@ const UserSchema = new Schema<ServerUser>({
         required: true,
     },
     notificationsId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: [mongoose.Schema.Types.ObjectId],
         ref: "notifications",
         required: true,
+        default: [],
     },
 });
 

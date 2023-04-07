@@ -1,7 +1,7 @@
 <script lang="ts">
     import SearchBar from "$lib/components/SearchBar.svelte";
-    import friends from "$lib/stores/friends";
-    import type { User } from "$lib/Types";
+    import notifications from "$lib/stores/notifications";
+    import { NotificationKind, type User } from "$lib/Types";
 
     let query = "";
     let searchResults: User[] = [];
@@ -43,7 +43,7 @@
             on:click={() => {
                 query = "";
                 searchResults = [];
-                friends.add(user._id);
+                notifications.create(NotificationKind.FriendRequest, user._id);
             }}
         >
             ajouter en ami

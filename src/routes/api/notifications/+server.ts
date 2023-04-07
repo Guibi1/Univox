@@ -1,22 +1,22 @@
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
+import mongoose from "mongoose";
 import type { RequestHandler } from "./$types";
 
 export const POST = (async ({ request, locals }) => {
     if (!locals.user) throw error(401);
 
-    const { notification, receiverId } = await request.json();
-    if (
-        !notification ||
-        !receiverId ||
-        locals.user !== notification.senderId ||
-        !(await db.findUserById(receiverId))
-    ) {
+    const { kind, receiverId } = await request.json();
+    if (!kind || !receiverId || !(await db.getUser(receiverId))) {
         throw error(400, "Invalid data.");
     }
 
     return json({
-        success: await db.sendNotification(locals.user, notification, receiverId),
+        success: await db.sendNotification(
+            locals.user,
+            { _id: new mongoose.Types.ObjectId(), kind, senderId: locals.user._id },
+            receiverId
+        ),
         notifications: await db.getNotifications(locals.user),
     });
 }) satisfies RequestHandler;
