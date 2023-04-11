@@ -1,3 +1,8 @@
+/**
+ * @file A Svelte store that manages the user's notification
+ * @author Laurent Stéphenne <laurent@guibi.ca>
+ */
+
 import type { Notification, NotificationKind } from "$lib/Types";
 import type mongoose from "mongoose";
 import { writable } from "svelte/store";
@@ -5,12 +10,20 @@ import { writable } from "svelte/store";
 function createNotificationsStore() {
     const { subscribe, set } = writable<Notification[]>();
 
+    /**
+     * Updates the store with the latest information from the server
+     */
     async function refresh() {
         const { success, notifications } = await (await fetch("/api/notifications")).json();
         if (success) set(notifications);
     }
 
-    async function add(kind: NotificationKind, receiverId: mongoose.Types.ObjectId) {
+    /**
+     * Sends a notification to a user
+     * @param kind The kind of notification to send
+     * @param receiverId The user that will receive the notification
+     */
+    async function create(kind: NotificationKind, receiverId: mongoose.Types.ObjectId) {
         const { success } = await (
             await fetch("/api/notifications", {
                 method: "POST",
@@ -23,6 +36,10 @@ function createNotificationsStore() {
         if (success) refresh();
     }
 
+    /**
+     * Removes a notification from the database
+     * @param notification The notification to remove
+     */
     async function remove(notification: Notification) {
         const { success } = await (
             await fetch("/api/notifications", {
@@ -39,7 +56,7 @@ function createNotificationsStore() {
     return {
         subscribe,
         set,
-        create: add,
+        create,
         remove,
         refresh,
     };

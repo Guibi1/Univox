@@ -1,34 +1,66 @@
+import { NotificationKind } from "$lib/Types";
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
+import mongoose, { isObjectIdOrHexString } from "mongoose";
 import type { RequestHandler } from "./$types";
 
+/**
+ * Sends a notification to a user
+ * @param {NotificationKind} kind The kind of notification
+ * @param {mongoose.Types.ObjectId} receiverId The user that will receive the notification
+ */
 export const POST = (async ({ request, locals }) => {
     if (!locals.user) throw error(401);
 
     const { kind, receiverId } = await request.json();
-    if (!kind || !receiverId || !(await db.getUser(receiverId))) {
+
+    // Input validation
+    if (
+        typeof kind !== "string" ||
+        !(kind in NotificationKind) ||
+        typeof receiverId !== "string" ||
+        !isObjectIdOrHexString(receiverId) ||
+        (await db.getUser(new mongoose.Types.ObjectId(receiverId))) === null
+    ) {
         throw error(400, "Invalid data.");
     }
 
     return json({
-        success: await db.sendNotification(locals.user, kind, receiverId),
+        success: await db.sendNotification(
+            locals.user,
+            kind as NotificationKind,
+            new mongoose.Types.ObjectId(receiverId)
+        ),
     });
 }) satisfies RequestHandler;
 
+/**
+ * Removes a notification from the user's account
+ * @param {mongoose.Types.ObjectId} notificationId The ID of the notification to remove
+ */
 export const DELETE = (async ({ request, locals }) => {
     if (!locals.user) throw error(401);
 
-    const { notification } = await request.json();
-    if (!notification) {
+    const { notificationId } = await request.json();
+
+    // Input validation
+    if (!isObjectIdOrHexString(notificationId)) {
         throw error(400, "Invalid data.");
     }
 
     return json({
-        success: await db.deleteNotification(locals.user, notification),
+        success: await db.deleteNotification(
+            locals.user,
+            new mongoose.Types.ObjectId(notificationId)
+        ),
     });
 }) satisfies RequestHandler;
 
+/**
+ * Returns an up to date array of notifications
+ */
 export const GET = (async ({ locals }) => {
     if (!locals.user) throw error(401);
+
     return json({ success: true, notifications: locals.notifications });
 }) satisfies RequestHandler;
