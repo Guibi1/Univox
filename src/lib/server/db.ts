@@ -56,7 +56,7 @@ export async function getUserIdFromToken(
 
 // Helpers: User
 export function serverUserToUser(serverUser: ServerUser): User {
-    const cleanUser = serverUser as User & {
+    const cleanUser = { ...serverUser } as User & {
         passwordHash?: string;
         friendsId?: mongoose.Types.ObjectId[];
         notificationsId?: mongoose.Types.ObjectId[];
@@ -151,7 +151,7 @@ export async function updateUser(
     return true;
 }
 
-export async function searchUsers(user: ServerUser, query: string): Promise<ServerUser[]> {
+export async function searchUsers(user: ServerUser, query: string): Promise<User[]> {
     query = sanitizeQuery(query);
     if (query.length < 4) return [];
     query = normalizeQuery(query);
@@ -170,7 +170,9 @@ export async function searchUsers(user: ServerUser, query: string): Promise<Serv
                 },
             ],
         }).limit(5)
-    ).map((user: mongoose.Document<ServerUser>) => ({ ...user.toObject() }));
+    ).map((user: mongoose.HydratedDocument<ServerUser>) =>
+        serverUserToUser({ ...user.toObject() })
+    );
 }
 
 // Helpers: Friends
@@ -286,7 +288,10 @@ export async function getNotifications(user: ServerUser): Promise<Notification[]
         _id: { $in: user.notificationsId },
     }).populate("sender");
 
-    return doc.map((n) => ({ ...n.toObject() }));
+    return doc.map((notification) => {
+        const n = notification.toObject();
+        return { ...n, sender: serverUserToUser(n.sender as ServerUser) };
+    });
 }
 
 export async function sendNotification(
