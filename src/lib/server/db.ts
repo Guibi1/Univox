@@ -304,12 +304,12 @@ export async function sendNotification(
 
 export async function deleteNotification(
     user: ServerUser,
-    notification: Notification
+    notificationId: mongoose.Types.ObjectId
 ): Promise<boolean> {
-    if (!user.notificationsId.some((id) => id.equals(notification._id))) return false;
+    if (!user.notificationsId.some((id) => id.equals(notificationId))) return false;
 
     await Users.findByIdAndUpdate(user._id, {
-        $pull: { notificationsId: notification._id },
+        $pull: { notificationsId: notificationId },
     });
 
     return true;
