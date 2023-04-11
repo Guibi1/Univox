@@ -1,25 +1,20 @@
+/**
+ * @file Allows to interact with Omnivox. (login, schedule, etc)
+ */
+
+import type { Class } from "$lib/Types";
 import * as cheerio from "cheerio";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import weekday from "dayjs/plugin/weekday";
 import mongoose from "mongoose";
-import type { Class } from "../Types";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(weekday);
 
-type OmnivoxCookie = {
-    COMN: string;
-    DTKS: string;
-    K: string;
-    TKSBDBP: string;
-};
-
-type ScheduleCookie = {
-    sessionID: string;
-    rvpMod: string;
-};
-
+/**
+ * Represents the differents Semesters
+ */
 export enum Semester {
     Winter = "1",
     Summer = "2",
@@ -238,3 +233,15 @@ function regexFind(data: string | null, query: RegExp): RegExpMatchArray {
 
     return match;
 }
+
+type OmnivoxCookie = {
+    COMN: string;
+    DTKS: string;
+    K: string;
+    TKSBDBP: string;
+};
+
+type ScheduleCookie = {
+    sessionID: string;
+    rvpMod: string;
+};

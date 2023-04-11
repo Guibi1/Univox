@@ -14,47 +14,80 @@ import Books from "./models/books";
 import Notifications from "./models/notifications";
 import Schedules from "./models/schedules";
 import Settings from "./models/settings";
-import Tokens from "./models/tokens";
+import Tokens, { type Token } from "./models/tokens";
 import Users from "./models/users";
 
-// Connection
+/**
+ * Connects the app to the database if its not already connected
+ */
 mongoose.set("strictQuery", false);
 if (mongoose.connection.readyState !== 1) {
     mongoose.connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox");
 }
 
-// Helpers: Token
+// -*-*- TOKEN -*-*-
+/**
+ * Creates a token that authentifies the user
+ * @param user The logged in user
+ * @returns The new session token
+ */
 export async function createToken(user: ServerUser) {
     const token: string = await bcryptjs.hash(user.da + Date(), 5);
     await Tokens.create({ token, userId: user._id });
     return token;
 }
 
+/**
+ * Removes an existing token
+ * @param token The token to delete
+ */
 export async function deleteToken(token: string) {
     await Tokens.findOneAndRemove({ token });
 }
 
+/**
+ * Finds the user that logged in with the provided token
+ * @param token The user's token
+ * @returns The corresponding server user
+ */
 export async function getUserFromToken(token: string | undefined): Promise<ServerUser | null> {
     const userId = await getUserIdFromToken(token);
     if (userId) {
-        return getServerUser(userId);
+        return await getServerUser(userId);
     }
     return null;
 }
 
+/**
+ * Finds the ID of the user that logged in with the provided token
+ * @param token The user's token
+ * @returns The corresponding user ID
+ */
 export async function getUserIdFromToken(
     token: string | undefined
 ): Promise<mongoose.Types.ObjectId | null> {
     if (!token) return null;
 
-    const doc = await Tokens.findOne({ token });
-    if (!doc) return null;
-    doc.lastAccessedDate = Date.now();
+    const doc: mongoose.HydratedDocument<Token> | null = await Tokens.findOne({
+        token,
+    });
+    if (!doc) {
+        return null;
+    }
+
+    // Update the last accessed date
+    doc.lastAccessedDate = new Date();
     doc.save();
-    return doc?.userId ?? null;
+
+    return doc.userId;
 }
 
-// Helpers: User
+// -*-*- USER -*-*-
+/**
+ * Casts a server user to a normal user by deleting the unwanted properties
+ * @param serverUser The server user to cast
+ * @returns The casted user
+ */
 export function serverUserToUser(serverUser: ServerUser): User {
     const cleanUser = serverUser as User & {
         passwordHash?: string;
@@ -75,30 +108,51 @@ export function serverUserToUser(serverUser: ServerUser): User {
     return cleanUser;
 }
 
+/**
+ * Finds the requested user in the database and returns it as a server user
+ * @param id The user id
+ * @returns The requested server user, or null if it doesn't exist
+ */
 export async function getServerUser(id: mongoose.Types.ObjectId): Promise<ServerUser | null> {
-    const doc: mongoose.Document<ServerUser> | null = await Users.findById(id);
+    const doc: mongoose.HydratedDocument<ServerUser> | null = await Users.findById(id);
     if (!doc) {
         return null;
     }
     return { ...doc.toObject() };
 }
 
+/**
+ * Finds the requested user in the database and returns it as a normal user
+ * @param id The user id
+ * @returns The requested user, or null if it doesn't exist
+ */
 export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null> {
-    const doc: mongoose.Document<ServerUser> | null = await Users.findById(id);
-    if (!doc) {
+    const user = await getServerUser(id);
+    if (!user) {
         return null;
     }
-    return serverUserToUser({ ...doc.toObject() });
+    return serverUserToUser(user);
 }
 
+/**
+ * Finds one matching user in the database and returns it as a normal user
+ * @param filter Filters to match a specific user
+ * @returns The requested user, or null if it wasn't found
+ */
 export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | null> {
-    const doc: mongoose.Document<ServerUser> | null = await Users.findOne(filter);
+    const doc: mongoose.HydratedDocument<ServerUser> | null = await Users.findOne(filter);
     if (!doc) {
         return null;
     }
     return serverUserToUser({ ...doc.toObject() });
 }
 
+/**
+ * Tests the provided login credentials to confirm a login attempt
+ * @param da The provided DA
+ * @param password The provided password
+ * @returns The server user with the provided credentials, or null if no user matched them
+ */
 export async function compareUserPassword(
     da: string,
     password: string
@@ -110,6 +164,12 @@ export async function compareUserPassword(
     return null;
 }
 
+/**
+ * Creates a new user in the databases
+ * @param user The new user to create
+ * @param password The user's password
+ * @returns The newly created server user
+ */
 export async function createUser(user: User, password: string): Promise<ServerUser | null> {
     if ((await findUser({ da: user.da })) !== null) {
         console.error("A user with this 'da' already exists.");
@@ -118,7 +178,7 @@ export async function createUser(user: User, password: string): Promise<ServerUs
 
     const scheduleId: mongoose.Types.ObjectId = (await Schedules.create({}))._id;
     const settingsId: mongoose.Types.ObjectId = (await Settings.create({}))._id;
-    const doc: mongoose.Document<ServerUser> = await Users.create({
+    const doc: mongoose.HydratedDocument<ServerUser> = await Users.create({
         ...user,
         scheduleId,
         settingsId,
@@ -127,30 +187,47 @@ export async function createUser(user: User, password: string): Promise<ServerUs
     return { ...doc.toObject() };
 }
 
-export async function updateUserPassword(user: ServerUser, password: string): Promise<boolean> {
-    if (!(await getUser(user._id))) {
-        console.error("No user with this id was found.");
+/**
+ * Modifies the user's password
+ * @param user The user to update
+ * @param password The new password
+ * @returns True if the operation succeded, false otherwise
+ */
+export async function updateUserPassword(user: User, password: string): Promise<boolean> {
+    try {
+        await Users.findByIdAndUpdate(user, {
+            $set: { passwordHash: await bcryptjs.hash(password, 11) },
+        });
+        return true;
+    } catch {
         return false;
     }
-
-    await Users.findByIdAndUpdate(user, {
-        $set: { passwordHash: await bcryptjs.hash(password, 11) },
-    });
-    return true;
 }
 
+/**
+ * Modifies the user's database entry
+ * @param user The user to update
+ * @param data The data to modify
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function updateUser(
     user: ServerUser,
     data: mongoose.AnyKeys<ServerUser>
 ): Promise<boolean> {
-    if (!(await getUser(user._id))) {
+    try {
+        await Users.findByIdAndUpdate(user, { $set: data });
+        return true;
+    } catch {
         return false;
     }
-
-    await Users.findByIdAndUpdate(user, { $set: data });
-    return true;
 }
 
+/**
+ * Searches the database to find users that match the query
+ * @param user The current user
+ * @param query The search query
+ * @returns An array of matching server user
+ */
 export async function searchUsers(user: ServerUser, query: string): Promise<ServerUser[]> {
     query = sanitizeQuery(query);
     if (query.length < 4) return [];
@@ -170,10 +247,15 @@ export async function searchUsers(user: ServerUser, query: string): Promise<Serv
                 },
             ],
         }).limit(5)
-    ).map((user: mongoose.Document<ServerUser>) => ({ ...user.toObject() }));
+    ).map((user: mongoose.HydratedDocument<ServerUser>) => ({ ...user.toObject() }));
 }
 
-// Helpers: Friends
+// -*-*- FRIENDS -*-*-
+/**
+ * Fetches the latests friends
+ * @param user The current user
+ * @returns An array of friends
+ */
 export async function getFriends(user: ServerUser): Promise<User[]> {
     const friends: User[] = [];
     for (const friendId of user.friendsId) {
@@ -186,6 +268,12 @@ export async function getFriends(user: ServerUser): Promise<User[]> {
     return friends;
 }
 
+/**
+ * Makes two user friends by adding each other in their friendlist
+ * @param user The current user
+ * @param friendId The friend to add
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function addFriend(
     user: ServerUser,
     friendId: mongoose.Types.ObjectId
@@ -202,6 +290,12 @@ export async function addFriend(
     return true;
 }
 
+/**
+ * Unfriends two user by removing each other from their respective friendlist
+ * @param user The current user
+ * @param friendId The friend to remove
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function deleteFriend(
     user: ServerUser,
     friendId: mongoose.Types.ObjectId
@@ -219,15 +313,28 @@ export async function deleteFriend(
     return true;
 }
 
-// Helpers: Schedule
+// -*-*- SCHEDULE -*-*-
+/**
+ * Fetches the user's latest schedule
+ * @param user The targeted user
+ * @returns The user's schedule
+ */
 export async function getSchedule(user: ServerUser): Promise<Schedule | null> {
-    const doc: mongoose.Document<Schedule> | null = await Schedules.findById(user.scheduleId);
+    const doc: mongoose.HydratedDocument<Schedule> | null = await Schedules.findById(
+        user.scheduleId
+    );
     if (!doc) {
         return null;
     }
     return { ...doc.toObject() };
 }
 
+/**
+ * Adds all the provided periods to the user's schedule
+ * @param user The targeted user
+ * @param periods An array of periods to add
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]): Promise<boolean> {
     if (!user.settingsId) return false;
 
@@ -237,15 +344,27 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
     return true;
 }
 
-// Helpers: Book
-export async function findBookById(bookId: mongoose.Types.ObjectId): Promise<Book | null> {
-    const doc: mongoose.Document<Book> | null = await Books.findById(bookId);
+// -*-*- BOOK -*-*-
+/**
+ * Fetches the book with the provided ID
+ * @param bookId The targeted book's ID
+ * @returns The requested book or null if it doesn't exist
+ */
+export async function getBook(bookId: mongoose.Types.ObjectId): Promise<Book | null> {
+    const doc: mongoose.HydratedDocument<Book> | null = await Books.findById(bookId);
     if (!doc) {
         return null;
     }
     return { ...doc.toObject() };
 }
 
+/**
+ * Searches for corresponding books in the database
+ * @param user The current user
+ * @param query The search query
+ * @param codes The search filters
+ * @returns An array of matching books
+ */
 export async function searchBooks(
     user: ServerUser,
     query: string,
@@ -272,36 +391,63 @@ export async function searchBooks(
                     : []),
             ],
         }).limit(15)
-    ).map((book: mongoose.Document<Book>) => ({ ...book.toObject() }));
+    ).map((book: mongoose.HydratedDocument<Book>) => ({ ...book.toObject() }));
 }
 
+/**
+ * Adds a new book listing to the database
+ * @param book The book to add
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function addBookListing(book: Book): Promise<boolean> {
     await Books.create(book);
     return true;
 }
 
-// Heplers: Notifications
+// -*-*- NOTIFICATION -*-*-
+/**
+ * Fetches the user's latest notifications
+ * @param user The target user
+ * @returns An array of notification
+ */
 export async function getNotifications(user: ServerUser): Promise<Notification[]> {
-    const doc: mongoose.Document<Schedule>[] = await Notifications.find({
+    const doc: mongoose.HydratedDocument<Notification>[] = await Notifications.find({
         _id: { $in: user.notificationsId },
     }).populate("sender");
 
     return doc.map((n) => ({ ...n.toObject() }));
 }
 
+/**
+ * Sends a notification to the specified user
+ * @param user The current user
+ * @param kind The kind of notification
+ * @param receiverId The user that will receive the notification
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function sendNotification(
     user: ServerUser,
     kind: NotificationKind,
     receiverId: mongoose.Types.ObjectId
 ): Promise<boolean> {
-    const notificationId = (await Notifications.create({ kind, sender: user._id }))._id;
-    await Users.findByIdAndUpdate(receiverId, {
-        $push: { notificationsId: notificationId },
-    });
+    try {
+        const notificationId = (await Notifications.create({ kind, sender: user._id }))._id;
+        await Users.findByIdAndUpdate(receiverId, {
+            $push: { notificationsId: notificationId },
+        });
 
-    return true;
+        return true;
+    } catch {
+        return false;
+    }
 }
 
+/**
+ * Deletes a notification from the user's account
+ * @param user The current user
+ * @param notificationId The ID of the targeted notification
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function deleteNotification(
     user: ServerUser,
     notificationId: mongoose.Types.ObjectId
@@ -315,9 +461,16 @@ export async function deleteNotification(
     return true;
 }
 
-// Helpers: Settings
+// -*-*- SETTINGS -*-*-
+/**
+ * Fetches the user's latest settings
+ * @param user The current user
+ * @returns The user's settings
+ */
 export async function getSettings(user: ServerUser): Promise<Settings | null> {
-    const doc: mongoose.Document<Settings> | null = await Settings.findById(user.settingsId);
+    const doc: mongoose.HydratedDocument<Settings> | null = await Settings.findById(
+        user.settingsId
+    );
 
     if (!doc) {
         return null;
@@ -325,12 +478,22 @@ export async function getSettings(user: ServerUser): Promise<Settings | null> {
     return { ...doc.toObject() };
 }
 
+/**
+ * Updates the user's settings in the database
+ * @param user The target user
+ * @param settings The new settings
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function setSettings(user: ServerUser, settings: Settings): Promise<boolean> {
-    await Settings.findByIdAndUpdate(user.settingsId, { $set: settings });
-    return true;
+    try {
+        await Settings.findByIdAndUpdate(user.settingsId, { $set: settings });
+        return true;
+    } catch {
+        return false;
+    }
 }
 
-// Helpers: Query normalization
+// -*-*- QUERY NORMALIZATION -*-*-
 function sanitizeQuery(query: string): string {
     return query.replace(/\./g, "").trim();
 }
