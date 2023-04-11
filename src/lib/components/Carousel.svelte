@@ -1,26 +1,34 @@
 <script lang="ts">
+    // Importing easing function for fade transition
     import { cubicInOut } from "svelte/easing";
 
+    // Constants and exported variables
     export const maxImagesCount = 4;
     export let images: string[] = [];
     export let files: File[] = [];
     export let selectedIndex = -1;
     export let readOnly = false;
 
+    // Local state for drag event handling
     let isDragginOver = false;
 
+    // Function to remove an image from the images array
     function removeImage(index: number) {
         images.splice(index, 1);
         files.splice(index, 1);
-        images = images; // This is to tell the compiler to update so that the preview images element updates
+        // Triggering reactivity in Svelte
+        images = images;
+        // Updating the selected index after removal
         selectedIndex = !images[selectedIndex] ? selectedIndex - 1 : selectedIndex;
     }
 
+    // Function to handle file input change event
     function handleUpload(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
         if (!e.currentTarget.files) return;
         readImages(e.currentTarget.files);
     }
 
+    // Function to handle drop event for file drag and drop
     function handleDrop(e: DragEvent) {
         e.preventDefault();
         if (!e.dataTransfer) return;
@@ -28,6 +36,7 @@
         isDragginOver = false;
     }
 
+    // Function to read image files and update the images and files arrays
     function readImages(filelist: FileList) {
         for (let file of filelist) {
             if (file.type !== "image/png" && file.type !== "image/jpeg") return;
@@ -46,12 +55,15 @@
         }
     }
 
+    // Custom action for handling drag and drop events
     function dropFiles(node: HTMLElement, enabled: boolean) {
+        // Function to handle dragover event
         const handleDragOver = (e: DragEvent) => {
             e.preventDefault();
             if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
         };
 
+        // Function to enable or disable drag and drop event listeners
         const setActive = (enable: boolean) => {
             if (enable) {
                 node.addEventListener("dragover", handleDragOver);
@@ -69,6 +81,7 @@
         };
     }
 
+    // Fade transition for drag and drop overlay
     function fade(node: HTMLElement) {
         const o = +getComputedStyle(node).opacity;
         return {
@@ -79,6 +92,7 @@
     }
 </script>
 
+<!-- Main container -->
 <div class="relative py-4">
     <div
         use:dropFiles={images.length < maxImagesCount && !readOnly}
@@ -86,10 +100,10 @@
         class="relative flex h-64 items-stretch bg-neutral-700"
     >
         {#if images.length === 0}
+            <!-- Empty state with file input and label -->
             <label class="flex cursor-pointer flex-col items-center justify-center">
                 <i class="bx bx-cloud-upload pointer-events-none text-7xl" />
                 <p class="pointer-events-none">Glissez ici des images de votre livre</p>
-
                 <input
                     type="file"
                     multiple
@@ -99,6 +113,7 @@
                 />
             </label>
         {:else}
+            <!-- Displaying the selected image -->
             <img
                 src={images[selectedIndex]}
                 alt="Livre"
@@ -106,6 +121,7 @@
             />
 
             {#if !readOnly}
+                <!-- Remove button for the selected image -->
                 <button
                     type="button"
                     on:click={() => removeImage(selectedIndex)}
@@ -117,6 +133,7 @@
         {/if}
 
         {#if isDragginOver && !readOnly}
+            <!-- Drag and drop overlay with fade transition -->
             <div
                 transition:fade
                 on:dragleave={() => (isDragginOver = false)}
@@ -128,9 +145,11 @@
         {/if}
     </div>
 
+    <!-- Thumbnail container -->
     <div class="flex h-12 items-center justify-center">
         <div class="z-20 flex gap-2">
             {#each images as image, i}
+                <!-- Thumbnail for each image with click handler -->
                 <button type="button" on:click={() => (selectedIndex = i)}>
                     <img
                         src={image}
@@ -143,6 +162,7 @@
             {/each}
 
             {#if images.length < maxImagesCount && !readOnly}
+                <!-- Add image button with file input and label -->
                 <label
                     class="flex aspect-square w-20 cursor-pointer items-center justify-center border-2 border-neutral-300 bg-neutral-500 object-cover transition-[scale] hover:scale-110"
                 >

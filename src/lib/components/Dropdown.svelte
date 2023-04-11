@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+    // Dropdown option type definition
     type DropdownOption = {
         text: string;
         color?: DropdownColor;
@@ -10,6 +11,7 @@
         ) => any;
     };
 
+    // Exported context for managing dropdown options and separator
     export type DropdownContext = { addOption: (a: DropdownOption) => void; separate: () => void };
     export type DropdownColor = "normal" | "red" | "blue";
 </script>
@@ -18,9 +20,11 @@
     import { setContext } from "svelte";
     import EmptyDropdown, { type DropdownPosition } from "./EmptyDropdown.svelte";
 
+    // Exported position prop and internal actions state
     export let position: DropdownPosition = "side-right";
     export let actions: DropdownOption[][] = [];
 
+    // Set the context for managing dropdown options and separators
     setContext<DropdownContext>("dropdown", {
         addOption: (action: DropdownOption) => {
             if (actions.length === 0) actions.push([]);
@@ -30,6 +34,7 @@
         separate: () => (actions = [...actions, []]),
     });
 
+    // Get color class for dropdown option based on color prop
     function getColor(action: DropdownOption) {
         switch (action.color) {
             case "red":
@@ -42,7 +47,9 @@
     }
 </script>
 
+<!-- Main component, wraps EmptyDropdown and handles button and dropdown items -->
 <EmptyDropdown bind:position>
+    <!-- Button slot -->
     <div slot="button" class="w-full">
         {#if $$slots.button}
             <slot name="button" />
@@ -51,6 +58,7 @@
         {/if}
     </div>
 
+    <!-- Render dropdown options -->
     {#each actions as section}
         <div class="flex flex-col py-2">
             {#each section as action}
@@ -80,6 +88,7 @@
     {/each}
 </EmptyDropdown>
 
+<!-- Hidden slot container for content rendered outside -->
 <div class="hidden">
     <slot />
 </div>
