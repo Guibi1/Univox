@@ -75,14 +75,6 @@ export function serverUserToUser(serverUser: ServerUser): User {
     return cleanUser;
 }
 
-export async function findUser(filter: FilterQuery<ServerUser>): Promise<ServerUser | null> {
-    const doc: mongoose.Document<ServerUser> | null = await Users.findOne(filter);
-    if (!doc) {
-        return null;
-    }
-    return { ...doc.toObject() };
-}
-
 export async function getServerUser(id: mongoose.Types.ObjectId): Promise<ServerUser | null> {
     const doc: mongoose.Document<ServerUser> | null = await Users.findById(id);
     if (!doc) {
@@ -99,19 +91,27 @@ export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null>
     return serverUserToUser({ ...doc.toObject() });
 }
 
+export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | null> {
+    const doc: mongoose.Document<ServerUser> | null = await Users.findOne(filter);
+    if (!doc) {
+        return null;
+    }
+    return serverUserToUser({ ...doc.toObject() });
+}
+
 export async function compareUserPassword(
     da: string,
     password: string
 ): Promise<ServerUser | null> {
-    const user = await findUser({ da });
-    if (user && (await bcryptjs.compare(password.toString(), user.passwordHash))) {
+    const user = await Users.findOne({ da });
+    if (user && (await bcryptjs.compare(password, user.passwordHash))) {
         return user;
     }
     return null;
 }
 
 export async function createUser(user: User, password: string): Promise<ServerUser | null> {
-    if ((await findUser({ da: user.da })) === null) {
+    if ((await findUser({ da: user.da })) !== null) {
         console.error("A user with this 'da' already exists.");
         return null;
     }
