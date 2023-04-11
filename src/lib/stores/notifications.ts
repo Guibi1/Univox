@@ -1,6 +1,5 @@
 /**
  * @file A Svelte store that manages the user's notification
- * @author Laurent Stéphenne <laurent@guibi.ca>
  */
 
 import type { Notification, NotificationKind } from "$lib/Types";

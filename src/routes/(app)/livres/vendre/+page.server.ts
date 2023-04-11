@@ -58,7 +58,7 @@ export const actions = {
 
             const name = randomUUID();
             uploads.push(uploadBookImage(image, name));
-            images.push(`/api/images/book-${name}`);
+            images.push(`/api/images/book/${name}`);
         }
 
         const book = {
