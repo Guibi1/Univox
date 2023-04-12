@@ -25,7 +25,10 @@ if (mongoose.connection.readyState !== 1) {
     mongoose.connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox");
 }
 
-// -*-*- TOKEN -*-*-
+///////////////////////
+// -*-*- TOKEN -*-*- //
+///////////////////////
+
 /**
  * Creates a token that authentifies the user
  * @param user The logged in user
@@ -82,7 +85,10 @@ export async function getUserIdFromToken(
     return doc.userId;
 }
 
-// -*-*- USER -*-*-
+//////////////////////
+// -*-*- USER -*-*- //
+//////////////////////
+
 /**
  * Casts a server user to a normal user by deleting the unwanted properties
  * @param serverUser The server user to cast
@@ -313,7 +319,10 @@ export async function deleteFriend(
     return true;
 }
 
-// -*-*- SCHEDULE -*-*-
+//////////////////////////
+// -*-*- SCHEDULE -*-*- //
+//////////////////////////
+
 /**
  * Fetches the user's latest schedule
  * @param user The targeted user
@@ -404,7 +413,10 @@ export async function addBookListing(book: Book): Promise<boolean> {
     return true;
 }
 
-// -*-*- NOTIFICATION -*-*-
+//////////////////////////////
+// -*-*- NOTIFICATION -*-*- //
+//////////////////////////////
+
 /**
  * Fetches the user's latest notifications
  * @param user The target user
@@ -461,7 +473,10 @@ export async function deleteNotification(
     return true;
 }
 
-// -*-*- SETTINGS -*-*-
+//////////////////////////
+// -*-*- SETTINGS -*-*- //
+//////////////////////////
+
 /**
  * Fetches the user's latest settings
  * @param user The current user
@@ -493,11 +508,24 @@ export async function setSettings(user: ServerUser, settings: Settings): Promise
     }
 }
 
-// -*-*- QUERY NORMALIZATION -*-*-
+/////////////////////////////////////
+// -*-*- QUERY NORMALIZATION -*-*- //
+/////////////////////////////////////
+
+/**
+ * Removes any ambigous caracters from a query
+ * @param query The string to sanitize
+ * @returns The sanitized query
+ */
 function sanitizeQuery(query: string): string {
-    return query.replace(/\./g, "").trim();
+    return query.replace(/\./g, "").replace(/\\/g, "\\\\").trim();
 }
 
+/**
+ * Makes a query match accents as well
+ * @param query The string to normalize
+ * @returns The normalized query
+ */
 function normalizeQuery(query: string): string {
     return query
         .replace(/a/g, "[a,á,à,ä,â]")
