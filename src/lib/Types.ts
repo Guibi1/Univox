@@ -9,7 +9,9 @@ export interface User {
     lastName: string;
     scheduleId: mongoose.Types.ObjectId;
     friendsId: mongoose.Types.ObjectId[];
+
     groupsId: mongoose.Types.ObjectId[];
+
     settingsId: mongoose.Types.ObjectId;
 }
 
