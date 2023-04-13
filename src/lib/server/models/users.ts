@@ -55,7 +55,7 @@ const UserSchema = new Schema<ServerUser>({
             },
             message: "Duplicate values are not allowed in the array.",
         },
-        ref: "users",
+        ref: "groups",
         required: true,
         default: [],
     },

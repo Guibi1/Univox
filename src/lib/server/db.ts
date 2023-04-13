@@ -1,8 +1,9 @@
 import { MONGODB_URI } from "$env/static/private";
-import type { Book, Period, Schedule, User } from "$lib/Types";
+import type { Book, Group, Period, Schedule, User } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
 import Books from "./models/books";
+import Groups from "./models/groups";
 import Schedules from "./models/schedules";
 import Settings from "./models/settings";
 import Tokens from "./models/tokens";
@@ -62,6 +63,15 @@ export async function findUserById(id: mongoose.Types.ObjectId): Promise<User | 
     }
     const user = { ...doc.toObject(), passwordHash: null };
     return user as User;
+}
+
+export async function findGroupById(id: mongoose.Types.ObjectId): Promise<Group | null> {
+    const doc = await Groups.findById(id);
+    if (!doc) {
+        return null;
+    }
+    const group = { ...doc.toObject(), passwordHash: null };
+    return group as Group;
 }
 
 export async function compareUserPassword(da: string, password: string): Promise<User | null> {
@@ -162,6 +172,34 @@ export async function deleteFriend(
     await Users.findByIdAndUpdate(friendId, {
         $pull: { friendsId: user._id },
     });
+    return true;
+}
+
+// Helpers: Groups
+
+export async function getGroups(user: User): Promise<Group[]> {
+    const groups: Group[] = [];
+    for (const groupId of user.groupsId) {
+        const group = await findGroupById(groupId);
+        if (group) {
+            groups.push(group);
+        }
+    }
+    return groups;
+}
+
+export async function addToGroup(user: User, group: Group, friendId: mongoose.Types.ObjectId) {
+    if (!group.usersId.includes(user._id)) return false;
+    if (!group.usersId.includes(friendId)) return false;
+
+    await Groups.findByIdAndUpdate(group, { $push: { usersId: friendId } });
+    return true;
+}
+
+export async function quitGroup(user: User, group: Group) {
+    if (!group.usersId.includes(user._id)) return false;
+
+    await Groups.findByIdAndUpdate(group, { $pull: { usersId: user._id } });
     return true;
 }
 

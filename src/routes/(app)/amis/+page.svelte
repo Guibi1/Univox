@@ -24,10 +24,9 @@
 <!-- class="sticky top-0 z-50 flex justify-center border-b bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900" -->
 
 <div
-    class="grid grid-cols-3 border-b bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900"
+    class="grid grid-cols-3 border-b border-black bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900"
 >
-
-<!-- class="ml-10 flex w-1/2 flex-row items-center gap-3" -->
+    <!-- class="ml-10 flex w-1/2 flex-row items-center gap-3" -->
 
     <div class="col-span-2 flex w-1/2 flex-row items-center gap-3">
         <SearchBar bind:query {handleSearch} />
@@ -40,14 +39,16 @@
         />
     </div>
 
-    <a class="justify-self-end"
-    href="/amis/ajouter-ami"> Ajouter des amis </a>
+    <div class="justify-self-end">
+        <div><a href="/amis/ajouter-ami"> Ajouter des amis </a></div>
+        <button>Créer un groupe</button>
+        <!-- À faire -->
+    </div>
 </div>
 
-
-<div class="grid grid-cols-4 h-full">
-    <ul class="px-5 border-r">
-        <p class="text-xl font-bold border-b mb-4">Vos amis</p>
+<div class="grid h-full grid-cols-4">
+    <ul class="border-r border-black px-5 dark:border-white">
+        <p class="mb-4 border-b border-black text-xl font-bold dark:border-white">Vos amis</p>
         {#each $friends as ami}
             <li>
                 <div class="flex items-center">
@@ -73,15 +74,16 @@
         {/each}
     </ul>
 
-    <ul class="px-5 border-r">
-        <p class="text-xl font-bold border-b mb-4">Vos groupes</p>
-        <!-- {#each $groups as group}
+    <ul class="border-r border-black px-5 dark:border-white">
+        <p class="mb-4 border-b border-black text-xl font-bold dark:border-white">Vos groupes</p>
+
+        {#each $groups as group}
             <li>
                 <div class="flex items-center">
-                    
+                    {group.name}
                 </div>
             </li>
-        {/each} -->
+        {/each}
     </ul>
 
     <div class="col-start-3 col-end-5 justify-self-center">Affichage de l'horaire commun</div>

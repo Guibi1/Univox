@@ -9,6 +9,7 @@ declare global {
         interface Locals {
             user: User;
             friends: User[];
+            groups: Group[];
         }
         // interface Error {}
         // interface PageData {}
