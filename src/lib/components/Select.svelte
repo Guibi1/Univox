@@ -22,7 +22,7 @@
     });
 </script>
 
-<Dropdown fullWith position="bottom-right">
+<Dropdown fullWith dropType="default" position="bottom-right">
     <div
         slot="button"
         class="flex h-12 w-full items-center justify-between rounded-lg border-2 border-neutral-600 bg-gray-200 px-4 outline-none focus-visible:border-black dark:bg-neutral-700 dark:text-white dark:focus-visible:border-white"

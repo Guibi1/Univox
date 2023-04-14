@@ -8,7 +8,6 @@
                 currentTarget: EventTarget;
             }
         ) => any;
-        selected?: boolean;
     };
 
     export type DropdownContext = { addOption: (a: DropdownOption) => void; separate: () => void };
@@ -16,12 +15,9 @@
 </script>
 
 <script lang="ts">
-    import { set } from "mongoose";
-
     import { setContext } from "svelte";
 
     export let position: "side-right" | "bottom-left" | "bottom-right" = "side-right";
-    export let dropType: "default" | "selection";
     export let fullWith = false;
     export let actions: DropdownOption[][] = [[]];
 
@@ -95,7 +91,6 @@
             {#each actions as section}
                 <div class="flex flex-col py-2">
                     {#each section as action}
-                    
                         {#if action.href}
                             <a
                                 class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
@@ -107,36 +102,15 @@
                                 {action.text}
                             </a>
                         {:else}
-                        <div>
-                            {#if dropType == "default"}
-                                <button
+                            <button
                                 class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
                                     action
                                 )}`}
-                                    on:click={action.onClick}
+                                on:click={action.onClick}
                                 data-closeOnClick
-                                >
-                                    
-                                {action.text}
-                                </button>
-                            {/if}
-
-                            {#if dropType == "selection"}
-                                <button
-                                class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                                    action
-                                )}`}
-                                
                             >
-                            <!-- faire un on:click pour mettre « action.selectable » sur True -->
                                 {action.text}
-                                <box-icon class="invisible"
-                                name="check" />
                             </button>
-                            {/if}
-                            
-                        </div>
-                            
                         {/if}
                     {/each}
                 </div>

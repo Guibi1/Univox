@@ -41,7 +41,13 @@
 
     <div class="justify-self-end">
         <div><a href="/amis/ajouter-ami"> Ajouter des amis </a></div>
-        <button>Créer un groupe</button>
+        <!-- <button>Créer un groupe</button> -->
+        <Dropdown dropType="selection" position="bottom-left">
+            <div slot="button">Créer un groupe</div>
+            {#each $friends as ami}
+            <Option text={ami.lastName + ", " + ami.firstName}></Option>
+            {/each}
+        </Dropdown>
         <!-- À faire -->
     </div>
 </div>
@@ -53,7 +59,7 @@
             <li>
                 <div class="flex items-center">
                     {ami.lastName + ", " + ami.firstName}
-                    <Dropdown>
+                    <Dropdown dropType="default">
                         <Option
                             text="Consulter l'horaire"
                             onClick={() => console.log("TODO: afficher l'horaire")}

@@ -19,7 +19,7 @@
 
 <nav class="flex h-14 items-stretch justify-between bg-blue-secondary">
     <div class="grid aspect-square tablet:hidden">
-        <Dropdown actions={[pages]} position="bottom-right">
+        <Dropdown dropType="default" actions={[pages]} position="bottom-right">
             <box-icon slot="button" name="menu" />
         </Dropdown>
     </div>
@@ -54,13 +54,13 @@
 
     <div class="flex flex-row">
         <div class="grid aspect-square">
-            <Dropdown position="bottom-left">
+            <Dropdown dropType="default" position="bottom-left">
                 <box-icon slot="button" name="bell" />
             </Dropdown>
         </div>
 
         <div class="grid aspect-square">
-            <Dropdown position="bottom-left">
+            <Dropdown dropType="default" position="bottom-left">
                 <box-icon slot="button" name="user" />
 
                 <Option text="Mon Profil" href="/profil" />
