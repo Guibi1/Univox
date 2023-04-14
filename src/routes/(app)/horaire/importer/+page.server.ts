@@ -5,7 +5,9 @@ import dayjs from "dayjs";
 import type { Actions } from "./$types";
 
 export const actions = {
-    default: async ({ request, cookies }) => {
+    default: async ({ request, locals }) => {
+        if (!locals.user) return fail(401, { incorrect: true });
+
         const data = await request.formData();
         const omnivoxPassword = data.get("omnivoxPassword")?.toString();
 
@@ -13,13 +15,8 @@ export const actions = {
             return fail(400, { incorrect: true });
         }
 
-        const user = await db.getUserFromToken(cookies.get("token"));
-        if (!user) {
-            return fail(401, { incorrect: true });
-        }
-
         try {
-            const cookie = await omnivox.login(user.da, omnivoxPassword);
+            const cookie = await omnivox.login(locals.user.da, omnivoxPassword);
             const html = await omnivox.fetchSchedulePageHTML(
                 cookie,
                 dayjs().year(),
@@ -27,7 +24,7 @@ export const actions = {
             );
             const schedule = omnivox.schedulePageToClasses(html);
 
-            await db.addPeriodsToSchedule(user.scheduleId, schedule);
+            await db.addPeriodsToSchedule(locals.user, schedule);
         } catch (e) {
             return fail(401, { incorrect: true });
         }

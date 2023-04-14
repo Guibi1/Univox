@@ -7,9 +7,15 @@ export interface User {
     email: string;
     firstName: string;
     lastName: string;
-    scheduleId: mongoose.Types.ObjectId;
+    avatar: string;
+}
+
+export interface ServerUser extends User {
+    passwordHash: string;
     friendsId: mongoose.Types.ObjectId[];
+    notificationsId: mongoose.Types.ObjectId[];
     settingsId: mongoose.Types.ObjectId;
+    scheduleId: mongoose.Types.ObjectId;
 }
 
 export interface Book {
@@ -18,7 +24,7 @@ export interface Book {
     sellerId: mongoose.Types.ObjectId;
     title: string;
     ISBN: string;
-    src: string;
+    src: string[];
     author: string;
     price: number;
     state: string;
@@ -45,4 +51,14 @@ export interface Class extends Period {
     virtual: boolean;
     timeStart: Dayjs;
     timeEnd: Dayjs;
+}
+
+export interface Notification {
+    _id: mongoose.Types.ObjectId;
+    kind: NotificationKind;
+    sender: User;
+}
+
+export enum NotificationKind {
+    FriendRequest = "FriendRequest",
 }

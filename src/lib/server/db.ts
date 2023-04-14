@@ -1,8 +1,17 @@
 import { MONGODB_URI } from "$env/static/private";
-import type { Book, Period, Schedule, User } from "$lib/Types";
+import type {
+    Book,
+    Notification,
+    NotificationKind,
+    Period,
+    Schedule,
+    ServerUser,
+    User,
+} from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
 import Books from "./models/books";
+import Notifications from "./models/notifications";
 import Schedules from "./models/schedules";
 import Settings from "./models/settings";
 import Tokens from "./models/tokens";
@@ -15,7 +24,7 @@ if (mongoose.connection.readyState !== 1) {
 }
 
 // Helpers: Token
-export async function createToken(user: User) {
+export async function createToken(user: ServerUser) {
     const token: string = await bcryptjs.hash(user.da + Date(), 5);
     await Tokens.create({ token, userId: user._id });
     return token;
@@ -25,10 +34,10 @@ export async function deleteToken(token: string) {
     await Tokens.findOneAndRemove({ token });
 }
 
-export async function getUserFromToken(token: string | undefined): Promise<User | null> {
+export async function getUserFromToken(token: string | undefined): Promise<ServerUser | null> {
     const userId = await getUserIdFromToken(token);
     if (userId) {
-        return findUserById(userId);
+        return getServerUser(userId);
     }
     return null;
 }
@@ -46,87 +55,131 @@ export async function getUserIdFromToken(
 }
 
 // Helpers: User
-export async function findUser(filter: FilterQuery<User>): Promise<User | null> {
-    const doc = await Users.findOne(filter);
+export function serverUserToUser(serverUser: ServerUser): User {
+    const cleanUser = { ...serverUser } as User & {
+        passwordHash?: string;
+        friendsId?: mongoose.Types.ObjectId[];
+        notificationsId?: mongoose.Types.ObjectId[];
+        settingsId?: mongoose.Types.ObjectId;
+        scheduleId?: mongoose.Types.ObjectId;
+        __v?: number;
+    };
+
+    delete cleanUser.passwordHash;
+    delete cleanUser.friendsId;
+    delete cleanUser.notificationsId;
+    delete cleanUser.settingsId;
+    delete cleanUser.scheduleId;
+    delete cleanUser.__v;
+
+    return cleanUser;
+}
+
+export async function getServerUser(id: mongoose.Types.ObjectId): Promise<ServerUser | null> {
+    const doc: mongoose.Document<ServerUser> | null = await Users.findById(id);
     if (!doc) {
         return null;
     }
-    const user = { ...doc.toObject(), passwordHash: null };
-    return user as User;
+    return { ...doc.toObject() };
 }
 
-export async function findUserById(id: mongoose.Types.ObjectId): Promise<User | null> {
-    const doc = await Users.findById(id);
+export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null> {
+    const doc: mongoose.Document<ServerUser> | null = await Users.findById(id);
     if (!doc) {
         return null;
     }
-    const user = { ...doc.toObject(), passwordHash: null };
-    return user as User;
+    return serverUserToUser({ ...doc.toObject() });
 }
 
-export async function compareUserPassword(da: string, password: string): Promise<User | null> {
-    const user = (await Users.findOne({ da }))?.toObject();
-    const passwordHash = user?.passwordHash;
-    if (passwordHash && (await bcryptjs.compare(password.toString(), passwordHash))) {
+export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | null> {
+    const doc: mongoose.Document<ServerUser> | null = await Users.findOne(filter);
+    if (!doc) {
+        return null;
+    }
+    return serverUserToUser({ ...doc.toObject() });
+}
+
+export async function compareUserPassword(
+    da: string,
+    password: string
+): Promise<ServerUser | null> {
+    const user = await Users.findOne({ da });
+    if (user && (await bcryptjs.compare(password, user.passwordHash))) {
         return user;
     }
     return null;
 }
 
-export async function createUser(user: User, password: string): Promise<boolean> {
-    if (await findUser({ da: user.da })) {
+export async function createUser(user: User, password: string): Promise<ServerUser | null> {
+    if ((await findUser({ da: user.da })) !== null) {
         console.error("A user with this 'da' already exists.");
-        return false;
+        return null;
     }
 
-    await Schedules.create({ _id: user.scheduleId, periods: [] });
-    await Settings.create({ _id: user.settingsId });
-    await Users.create({ ...user, passwordHash: await bcryptjs.hash(password ?? "", 11) });
-    return true;
+    const scheduleId: mongoose.Types.ObjectId = (await Schedules.create({}))._id;
+    const settingsId: mongoose.Types.ObjectId = (await Settings.create({}))._id;
+    const doc: mongoose.Document<ServerUser> = await Users.create({
+        ...user,
+        scheduleId,
+        settingsId,
+        passwordHash: await bcryptjs.hash(password ?? "", 11),
+    });
+    return { ...doc.toObject() };
 }
 
-export async function updateUserPassword(
-    userId: mongoose.Types.ObjectId,
-    password: string
-): Promise<boolean> {
-    if (!(await findUserById(userId))) {
+export async function updateUserPassword(user: ServerUser, password: string): Promise<boolean> {
+    if (!(await getUser(user._id))) {
         console.error("No user with this id was found.");
         return false;
     }
 
-    await Users.findByIdAndUpdate(userId, {
+    await Users.findByIdAndUpdate(user, {
         $set: { passwordHash: await bcryptjs.hash(password, 11) },
     });
     return true;
 }
 
-export async function searchUsers(user: User, query: string): Promise<User[]> {
+export async function updateUser(
+    user: ServerUser,
+    data: mongoose.AnyKeys<ServerUser>
+): Promise<boolean> {
+    if (!(await getUser(user._id))) {
+        return false;
+    }
+
+    await Users.findByIdAndUpdate(user, { $set: data });
+    return true;
+}
+
+export async function searchUsers(user: ServerUser, query: string): Promise<User[]> {
     query = sanitizeQuery(query);
     if (query.length < 4) return [];
     query = normalizeQuery(query);
 
-    return await Users.find({
-        $and: [
-            { _id: { $ne: user._id } },
-            { _id: { $not: { $in: user.friendsId } } },
-            {
-                $or: [
-                    { da: { $eq: query } },
-                    { firstName: { $regex: query, $options: "i" } },
-                    { lastName: { $regex: query, $options: "i" } },
-                ],
-            },
-        ],
-    })
-        .limit(5)
-        .exec();
+    return (
+        await Users.find({
+            $and: [
+                { _id: { $ne: user._id } },
+                { _id: { $not: { $in: user?.friendsId } } },
+                {
+                    $or: [
+                        { da: { $eq: query } },
+                        { firstName: { $regex: query, $options: "i" } },
+                        { lastName: { $regex: query, $options: "i" } },
+                    ],
+                },
+            ],
+        }).limit(5)
+    ).map((user: mongoose.HydratedDocument<ServerUser>) =>
+        serverUserToUser({ ...user.toObject() })
+    );
 }
 
 // Helpers: Friends
-export async function getFriends(user: User): Promise<User[]> {
+export async function getFriends(user: ServerUser): Promise<User[]> {
     const friends: User[] = [];
     for (const friendId of user.friendsId) {
-        const friend = await findUserById(friendId);
+        const friend = await getUser(friendId);
         if (friend) {
             friends.push(friend);
         }
@@ -135,7 +188,10 @@ export async function getFriends(user: User): Promise<User[]> {
     return friends;
 }
 
-export async function addFriend(user: User, friendId: mongoose.Types.ObjectId): Promise<boolean> {
+export async function addFriend(
+    user: ServerUser,
+    friendId: mongoose.Types.ObjectId
+): Promise<boolean> {
     if (user._id === friendId) return false;
     if (user.friendsId.includes(friendId)) return false;
 
@@ -149,7 +205,7 @@ export async function addFriend(user: User, friendId: mongoose.Types.ObjectId): 
 }
 
 export async function deleteFriend(
-    user: User,
+    user: ServerUser,
     friendId: mongoose.Types.ObjectId
 ): Promise<boolean> {
     //Faut voir si pop fonctionne
@@ -166,37 +222,18 @@ export async function deleteFriend(
 }
 
 // Helpers: Schedule
-export async function getSchedule(user: User): Promise<Schedule> {
-    // TODO: Raise error when null
-    return (
-        (await findScheduleById(user.scheduleId)) || {
-            _id: new mongoose.Types.ObjectId(),
-            periods: [],
-        }
-    );
-}
-
-export async function findScheduleById(
-    scheduleId: mongoose.Types.ObjectId
-): Promise<Schedule | null> {
-    const doc = await Schedules.findById(scheduleId);
+export async function getSchedule(user: ServerUser): Promise<Schedule | null> {
+    const doc: mongoose.Document<Schedule> | null = await Schedules.findById(user.scheduleId);
     if (!doc) {
         return null;
     }
     return { ...doc.toObject() };
 }
 
-export async function addPeriodsToSchedule(
-    scheduleId: mongoose.Types.ObjectId,
-    periods: Period[]
-): Promise<boolean> {
-    if (!(await findScheduleById(scheduleId))) {
-        console.error("No schedule with this id was found.");
-        return false;
-    }
+export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]): Promise<boolean> {
+    if (!user.settingsId) return false;
 
-    console.log("🚀 ~ file: db.ts:183 ~ periods:", periods)
-    await Schedules.findByIdAndUpdate(scheduleId, {
+    await Schedules.findByIdAndUpdate(user.scheduleId, {
         $push: { periods: periods },
     });
     return true;
@@ -204,36 +241,40 @@ export async function addPeriodsToSchedule(
 
 // Helpers: Book
 export async function findBookById(bookId: mongoose.Types.ObjectId): Promise<Book | null> {
-    const doc = await Books.findById(bookId);
+    const doc: mongoose.Document<Book> | null = await Books.findById(bookId);
     if (!doc) {
         return null;
     }
     return { ...doc.toObject() };
 }
 
-export async function searchBooks(user: User, query: string, codes: string[]): Promise<Book[]> {
+export async function searchBooks(
+    user: ServerUser,
+    query: string,
+    codes: string[]
+): Promise<Book[]> {
     query = sanitizeQuery(query);
     query = normalizeQuery(query);
 
-    return await Books.find({
-        $and: [
-            { sellerId: { $ne: user._id } },
-            ...(codes.length > 0 ? [{ code: { $in: codes } }] : []),
-            ...(query.length > 0
-                ? [
-                      {
-                          $or: [
-                              { ISBN: { $eq: query } },
-                              { title: { $regex: query, $options: "i" } },
-                              { author: { $regex: query, $options: "i" } },
-                          ],
-                      },
-                  ]
-                : []),
-        ],
-    })
-        .limit(15)
-        .exec();
+    return (
+        await Books.find({
+            $and: [
+                { sellerId: { $ne: user._id } },
+                ...(codes.length > 0 ? [{ code: { $in: codes } }] : []),
+                ...(query.length > 0
+                    ? [
+                          {
+                              $or: [
+                                  { ISBN: { $eq: query } },
+                                  { title: { $regex: query, $options: "i" } },
+                                  { author: { $regex: query, $options: "i" } },
+                              ],
+                          },
+                      ]
+                    : []),
+            ],
+        }).limit(15)
+    ).map((book: mongoose.Document<Book>) => ({ ...book.toObject() }));
 }
 
 export async function addBookListing(book: Book): Promise<boolean> {
@@ -241,17 +282,55 @@ export async function addBookListing(book: Book): Promise<boolean> {
     return true;
 }
 
+// Heplers: Notifications
+export async function getNotifications(user: ServerUser): Promise<Notification[]> {
+    const doc: mongoose.Document<Schedule>[] = await Notifications.find({
+        _id: { $in: user.notificationsId },
+    }).populate("sender");
+
+    return doc.map((notification) => {
+        const n = notification.toObject();
+        return { ...n, sender: serverUserToUser(n.sender as ServerUser) };
+    });
+}
+
+export async function sendNotification(
+    user: ServerUser,
+    kind: NotificationKind,
+    receiverId: mongoose.Types.ObjectId
+): Promise<boolean> {
+    const notificationId = (await Notifications.create({ kind, sender: user._id }))._id;
+    await Users.findByIdAndUpdate(receiverId, {
+        $push: { notificationsId: notificationId },
+    });
+
+    return true;
+}
+
+export async function deleteNotification(
+    user: ServerUser,
+    notificationId: mongoose.Types.ObjectId
+): Promise<boolean> {
+    if (!user.notificationsId.some((id) => id.equals(notificationId))) return false;
+
+    await Users.findByIdAndUpdate(user._id, {
+        $pull: { notificationsId: notificationId },
+    });
+
+    return true;
+}
+
 // Helpers: Settings
-export async function getSettings(user: User): Promise<Settings | null> {
-    const doc = await Settings.findById(user.settingsId);
+export async function getSettings(user: ServerUser): Promise<Settings | null> {
+    const doc: mongoose.Document<Settings> | null = await Settings.findById(user.settingsId);
+
     if (!doc) {
         return null;
     }
-    return doc.toObject() as Settings;
+    return { ...doc.toObject() };
 }
 
-export async function setSettings(user: User, settings: Settings): Promise<boolean> {
-    if (!settings) return false;
+export async function setSettings(user: ServerUser, settings: Settings): Promise<boolean> {
     await Settings.findByIdAndUpdate(user.settingsId, { $set: settings });
     return true;
 }

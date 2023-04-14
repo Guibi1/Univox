@@ -1,7 +1,7 @@
 <script lang="ts">
     import SearchBar from "$lib/components/SearchBar.svelte";
-    import friends from "$lib/stores/friends";
-    import type { User } from "$lib/Types";
+    import notifications from "$lib/stores/notifications";
+    import { NotificationKind, type User } from "$lib/Types";
 
     let query = "";
     let searchResults: User[] = [];
@@ -24,9 +24,8 @@
     <div class="ml-10 flex w-1/2 flex-row items-center gap-3">
         <SearchBar bind:query {handleSearch} />
 
-        <box-icon
-            name="search-alt"
-            class="h-10 w-10 cursor-pointer"
+        <i
+            class="bx bx-search-alt h-10 w-10 cursor-pointer text-4xl"
             on:click={handleSearch}
             on:keypress={handleSearch}
         />
@@ -44,7 +43,7 @@
             on:click={() => {
                 query = "";
                 searchResults = [];
-                friends.add(user._id);
+                notifications.create(NotificationKind.FriendRequest, user._id);
             }}
         >
             ajouter en ami

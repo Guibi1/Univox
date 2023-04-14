@@ -8,13 +8,14 @@
 </script>
 
 <script lang="ts">
-    import { setContext } from "svelte";
+    import { createEventDispatcher, setContext } from "svelte";
     import Dropdown from "./Dropdown.svelte";
     import Option from "./Option.svelte";
 
     export let value: string = "";
     export let name: string = "";
 
+    const dispatch = createEventDispatcher();
     let options: SelectOption[] = [];
 
     setContext<SelectContext>("select", {
@@ -22,7 +23,7 @@
     });
 </script>
 
-<Dropdown fullWith position="bottom-right">
+<Dropdown position="bottom-right">
     <div
         slot="button"
         class="flex h-12 w-full items-center justify-between rounded-lg border-2 border-neutral-600 bg-gray-200 px-4 outline-none focus-visible:border-black dark:bg-neutral-700 dark:text-white dark:focus-visible:border-white"
@@ -30,11 +31,17 @@
         <span>
             {options.find((o) => o.value === value)?.text ?? (value || "Choisir une option")}
         </span>
-        <box-icon name="chevron-down" class="aspect-square h-full text-xl text-white" />
+        <i class="bx bx-chevron-down aspect-square text-xl text-white" />
     </div>
 
     {#each options as option}
-        <Option text={option.text} onClick={() => (value = option.value ?? option.text)} />
+        <Option
+            text={option.text}
+            onClick={() => {
+                value = option.value ?? option.text;
+                dispatch("change", value);
+            }}
+        />
     {/each}
 </Dropdown>
 

@@ -4,7 +4,7 @@ import type { User } from "$lib/Types";
 import { writable } from "svelte/store";
 
 function createUserStore() {
-    const { subscribe, set: setStore } = writable<User | null>();
+    const { subscribe, set: setStore } = writable<User>();
     let bc: BroadcastChannel;
 
     // This syncs the different tabs' user
@@ -22,14 +22,22 @@ function createUserStore() {
     };
 
     async function refresh() {
-        const user = await (await fetch("/api/user")).json();
-        set(user);
+        const { success, user } = await (await fetch("/api/user")).json();
+        if (success) set(user);
+    }
+
+    async function setAvatar(seed: string) {
+        const { success } = await (
+            await fetch("/api/user/avatar", { method: "POST", body: seed })
+        ).json();
+        if (success) refresh();
     }
 
     return {
         subscribe,
         set,
         refresh,
+        setAvatar,
     };
 }
 

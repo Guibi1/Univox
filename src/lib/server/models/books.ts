@@ -19,7 +19,7 @@ const BookSchema = new Schema<Book>({
         required: true,
     },
     src: {
-        type: String,
+        type: [String],
         required: true,
     },
     author: {
