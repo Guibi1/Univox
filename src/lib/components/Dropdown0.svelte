@@ -3,6 +3,7 @@
         text: string;
         color?: DropdownColor;
         href?: string;
+        selected?: boolean;
         onClick?: (
             event: Event & {
                 currentTarget: EventTarget;
@@ -15,9 +16,12 @@
 </script>
 
 <script lang="ts">
+    import { set } from "mongoose";
+
     import { setContext } from "svelte";
 
     export let position: "side-right" | "bottom-left" | "bottom-right" = "side-right";
+    export let dropType: "default" | "selection";
     export let fullWith = false;
     export let actions: DropdownOption[][] = [[]];
 
@@ -40,6 +44,15 @@
             default:
                 return "text-neutral";
         }
+    }
+
+    function toggle(action: DropdownOption) {
+        console.log("bonobo content");
+        if (action.selected == null) {
+            action.selected = false;
+        }
+        action.selected = !action.selected;
+        console.log(action.text + ": " + action.selected);
     }
 
     function closeOnClickOutside(node: HTMLElement, enabled: boolean) {
@@ -102,15 +115,32 @@
                                 {action.text}
                             </a>
                         {:else}
-                            <button
-                                class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                                    action
-                                )}`}
-                                on:click={action.onClick}
-                                data-closeOnClick
-                            >
-                                {action.text}
-                            </button>
+                            <div>
+                                {#if dropType == "default"}
+                                    <button
+                                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                                            action
+                                        )}`}
+                                        on:click={action.onClick}
+                                        data-closeOnClick
+                                    >
+                                        {action.text}
+                                    </button>
+                                {/if}
+
+                                {#if dropType == "selection"}
+                                    <button
+                                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                                            action
+                                        )}`}
+                                        on:click={() => toggle(action)}
+                                    >
+                                        <!-- faire un on:click pour mettre « action.selectable » sur True -->
+                                        {action.text}
+                                        <box-icon class="invisible" name="check" />
+                                    </button>
+                                {/if}
+                            </div>
                         {/if}
                     {/each}
                 </div>

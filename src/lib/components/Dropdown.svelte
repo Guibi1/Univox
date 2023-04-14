@@ -48,11 +48,11 @@
 
     function toggle(action: DropdownOption) {
         console.log("bonobo content");
-        if (action.selected == null) {
-            action.selected = false;
-        }
         action.selected = !action.selected;
         console.log(action.text + ": " + action.selected);
+    }
+    function checkVisible(action: DropdownOption) {
+        if (!action.selected) return "visible";
     }
 
     function closeOnClickOutside(node: HTMLElement, enabled: boolean) {
@@ -137,7 +137,7 @@
                                     >
                                         <!-- faire un on:click pour mettre « action.selectable » sur True -->
                                         {action.text}
-                                        <box-icon class="invisible" name="check" />
+                                        <box-icon class={`${checkVisible(action)}`} name="check" />
                                     </button>
                                 {/if}
                             </div>
