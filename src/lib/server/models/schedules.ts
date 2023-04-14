@@ -1,5 +1,6 @@
 import type { Class, Schedule } from "$lib/Types";
 import mongoose, { Schema } from "mongoose";
+import dayjs, { Dayjs } from "dayjs";
 
 const PeriodSchema = new Schema<Class>({
     code: { type: String, required: false },
