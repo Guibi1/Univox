@@ -95,7 +95,7 @@
                                             {period.name} <br />
                                             {period.group} <br />
                                             {period.local} <br />
-                                            {period.type} <br />
+                                            <br />
                                             {period.teacher} <br />
                                             {period.virtual} <br />
                                             {period.timeStart} <br />

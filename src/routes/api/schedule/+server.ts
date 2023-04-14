@@ -10,10 +10,10 @@ export const POST = (async ({ request, locals }) => {
         throw error(400, "Invalid data.");
     }
 
-    return json({ success: await db.addPeriodsToSchedule(locals.user.scheduleId, periods) });
+    return json({ success: await db.addPeriodsToSchedule(locals.user, periods) });
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {
     if (!locals.user) throw error(401);
-    return json(locals.schedule);
+    return json(locals);
 }) satisfies RequestHandler;

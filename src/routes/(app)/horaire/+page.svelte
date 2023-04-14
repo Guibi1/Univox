@@ -6,15 +6,19 @@
     import horaire from "$lib/stores/horaire";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
     import type { Class } from "$lib/Types";
+    import AddPeriodForm from "./addPeriodForm.svelte";
 
     // fetch the user schedule from the server
     async function addPeriod() {
-        await horaire.add({
+        await horaire.add(period);
+    }
+
+    let period ={
             name: "Period 1",
             timeStart: dayjs().hour(14).minute(0),
             timeEnd: dayjs().hour(16).minute(0),
-        });
-    }
+        }
+
 
 
     let schedule: Class[] = [];
@@ -39,7 +43,9 @@
             <span class="ml-2">Évènement</span>
         </button>
 
-        <ScheduleView {schedule}/>
+        <!-- <ScheduleView {schedule}/> -->
+        <AddPeriodForm/>
+
 
 
         <!-- {#eachsche as period}
