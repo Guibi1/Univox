@@ -3,12 +3,12 @@
         text: string;
         color?: DropdownColor;
         href?: string;
+        selected?: boolean;
         onClick?: (
             event: Event & {
                 currentTarget: EventTarget;
             }
         ) => any;
-        selected?: boolean;
     };
 
     export type DropdownContext = { addOption: (a: DropdownOption) => void; separate: () => void };
@@ -44,6 +44,15 @@
             default:
                 return "text-neutral";
         }
+    }
+
+    function toggle(action: DropdownOption) {
+        console.log("bonobo content");
+        if (action.selected == null) {
+            action.selected = false;
+        }
+        action.selected = !action.selected;
+        console.log(action.text + ": " + action.selected);
     }
 
     function closeOnClickOutside(node: HTMLElement, enabled: boolean) {
@@ -95,7 +104,6 @@
             {#each actions as section}
                 <div class="flex flex-col py-2">
                     {#each section as action}
-                    
                         {#if action.href}
                             <a
                                 class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
@@ -107,36 +115,32 @@
                                 {action.text}
                             </a>
                         {:else}
-                        <div>
-                            {#if dropType == "default"}
-                                <button
-                                class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                                    action
-                                )}`}
-                                    on:click={action.onClick}
-                                data-closeOnClick
-                                >
-                                    
-                                {action.text}
-                                </button>
-                            {/if}
+                            <div>
+                                {#if dropType == "default"}
+                                    <button
+                                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                                            action
+                                        )}`}
+                                        on:click={action.onClick}
+                                        data-closeOnClick
+                                    >
+                                        {action.text}
+                                    </button>
+                                {/if}
 
-                            {#if dropType == "selection"}
-                                <button
-                                class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                                    action
-                                )}`}
-                                
-                            >
-                            <!-- faire un on:click pour mettre « action.selectable » sur True -->
-                                {action.text}
-                                <box-icon class="invisible"
-                                name="check" />
-                            </button>
-                            {/if}
-                            
-                        </div>
-                            
+                                {#if dropType == "selection"}
+                                    <button
+                                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                                            action
+                                        )}`}
+                                        on:click={() => toggle(action)}
+                                    >
+                                        <!-- faire un on:click pour mettre « action.selectable » sur True -->
+                                        {action.text}
+                                        <box-icon class="invisible" name="check" />
+                                    </button>
+                                {/if}
+                            </div>
                         {/if}
                     {/each}
                 </div>

@@ -45,8 +45,14 @@
         <Dropdown dropType="selection" position="bottom-left">
             <div slot="button">Créer un groupe</div>
             {#each $friends as ami}
-            <Option text={ami.lastName + ", " + ami.firstName}></Option>
+                <Option text={ami.lastName + ", " + ami.firstName} />
             {/each}
+            <Option
+                separate
+                text="Créer un groupe"
+                color="blue"
+                onClick={() => console.log("TODO: créer un groupe avec les amis sélectionnés")}
+            />
         </Dropdown>
         <!-- À faire -->
     </div>
