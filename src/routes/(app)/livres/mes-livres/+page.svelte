@@ -1,5 +1,5 @@
 <svelte:head>
-    <title>Univox | Livres | Mes livres</title>
+    <title>Univox | Mes livres</title>
 </svelte:head>
 
 <div>

@@ -19,17 +19,15 @@
     import { set } from "mongoose";
 
     import { setContext } from "svelte";
+    import EmptyDropdown, { type DropdownPosition } from "./EmptyDropdown.svelte";
 
-    export let position: "side-right" | "bottom-left" | "bottom-right" = "side-right";
-    export let dropType: "default" | "selection";
-    export let fullWith = false;
-    export let actions: DropdownOption[][] = [[]];
-
-    let open = false;
+    export let position: DropdownPosition = "side-right";
+    export let actions: DropdownOption[][] = [];
 
     setContext<DropdownContext>("dropdown", {
         addOption: (action: DropdownOption) => {
-            actions[actions.length - 1].push(action);
+            if (actions.length === 0) actions.push([]);
+            actions.at(-1)?.push(action);
             actions = actions;
         },
         separate: () => (actions = [...actions, []]),
@@ -45,110 +43,46 @@
                 return "text-neutral";
         }
     }
-
-    function toggle(action: DropdownOption) {
-        console.log("bonobo content");
-        action.selected = !action.selected;
-        console.log(action.text + ": " + action.selected);
-    }
-    function checkVisible(action: DropdownOption) {
-        if (!action.selected) return "visible";
-    }
-
-    function closeOnClickOutside(node: HTMLElement, enabled: boolean) {
-        const handleOutsideClick = ({ target }: Event) => {
-            if (
-                !node.contains(target as HTMLElement) ||
-                (target as HTMLElement).hasAttribute("data-closeOnClick")
-            ) {
-                open = false;
-            }
-        };
-
-        const update = (enabled: boolean) => {
-            if (enabled) window.addEventListener("click", handleOutsideClick);
-            else window.removeEventListener("click", handleOutsideClick);
-        };
-
-        update(enabled);
-        return {
-            update,
-            destroy: () => window.removeEventListener("click", handleOutsideClick),
-        };
-    }
 </script>
 
-<div use:closeOnClickOutside={open} class="relative grid">
-    <button on:click={() => (open = !open)} class="hover:gray-100 flex items-center justify-center">
+<EmptyDropdown bind:position>
+    <div slot="button" class="w-full">
         {#if $$slots.button}
             <slot name="button" />
         {:else}
-            <box-icon name="dots-vertical-rounded" />
+            <i class="bx bx-dots-vertical-rounded text-2xl" />
         {/if}
-    </button>
+    </div>
 
-    <!-- Dropdown menu -->
-    {#if open}
-        <div
-            class={`absolute z-[200] min-w-[13ch] divide-y divide-gray-100 rounded-lg bg-gray-200 dark:divide-neutral-300 dark:bg-neutral-700 ${
-                fullWith ? "w-full" : ""
-            }
-                ${
-                    position == "bottom-right"
-                        ? "top-full left-0"
-                        : position == "bottom-left"
-                        ? "top-full right-0"
-                        : "left-full"
-                }`}
-        >
-            {#each actions as section}
-                <div class="flex flex-col py-2">
-                    {#each section as action}
-                        {#if action.href}
-                            <a
-                                class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                                    action
-                                )}`}
-                                href={action.href}
-                                data-closeOnClick
-                            >
-                                {action.text}
-                            </a>
-                        {:else}
-                            <div>
-                                {#if dropType == "default"}
-                                    <button
-                                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                                            action
-                                        )}`}
-                                        on:click={action.onClick}
-                                        data-closeOnClick
-                                    >
-                                        {action.text}
-                                    </button>
-                                {/if}
-
-                                {#if dropType == "selection"}
-                                    <button
-                                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                                            action
-                                        )}`}
-                                        on:click={() => toggle(action)}
-                                    >
-                                        <!-- faire un on:click pour mettre « action.selectable » sur True -->
-                                        {action.text}
-                                        <box-icon class={`${checkVisible(action)}`} name="check" />
-                                    </button>
-                                {/if}
-                            </div>
-                        {/if}
-                    {/each}
-                </div>
+    {#each actions as section}
+        <div class="flex flex-col py-2">
+            {#each section as action}
+                {#if action.href}
+                    <a
+                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                            action
+                        )}`}
+                        href={action.href}
+                        data-closeOnClick
+                    >
+                        {action.text}
+                    </a>
+                {:else}
+                    <button
+                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                            action
+                        )}`}
+                        on:click={action.onClick}
+                        data-closeOnClick
+                    >
+                        {action.text}
+                    </button>
+                {/if}
             {/each}
         </div>
-    {/if}
-</div>
+    {/each}
+</EmptyDropdown>
 
-<div hidden>
+<div class="hidden">
     <slot />
 </div>

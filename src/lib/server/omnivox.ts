@@ -56,11 +56,14 @@ export async function fetchSchedulePageHTML(
     );
 
     // Fetch the actual schedule data
-    const visualiseRes = await fetch("https://bdeb-estd.omnivox.ca:443/estd/hrre/" + visualiseURL, {
-        headers: {
-            Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
-        },
-    });
+    const visualiseRes = await fetch(
+        "https://bdeb-estd.omnivox.ca:443/estd/hrre/" + visualiseURL + "&typeHoraire=Session",
+        {
+            headers: {
+                Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
+            },
+        }
+    );
 
     const buffer = await visualiseRes.arrayBuffer();
     const decoder = new TextDecoder("iso-8859-1");
@@ -220,11 +223,18 @@ export function schedulePageToClasses(HTML: string): Class[] {
     return schedule;
 }
 
+/**
+ * Finds a regular expression match in the specified string.
+ * @param {string|null} data The string to search for the regular expression match.
+ * @param {RegExp} query The regular expression pattern to match in the string.
+ * @returns {RegExpMatchArray} An array of matches that were found in the string.
+ * @throws Throws a string error message if the specified string is null or the regular expression query does not match the string.
+ */
 function regexFind(data: string | null, query: RegExp): RegExpMatchArray {
     if (data == null) throw "MATCH ERROR: STRING WAS NULL";
 
     const match = data.match(query);
-    if (match == null) throw `MATCH ERROR: '${query}' DIDN'T MATCH WITH '${data}'`;
+    if (match == null) throw `MATCH ERROR: '${query}' DIDN'T MATCH WITH PROVIDED STRING.`;
 
     return match;
 }

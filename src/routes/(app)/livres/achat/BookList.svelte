@@ -17,7 +17,7 @@
             on:keypress={() => openBook(book)}
         >
             <img
-                src={book.src}
+                src={book.src[0]}
                 class="row-span-full max-h-[12rem] w-full object-cover"
                 alt="Couverture du livre"
             />

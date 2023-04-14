@@ -77,8 +77,21 @@ export const actions = {
             return fail(401, { da, omnivoxIncorrect: true });
         }
 
+        // Try to create the user
+        const user = await db.createUser(
+            {
+                _id: new mongoose.Types.ObjectId(),
+                da,
+                email,
+                firstName,
+                lastName,
+                avatar: firstName + da,
+            },
+            password
+        );
+
         // Make sure the DA doesn't already has an account
-        if (await db.findUser({ da })) {
+        if (!user) {
             return fail(400, {
                 da,
                 omnivoxPassword,
@@ -90,22 +103,9 @@ export const actions = {
         }
 
         // Everything it good!
-        const user = {
-            _id: new mongoose.Types.ObjectId(),
-            da: da,
-            email: email ?? "",
-            firstName: firstName ?? "",
-            lastName: lastName ?? "",
-            scheduleId: new mongoose.Types.ObjectId(),
-            settingsId: new mongoose.Types.ObjectId(),
-            friendsId: [],
-        };
-
-        await db.createUser(user, password);
         const token = await db.createToken(user);
-
         cookies.set("token", token, { path: "/", httpOnly: true, secure: true, sameSite: true });
 
-        return { success: true };
+        return { firstName, lastName, success: true };
     },
 } satisfies Actions;
