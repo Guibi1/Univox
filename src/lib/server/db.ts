@@ -57,6 +57,45 @@ export async function getUserIdFromToken(
 }
 
 // Helpers: User
+export function serverUserToUser(serverUser: ServerUser): User {
+    const cleanUser = { ...serverUser } as User & {
+        passwordHash?: string;
+        friendsId?: mongoose.Types.ObjectId[];
+        notificationsId?: mongoose.Types.ObjectId[];
+        settingsId?: mongoose.Types.ObjectId;
+        scheduleId?: mongoose.Types.ObjectId;
+        __v?: number;
+    };
+
+    delete cleanUser.passwordHash;
+    delete cleanUser.friendsId;
+    delete cleanUser.notificationsId;
+    delete cleanUser.settingsId;
+    delete cleanUser.scheduleId;
+    delete cleanUser.__v;
+
+    return cleanUser;
+}
+
+export async function getServerUser(id: mongoose.Types.ObjectId): Promise<ServerUser | null> {
+    const doc: mongoose.Document<ServerUser> | null = await Users.findById(id);
+    if (!doc) {
+        return null;
+    }
+    return { ...doc.toObject() };
+}
+
+export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null> {
+    const doc: mongoose.Document<ServerUser> | null = await Users.findById(id);
+    if (!doc) {
+        return null;
+    }
+    return serverUserToUser({ ...doc.toObject() });
+}
+
+
+
+
 export async function findUser(filter: FilterQuery<User>): Promise<User | null> {
     const doc = await Users.findOne(filter);
     if (!doc) {
