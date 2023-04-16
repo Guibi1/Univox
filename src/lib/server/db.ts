@@ -246,7 +246,7 @@ export async function deleteFriend(
 
 // Helpers: Groups
 
-export async function getGroups(user: User): Promise<Group[]> {
+export async function getGroups(user: ServerUser): Promise<Group[]> {
     const groups: Group[] = [];
     for (const groupId of user.groupsId) {
         const group = await findGroupById(groupId);
