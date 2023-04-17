@@ -3,7 +3,6 @@
         text: string;
         color?: DropdownColor;
         href?: string;
-        selected?: boolean;
         onClick?: (
             event: Event & {
                 currentTarget: EventTarget;
@@ -16,8 +15,6 @@
 </script>
 
 <script lang="ts">
-    import { set } from "mongoose";
-
     import { setContext } from "svelte";
     import EmptyDropdown, { type DropdownPosition } from "./EmptyDropdown.svelte";
 

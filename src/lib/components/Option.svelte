@@ -7,8 +7,6 @@
     export let value: string | undefined = undefined;
     export let separate = false;
     export let href: string | undefined = undefined;
-    //export let selection: boolean | undefined = undefined
-    export let selected: false | undefined = undefined;
     export let color: DropdownColor = "normal";
     export let onClick:
         | undefined
@@ -21,8 +19,7 @@
     const dropdown: undefined | DropdownContext = getContext("dropdown");
     if (dropdown) {
         if (separate) dropdown.separate();
-        dropdown.addOption({ text, href, selected, color, onClick });
-        //dropdown.addOption({ text, href, selection, isSelected, color, onClick });
+        dropdown.addOption({ text, href, color, onClick });
     } else {
         const select: undefined | SelectContext = getContext("select");
         if (select) select.addOption({ text, value });

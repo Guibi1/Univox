@@ -93,21 +93,12 @@ export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null>
     return serverUserToUser({ ...doc.toObject() });
 }
 
-export async function findUser(filter: FilterQuery<User>): Promise<User | null> {
-    const doc = await Users.findOne(filter);
+export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | null> {
+    const doc: mongoose.Document<ServerUser> | null = await Users.findOne(filter);
     if (!doc) {
         return null;
     }
     return serverUserToUser({ ...doc.toObject() });
-}
-
-export async function findUserById(id: mongoose.Types.ObjectId): Promise<User | null> {
-    const doc = await Users.findById(id);
-    if (!doc) {
-        return null;
-    }
-    const user = { ...doc.toObject(), passwordHash: null };
-    return user as User;
 }
 
 export async function compareUserPassword(
@@ -138,7 +129,7 @@ export async function createUser(user: User, password: string): Promise<ServerUs
     return { ...doc.toObject() };
 }
 
-export async function updateUserPassword(user: ServerUser, password: string): Promise<boolean> {
+export async function updateUserPassword(user: User, password: string): Promise<boolean> {
     if (!(await getUser(user._id))) {
         console.error("No user with this id was found.");
         return false;

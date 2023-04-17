@@ -48,7 +48,6 @@ const UserSchema = new Schema<ServerUser>({
     },
     groupsId: {
         type: [mongoose.Schema.Types.ObjectId],
-
         validate: {
             validator: function (arr: unknown[]) {
                 return arr.length === new Set(arr).size;

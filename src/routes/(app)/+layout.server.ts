@@ -1,5 +1,6 @@
 import { serverUserToUser } from "$lib/server/db";
 import friends from "$lib/stores/friends";
+import groups from "$lib/stores/groups";
 import user from "$lib/stores/user";
 import { redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
@@ -13,6 +14,7 @@ export const load = (({ locals, url, depends }) => {
     // Stores are up to date during SSR
     user.set(serverUserToUser(locals.user));
     friends.set(locals.friends);
+    groups.set(locals.groups);
 
     return {
         storesInitialValue: {
