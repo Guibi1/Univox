@@ -81,7 +81,13 @@
 
         {#if selectedFriends.length >= 2}
             <div class="flex justify-center p-4">
-                <button class="filled">Créer un groupe</button>
+                <button
+                    class="filled"
+                    on:click={() => {
+                        selectedFriends = [];
+                        groups.create(selectedFriends);
+                    }}>Créer un groupe</button
+                >
             </div>
         {/if}
 

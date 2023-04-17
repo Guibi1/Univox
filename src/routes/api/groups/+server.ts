@@ -1,28 +1,31 @@
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
+import { isObjectIdOrHexString } from "mongoose";
 import type { RequestHandler } from "./$types";
 
 export const POST = (async ({ request, locals }) => {
     if (!locals.user) throw error(401);
 
-    const { groupId } = await request.json();
-    if (!groupId) {
+    const { friendsId } = await request.json();
+
+    if (!Array.isArray(friendsId) || friendsId.length < 2) {
         throw error(400, "Invalid data.");
     }
 
-    const { friendId } = await request.json(); //Pas sûr de ça
-    if (!friendId) {
-        throw error(400, "Invalid data.");
+    for (const id of friendsId) {
+        if (!isObjectIdOrHexString(id) || !locals.user.friendsId.includes(id)) {
+            throw error(400, "Invalid data.");
+        }
     }
 
-    return json({ success: await db.addToGroup(locals.user, groupId, friendId) });
+    return json({ success: await db.createGroup(locals.user, friendsId) });
 }) satisfies RequestHandler;
 
 export const DELETE = (async ({ request, locals }) => {
     if (!locals.user) throw error(401);
 
     const { groupId } = await request.json();
-    if (!groupId) {
+    if (!isObjectIdOrHexString(groupId)) {
         throw error(400, "Invalid data.");
     }
 

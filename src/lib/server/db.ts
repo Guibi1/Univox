@@ -110,15 +110,6 @@ export async function findUserById(id: mongoose.Types.ObjectId): Promise<User | 
     return user as User;
 }
 
-export async function findGroupById(id: mongoose.Types.ObjectId): Promise<Group | null> {
-    const doc = await Groups.findById(id);
-    if (!doc) {
-        return null;
-    }
-    const group = { ...doc.toObject(), passwordHash: null };
-    return group as Group;
-}
-
 export async function compareUserPassword(
     da: string,
     password: string
@@ -242,10 +233,19 @@ export async function deleteFriend(
 
 // Helpers: Groups
 
+export async function getGroup(id: mongoose.Types.ObjectId): Promise<Group | null> {
+    const doc = await Groups.findById(id);
+    if (!doc) {
+        return null;
+    }
+    const group = { ...doc.toObject(), passwordHash: null };
+    return group as Group;
+}
+
 export async function getGroups(user: ServerUser): Promise<Group[]> {
     const groups: Group[] = [];
     for (const groupId of user.groupsId) {
-        const group = await findGroupById(groupId);
+        const group = await getGroup(groupId);
         if (group) {
             groups.push(group);
         }
@@ -253,7 +253,26 @@ export async function getGroups(user: ServerUser): Promise<Group[]> {
     return groups;
 }
 
-export async function addToGroup(user: User, group: Group, friendId: mongoose.Types.ObjectId) {
+export async function createGroup(
+    user: User,
+    friendsId: mongoose.Types.ObjectId[]
+): Promise<boolean> {
+    if (friendsId.includes(user._id)) return false;
+    if (friendsId.length !== new Set(friendsId).size) return false;
+
+    try {
+        await Groups.create({ usersId: [...friendsId, user._id] });
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export async function addToGroup(
+    user: User,
+    group: Group,
+    friendId: mongoose.Types.ObjectId
+): Promise<boolean> {
     if (!group.usersId.includes(user._id)) return false;
     if (!group.usersId.includes(friendId)) return false;
 
@@ -261,10 +280,19 @@ export async function addToGroup(user: User, group: Group, friendId: mongoose.Ty
     return true;
 }
 
-export async function quitGroup(user: User, group: Group) {
+export async function quitGroup(user: User, group: Group): Promise<boolean> {
     if (!group.usersId.includes(user._id)) return false;
 
-    await Groups.findByIdAndUpdate(group, { $pull: { usersId: user._id } });
+    try {
+        if (group.usersId.length < 3) {
+            await Groups.findByIdAndDelete(group);
+        } else {
+            await Groups.findByIdAndUpdate(group, { $pull: { usersId: user._id } });
+        }
+    } catch {
+        return false;
+    }
+
     return true;
 }
 
