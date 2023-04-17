@@ -25,7 +25,7 @@
 <div class="grid h-[100vh] grid-rows-[min-content_1fr] overflow-hidden">
     <Navbar />
 
-    <div class="overflow-y-auto">
+    <div class="flex flex-col overflow-y-auto">
         <slot />
     </div>
 </div>

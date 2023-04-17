@@ -93,9 +93,6 @@ export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null>
     return serverUserToUser({ ...doc.toObject() });
 }
 
-
-
-
 export async function findUser(filter: FilterQuery<User>): Promise<User | null> {
     const doc = await Users.findOne(filter);
     if (!doc) {
@@ -176,7 +173,6 @@ export async function updateUser(
 
 export async function searchUsers(user: ServerUser, query: string): Promise<User[]> {
     query = sanitizeQuery(query);
-    if (query.length < 4) return [];
     query = normalizeQuery(query);
 
     return (
