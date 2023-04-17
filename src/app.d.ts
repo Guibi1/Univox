@@ -9,6 +9,7 @@ declare global {
         interface Locals {
             user: ServerUser;
             friends: User[];
+            groups: Group[];
             notifications: Notification[];
         }
         // interface Error {}
