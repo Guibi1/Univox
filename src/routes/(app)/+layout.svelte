@@ -2,6 +2,7 @@
     import { invalidate } from "$app/navigation";
     import friends from "$lib/stores/friends";
     import notifications from "$lib/stores/notifications";
+    import groups from "$lib/stores/groups";
     import user from "$lib/stores/user";
     import { onMount } from "svelte";
     import type { LayoutData } from "./$types";
@@ -11,6 +12,7 @@
     user.set(JSON.parse(data.storesInitialValue.serializedUser));
     friends.set(JSON.parse(data.storesInitialValue.serializedFriends));
     notifications.set(JSON.parse(data.storesInitialValue.serializedNotifications));
+    groups.set(JSON.parse(data.storesInitialValue.serializedGroups));
 
     onMount(() => {
         const bc = new BroadcastChannel("Invalidate user");
@@ -23,7 +25,7 @@
 <div class="grid h-[100vh] grid-rows-[min-content_1fr] overflow-hidden">
     <Navbar />
 
-    <div class="overflow-y-auto">
+    <div class="flex flex-col overflow-y-auto">
         <slot />
     </div>
 </div>

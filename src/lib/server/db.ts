@@ -1,6 +1,7 @@
 import { MONGODB_URI } from "$env/static/private";
 import type {
     Book,
+    Group,
     Notification,
     NotificationKind,
     Period,
@@ -11,6 +12,7 @@ import type {
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
 import Books from "./models/books";
+import Groups from "./models/groups";
 import Notifications from "./models/notifications";
 import Schedules from "./models/schedules";
 import Settings from "./models/settings";
@@ -127,7 +129,7 @@ export async function createUser(user: User, password: string): Promise<ServerUs
     return { ...doc.toObject() };
 }
 
-export async function updateUserPassword(user: ServerUser, password: string): Promise<boolean> {
+export async function updateUserPassword(user: User, password: string): Promise<boolean> {
     if (!(await getUser(user._id))) {
         console.error("No user with this id was found.");
         return false;
@@ -153,7 +155,6 @@ export async function updateUser(
 
 export async function searchUsers(user: ServerUser, query: string): Promise<User[]> {
     query = sanitizeQuery(query);
-    if (query.length < 4) return [];
     query = normalizeQuery(query);
 
     return (
@@ -218,6 +219,71 @@ export async function deleteFriend(
     await Users.findByIdAndUpdate(friendId, {
         $pull: { friendsId: user._id },
     });
+    return true;
+}
+
+// Helpers: Groups
+
+export async function getGroup(id: mongoose.Types.ObjectId): Promise<Group | null> {
+    const doc = await Groups.findById(id);
+    if (!doc) {
+        return null;
+    }
+    const group = { ...doc.toObject(), passwordHash: null };
+    return group as Group;
+}
+
+export async function getGroups(user: ServerUser): Promise<Group[]> {
+    const groups: Group[] = [];
+    for (const groupId of user.groupsId) {
+        const group = await getGroup(groupId);
+        if (group) {
+            groups.push(group);
+        }
+    }
+    return groups;
+}
+
+export async function createGroup(
+    user: User,
+    friendsId: mongoose.Types.ObjectId[]
+): Promise<boolean> {
+    if (friendsId.includes(user._id)) return false;
+    if (friendsId.length !== new Set(friendsId).size) return false;
+
+    try {
+        await Groups.create({ usersId: [...friendsId, user._id] });
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export async function addToGroup(
+    user: User,
+    group: Group,
+    friendId: mongoose.Types.ObjectId
+): Promise<boolean> {
+    if (!group.usersId.includes(user._id)) return false;
+    if (!group.usersId.includes(friendId)) return false;
+
+    await Groups.findByIdAndUpdate(group, { $push: { usersId: friendId } });
+    return true;
+}
+
+export async function quitGroup(user: User, group: Group): Promise<boolean> {
+    if (!group.usersId.includes(user._id)) return false;
+
+    try {
+        if (group.usersId.length < 3) {
+            await Groups.findByIdAndDelete(group);
+        } else {
+            await Groups.findByIdAndUpdate(group, { $pull: { usersId: user._id } });
+        }
+    } catch {
+        return false;
+    }
+
     return true;
 }
 
