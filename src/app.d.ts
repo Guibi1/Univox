@@ -1,4 +1,4 @@
-import type { Notification, ServerUser, User } from "$lib/Types";
+import type { Notification, Schedule, ServerUser, User } from "$lib/Types";
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -8,6 +8,7 @@ declare global {
     namespace App {
         interface Locals {
             user: ServerUser;
+            schedule: Schedule;
             friends: User[];
             groups: Group[];
             notifications: Notification[];

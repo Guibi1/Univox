@@ -1,12 +1,12 @@
-import type { Period, User } from "$lib/Types";
+import type { Period, Schedule } from "$lib/Types";
 import { writable } from "svelte/store";
-//
-function createHoraireStore() {
-    const { subscribe, set } = writable<User[]>();
+
+function createScheduleStore() {
+    const { subscribe, set } = writable<Schedule>();
 
     async function refresh() {
-        const horaire = await (await fetch("/api/schedule")).json();
-        set(horaire);
+        const schedule = await (await fetch("/api/schedule")).json();
+        set(schedule);
     }
 
     async function add(period: Period) {
@@ -28,5 +28,5 @@ function createHoraireStore() {
     };
 }
 
-const horaire = createHoraireStore();
-export default horaire;
+const schedule = createScheduleStore();
+export default schedule;

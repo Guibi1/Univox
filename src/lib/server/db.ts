@@ -288,10 +288,10 @@ export async function quitGroup(user: User, group: Group): Promise<boolean> {
 }
 
 // Helpers: Schedule
-export async function getSchedule(user: ServerUser): Promise<Schedule | null> {
+export async function getSchedule(user: ServerUser): Promise<Schedule> {
     const doc: mongoose.Document<Schedule> | null = await Schedules.findById(user.scheduleId);
     if (!doc) {
-        return null;
+        throw "Couldn't find the user's schedule";
     }
     return { ...doc.toObject() };
 }

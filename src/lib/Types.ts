@@ -40,6 +40,7 @@ export interface Book {
 export interface Schedule {
     _id: mongoose.Types.ObjectId;
     periods: Period[];
+    classes: Class[];
 }
 
 export interface Period {
@@ -49,7 +50,6 @@ export interface Period {
 }
 
 export interface Class extends Period {
-    _id: mongoose.Types.ObjectId;
     code?: string;
     group: number;
     local: string;
