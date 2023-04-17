@@ -5,7 +5,7 @@
     let timeout: NodeJS.Timeout | null;
     function timedSearch() {
         if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => handleSearch(query), 500);
+        timeout = setTimeout(() => handleSearch(query), 300);
     }
 </script>
 

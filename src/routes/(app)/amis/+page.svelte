@@ -10,10 +10,11 @@
     let selectedFriends: User[] = [];
 
     let query = "";
-    let searchResults: User[] = [];
+    let searchResults: User[] | null = null;
 
     async function handleSearch() {
-        searchResults = await (await fetch("/api/search/users/" + query)).json();
+        searchResults =
+            query.length === 0 ? null : await (await fetch("/api/search/users/" + query)).json();
     }
 
     function friendsFilterQuery(user: User, query: string) {
@@ -86,40 +87,44 @@
                     on:click={() => {
                         selectedFriends = [];
                         groups.create(selectedFriends);
-                    }}>Créer un groupe</button
+                    }}
                 >
+                    Créer un groupe
+                </button>
             </div>
         {/if}
 
         {#if query}
             <h2 class="mb-4 border-b border-black dark:border-white">Autres utilisateurs</h2>
 
-            {#if searchResults.length === 0}
+            {#if searchResults === null}
+                Chargement en cours
+            {:else if searchResults.length === 0}
                 Aucun résultats
+            {:else}
+                <div>
+                    {#each searchResults as user}
+                        <div class="flex items-center justify-between">
+                            {user.firstName}
+                            {user.lastName}
+                            <i>
+                                {user.da}
+                            </i>
+
+                            <button
+                                class="filled"
+                                on:click={() => {
+                                    query = "";
+                                    searchResults = [];
+                                    notifications.create(NotificationKind.FriendRequest, user._id);
+                                }}
+                            >
+                                Ajouter en ami
+                            </button>
+                        </div>
+                    {/each}
+                </div>
             {/if}
-
-            <div>
-                {#each searchResults as user}
-                    <div class="flex items-center justify-between">
-                        {user.firstName}
-                        {user.lastName}
-                        <i>
-                            {user.da}
-                        </i>
-
-                        <button
-                            class="filled"
-                            on:click={() => {
-                                query = "";
-                                searchResults = [];
-                                notifications.create(NotificationKind.FriendRequest, user._id);
-                            }}
-                        >
-                            Ajouter en ami
-                        </button>
-                    </div>
-                {/each}
-            </div>
         {/if}
     </div>
 

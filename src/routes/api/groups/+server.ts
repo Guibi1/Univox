@@ -6,19 +6,19 @@ import type { RequestHandler } from "./$types";
 export const POST = (async ({ request, locals }) => {
     if (!locals.user) throw error(401);
 
-    const { friendsId } = await request.json();
+    const { usersId } = await request.json();
 
-    if (!Array.isArray(friendsId) || friendsId.length < 2) {
+    if (!Array.isArray(usersId) || usersId.length < 2) {
         throw error(400, "Invalid data.");
     }
 
-    for (const id of friendsId) {
+    for (const id of usersId) {
         if (!isObjectIdOrHexString(id) || !locals.user.friendsId.includes(id)) {
             throw error(400, "Invalid data.");
         }
     }
 
-    return json({ success: await db.createGroup(locals.user, friendsId) });
+    return json({ success: await db.createGroup(locals.user, usersId) });
 }) satisfies RequestHandler;
 
 export const DELETE = (async ({ request, locals }) => {

@@ -1,5 +1,4 @@
 import type { Group, User } from "$lib/Types";
-import type mongoose from "mongoose";
 import { writable } from "svelte/store";
 
 function createGroupsStore() {
@@ -10,24 +9,24 @@ function createGroupsStore() {
         set(groups);
     }
 
-    async function create(friends: User[]) {
+    async function create(users: User[]) {
         await fetch("/api/groups", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ friendsId: friends.map((u) => u._id) }),
+            body: JSON.stringify({ usersId: users.map((u) => u._id) }),
         });
         refresh();
     }
 
-    async function quit(groupId: mongoose.Types.ObjectId) {
+    async function quit(group: Group) {
         await fetch("/api/groups", {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ groupId }),
+            body: JSON.stringify({ groupId: group._id }),
         });
         refresh();
     }
