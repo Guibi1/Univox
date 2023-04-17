@@ -1,14 +1,11 @@
 <script lang="ts">
-    import { weekdayOffset, dateAreTheSame } from "$lib/stores/firstDayOfTheWeek";
-
-    // Importation des types et bibliothèques nécessaires
-    import type { Class } from "$lib/Types";
-    import dayjs, { Dayjs } from "dayjs";
+    import type { Schedule } from "$lib/Types";
+    import { dateAreTheSame, weekdayOffset } from "$lib/stores/firstDayOfTheWeek";
+    import dayjs from "dayjs";
     import { onDestroy } from "svelte";
     import Hoverable from "./Hoverable.svelte";
 
-    // TODO: Remplacer "schedule" par l'emploi du temps de l'utilisateur
-    export let schedule: Class[];
+    export let schedule: Schedule;
 
     // Déclaration des propriétés
     let rowTitles: string[] = [];
@@ -47,6 +44,7 @@
         <button on:click={() => moveWeek(-1)}> Previous </button>
         <button on:click={() => moveWeek(1)}> Next </button>
     </div>
+
     <!-- Tableau qui contiendra l'emploi du temps -->
     <table class="relative">
         <!-- Ligne pour les jours de la semaine -->
@@ -67,7 +65,7 @@
                     {day.format("D")}
 
                     <!-- Boucle pour chaque période de l'emploi du temps -->
-                    {#each schedule.filter((p) => dateAreTheSame(p.timeStart, day)) as period}
+                    {#each schedule.periods.filter( (p) => dateAreTheSame(p.timeStart, day) ) as period}
                         <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
                         <Hoverable let:hovering>
                             <div
@@ -84,6 +82,10 @@
                                     (period.timeEnd.diff(period.timeStart, "minute") / 60)
                                 }rem;`}
                             >
+                                <p class="truncate text-center">
+                                    {period.name}
+                                </p>
+
                                 <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
                                 {#if hovering}
                                     <div
@@ -91,7 +93,47 @@
                                         style={`transform: translate(${cellWidth}rem,-50%`}
                                     >
                                         <p class="break-words text-center">
-                                            TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST
+                                            {period.name} <br />
+                                            <br />
+                                            {period.timeStart} <br />
+                                            {period.timeEnd}
+                                        </p>
+                                    </div>
+                                {/if}
+                            </div>
+                        </Hoverable>
+                    {/each}
+
+                    <!-- Boucle pour chaque période de l'emploi du temps -->
+                    {#each schedule.classes.filter( (p) => dateAreTheSame(p.timeStart, day) ) as period}
+                        <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
+                        <Hoverable let:hovering>
+                            <div
+                                class="absolute border-red-200 bg-sky-500 hover:border-2"
+                                style={`top: ${
+                                    rowHeight *
+                                    (period.timeStart.hour() +
+                                        period.timeStart.minute() / 60 -
+                                        timeOffset)
+                                }rem; 
+                                width: ${cellWidth}rem;
+                                height: ${
+                                    rowHeight *
+                                    (period.timeEnd.diff(period.timeStart, "minute") / 60)
+                                }rem;`}
+                            >
+                                <p class="truncate text-center">
+                                    {period.name}<br />
+                                    {period.group}
+                                </p>
+
+                                <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
+                                {#if hovering}
+                                    <div
+                                        class="absolute top-1/2 z-10 max-w-xs bg-blue-400 p-4"
+                                        style={`transform: translate(${cellWidth}rem,-50%`}
+                                    >
+                                        <p class="break-words text-center">
                                             {period.name} <br />
                                             {period.group} <br />
                                             {period.local} <br />
@@ -103,11 +145,6 @@
                                         </p>
                                     </div>
                                 {/if}
-                                <!-- Affiche le nom de la période et son identifiant -->
-                                <p class="truncate text-center">
-                                    {period.name}<br />
-                                    {period.group}
-                                </p>
                             </div>
                         </Hoverable>
                     {/each}

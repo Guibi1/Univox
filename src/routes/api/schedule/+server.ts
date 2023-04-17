@@ -6,7 +6,8 @@ export const POST = (async ({ request, locals }) => {
     if (!locals.user) throw error(401);
 
     const { periods } = await request.json();
-    if (!periods || periods.length === 0) {
+
+    if (!Array.isArray(periods) || periods.length === 0) {
         throw error(400, "Invalid data.");
     }
 
@@ -15,5 +16,5 @@ export const POST = (async ({ request, locals }) => {
 
 export const GET = (async ({ locals }) => {
     if (!locals.user) throw error(401);
-    return json(locals);
+    return json({ success: true, schedule: locals.schedule });
 }) satisfies RequestHandler;
