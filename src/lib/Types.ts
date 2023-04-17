@@ -14,8 +14,15 @@ export interface ServerUser extends User {
     passwordHash: string;
     friendsId: mongoose.Types.ObjectId[];
     notificationsId: mongoose.Types.ObjectId[];
+    groupsId: mongoose.Types.ObjectId[];
     settingsId: mongoose.Types.ObjectId;
     scheduleId: mongoose.Types.ObjectId;
+}
+
+export interface Group {
+    _id: mongoose.Types.ObjectId;
+    name: string;
+    usersId: mongoose.Types.ObjectId[];
 }
 
 export interface Book {
