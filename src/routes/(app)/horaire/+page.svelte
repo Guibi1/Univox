@@ -30,4 +30,8 @@
 
         <ScheduleView {currentWeek} schedule={$schedule} />
     </div>
+
+    <div>
+        <a href="/horaire/importer" class="filled">Importer d'Omnivox</a>
+    </div>
 </div>
