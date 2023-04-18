@@ -40,20 +40,20 @@ export interface Book {
 export interface Schedule {
     _id: mongoose.Types.ObjectId;
     periods: Period[];
-    classes: Class[];
 }
 
 export interface Period {
+    _id: mongoose.Types.ObjectId;
     name: string;
     timeStart: Dayjs;
     timeEnd: Dayjs;
 }
 
 export interface Class extends Period {
-    code?: string;
+    code: string;
     group: number;
     local: string;
-    theory: boolean;
+    type: "T" | "L";
     teacher: string;
     virtual: boolean;
     timeStart: Dayjs;
