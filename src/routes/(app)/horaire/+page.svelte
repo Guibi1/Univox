@@ -26,9 +26,9 @@
     </div>
 
     <div class="flex flex-col items-center gap-4">
-        <WeekSelector {currentWeek} />
+        <WeekSelector bind:currentWeek />
 
-        <ScheduleView {currentWeek} schedule={$schedule} />
+        <ScheduleView bind:currentWeek schedule={$schedule} />
     </div>
 
     <div>
