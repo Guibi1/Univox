@@ -1,83 +1,98 @@
 <script lang="ts">
+    import { enhance, type SubmitFunction } from "$app/forms";
     import schedule from "$lib/stores/schedule";
     import dayjs from "dayjs";
+    import type { ActionData } from "./$types";
 
-    let name = "";
-    let day = 1;
-    let startHour = 0;
-    let startMinute = 0;
-    let endHour = 0;
-    let endMinute = 0;
+    export let form: ActionData = null;
 
-    function handleSubmit(event: Event) {
-        event.preventDefault();
+    let loading = false;
 
-        schedule.add({
-            name,
-            timeStart: dayjs().day(day).hour(startHour).minute(startMinute).millisecond(0),
-            timeEnd: dayjs().hour(endHour).minute(endMinute).millisecond(0),
-        });
-    }
+    const handleSubmit = (() => {
+        loading = true;
+        return async ({ result, update }) => {
+            if (result.type === "success") {
+                await schedule.refresh();
+            }
+            loading = false;
+            update({ reset: true });
+        };
+    }) satisfies SubmitFunction;
 </script>
 
-<form on:submit={handleSubmit}>
-    <div class="flex flex-row space-x-4">
-        <div class="flex flex-col">
-            <label>
-                Name:
+<form
+    use:enhance={handleSubmit}
+    class="flex flex-col gap-2"
+    method="post"
+    action="/horaire?/addPeriod"
+>
+    <label data-error={form?.invalidName}>
+        Nom de l'évènement
 
-                <input type="text" bind:value={name} />
-            </label>
-        </div>
+        <input
+            type="text"
+            name="name"
+            value={form?.name ?? ""}
+            required
+            placeholder=" "
+            readonly={loading}
+        />
 
-        <div class="flex flex-col">
-            <label>
-                Day:
+        {#if form?.invalidName}
+            <span>Nom invalide</span>
+        {/if}
+    </label>
 
-                <select bind:value={day}>
-                    {#each Array.from(Array(31).keys()) as day}
-                        <option value={day + 1}>{day + 1}</option>
-                    {/each}
-                </select>
-            </label>
-        </div>
+    <label data-error={form?.invalidDate}>
+        Date
 
-        <div class="flex flex-col">
-            <label>
-                Start Time:
+        <input
+            name="date"
+            type="date"
+            required
+            value={form?.date ?? dayjs().format("YYYY-MM-DD")}
+            on:input={() => form && (form.invalidDate = false)}
+            readonly={loading}
+        />
 
-                <select bind:value={startHour}>
-                    {#each Array.from(Array(24).keys()) as hour}
-                        <option value={hour}>{hour}</option>
-                    {/each}
-                </select>
+        {#if form?.invalidDate}
+            <span>Date invalide</span>
+        {/if}
+    </label>
 
-                <select bind:value={startMinute}>
-                    {#each [0, 15, 30, 45] as minute}
-                        <option value={minute}>{minute}</option>
-                    {/each}
-                </select>
-            </label>
-        </div>
+    <label data-error={form?.invalidStartTime}>
+        Début
 
-        <div class="flex flex-col">
-            <label>
-                End Time:
+        <input
+            name="startTime"
+            type="time"
+            required
+            value={form?.startTime ?? dayjs().add(1, "hour").format("HH:00")}
+            on:input={() => form && (form.invalidStartTime = false)}
+            readonly={loading}
+        />
 
-                <select bind:value={endHour}>
-                    {#each Array.from(Array(24).keys()) as hour}
-                        <option value={hour}>{hour}</option>
-                    {/each}
-                </select>
+        {#if form?.invalidStartTime}
+            <span>Temps de début invalide</span>
+        {/if}
+    </label>
 
-                <select bind:value={endMinute}>
-                    {#each [0, 15, 30, 45] as minute}
-                        <option value={minute}>{minute}</option>
-                    {/each}
-                </select>
-            </label>
-        </div>
-    </div>
+    <label data-error={form?.invalidEndTime}>
+        Fin
 
-    <button type="submit">Add Event</button>
+        <input
+            name="endTime"
+            type="time"
+            required
+            value={form?.endTime ?? dayjs().add(2, "hour").format("HH:00")}
+            readonly={loading}
+        />
+        <!-- on:input={() => form && (form.invalidEndTime = false)} -->
+
+        {#if form?.invalidEndTime}
+            <span>Temps de fin invalide</span>
+        {/if}
+    </label>
+
+    <button type="submit" class="filled mt-4 self-center"> Ajouter à l'horaire </button>
 </form>

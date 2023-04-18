@@ -65,7 +65,7 @@
     }
 
     button.filled {
-        @apply flex h-12 items-center rounded-lg bg-blue-primary fill-white px-4 text-white;
+        @apply flex h-12 items-center justify-center rounded-lg bg-blue-primary fill-white px-4 text-white;
         @apply dark:bg-blue-primary dark:fill-black dark:text-black;
     }
 
