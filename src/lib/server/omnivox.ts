@@ -2,7 +2,6 @@ import * as cheerio from "cheerio";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import weekday from "dayjs/plugin/weekday";
-import mongoose from "mongoose";
 import type { Class } from "../Types";
 
 dayjs.extend(customParseFormat);
@@ -206,7 +205,6 @@ export function schedulePageToClasses(HTML: string): Class[] {
             }
 
             schedule.push({
-                _id: new mongoose.Types.ObjectId(),
                 name: match[1],
                 code: match[2],
                 group: Number(match[3]),
