@@ -9,3 +9,4 @@
 >
     <i class={`${$colorScheme === "dark" ? "bx-sun" : "bx-moon"} bx text-white`} />
 </button>
+
