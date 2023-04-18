@@ -64,21 +64,20 @@
         @apply block;
     }
 
-    button.filled,
-    a.filled {
-        @apply flex h-12 items-center justify-center rounded-lg bg-blue-primary fill-white px-4 text-white;
+    button.filled {
+        @apply flex h-12 items-center rounded-lg bg-blue-primary fill-white px-4 text-white;
         @apply dark:bg-blue-primary dark:fill-black dark:text-black;
-    }
-
-    button.outlined,
-    a.outlined {
-        @apply flex h-12 items-center justify-center rounded-lg border-2 border-blue-primary fill-black px-4 text-center text-black;
-        @apply dark:border-blue-darkPrimary dark:fill-white dark:text-white;
     }
 
     a {
         @apply cursor-pointer fill-white text-black dark:text-white;
         @apply cursor-pointer fill-white text-black dark:text-white;
+
+        &.outlined {
+            @apply fill-black text-black;
+            @apply rounded border-2 border-blue-primary py-2 text-center;
+            @apply dark:border-blue-darkPrimary dark:text-white;
+        }
     }
 
     hr {

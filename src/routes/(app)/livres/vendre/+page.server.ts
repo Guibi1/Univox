@@ -15,7 +15,6 @@ export const actions = {
         const ISBN = data.get("isbn")?.toString();
         const classCode = data.get("classCode")?.toString();
 
-        // Input validation
         const invalidTitle = !title;
         const invalidAuthor = !author;
         const invalidState = !state;
