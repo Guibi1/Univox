@@ -1,13 +1,3 @@
-<script lang="ts">
-    import ScheduleView from "$lib/components/ScheduleView.svelte";
-    import WeekSelector from "$lib/components/WeekSelector.svelte";
-    import schedule from "$lib/stores/schedule";
-    import dayjs from "dayjs";
-    import NewPeriodForm from "./NewPeriodForm.svelte";
-
-    let currentWeek = dayjs();
-</script>
-
 <svelte:head>
     <title>Univox | Horaire</title>
 </svelte:head>

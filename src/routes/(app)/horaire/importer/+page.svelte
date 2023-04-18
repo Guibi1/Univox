@@ -1,7 +1,7 @@
 <script lang="ts">
+    import user from "$lib/stores/user";
     import { enhance, type SubmitFunction } from "$app/forms";
-    import schedule from "$lib/stores/schedule";
-    import type { ActionData } from "../$types";
+    import type { ActionData } from "./$types";
 
     export let form: ActionData;
     let loading = false;
@@ -10,7 +10,7 @@
         loading = true;
         return async ({ result, update }) => {
             if (result.type === "redirect") {
-                schedule.refresh();
+                user.refresh();
             }
             loading = false;
             update();
@@ -22,24 +22,19 @@
     <title>Univox | Horaire | Importer</title>
 </svelte:head>
 
-<div
-    class="flex flex-col items-center gap-4 border-b border-black bg-white p-4 dark:border-neutral-500 dark:bg-neutral-900"
->
-    <h1>Importer mon horaire depuis Omnivox</h1>
-</div>
+<div class="m-auto flex w-fit flex-col items-center justify-center gap-4 pb-4">
+    <h1>Importer mon horaire de session depuis Omnivox</h1>
 
-<div class="flex items-center justify-center">
     {#if loading}
-        <i class="bx bx-loader-circle bx-spin my-2 text-5xl" />
+        <i class="bx bx-loader-circle bx-spin my-6 flex h-10 w-full items-center" />
     {/if}
 </div>
 
 <form
     use:enhance={handleSubmit}
-    class="m-auto flex w-80 flex-col gap-6"
     hidden={loading}
+    class="m-auto flex w-80 flex-col gap-6"
     method="post"
-    action="/horaire?/import"
 >
     <label data-error={form?.incorrect}>
         Mot de passe Omnivox
