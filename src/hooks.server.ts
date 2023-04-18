@@ -6,6 +6,7 @@ const userLocalsHandle = (async ({ event, resolve }) => {
     const user = await db.getUserFromToken(event.cookies.get("token"));
     if (user) {
         event.locals.user = user;
+        event.locals.schedule = await db.getSchedule(user);
         event.locals.friends = await db.getFriends(user);
         event.locals.groups = await db.getGroups(user);
         event.locals.notifications = await db.getNotifications(user);
