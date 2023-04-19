@@ -1,3 +1,7 @@
+/**
+ * @file API endpoints to manage the notifications
+ */
+
 import { NotificationKind } from "$lib/Types";
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";

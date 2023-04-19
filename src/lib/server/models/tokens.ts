@@ -1,15 +1,15 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
 export interface Token {
-    _id: mongoose.Types.ObjectId;
+    _id: Types.ObjectId;
     token: string;
-    userId: mongoose.Types.ObjectId;
+    userId: Types.ObjectId;
     lastAccessedDate: Date;
 }
 
 const TokenSchema = new Schema<Token>({
     token: String,
-    userId: mongoose.Types.ObjectId,
+    userId: Types.ObjectId,
     lastAccessedDate: {
         type: Date,
         default: Date.now,
