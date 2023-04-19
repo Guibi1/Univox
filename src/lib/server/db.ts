@@ -251,7 +251,7 @@ export async function updateUser(
  * Searches the database to find users that match the query
  * @param user The current user
  * @param query The search query
- * @returns An array of matching server user
+ * @returns An array of 5 matching users, or less
  */
 export async function searchUsers(user: ServerUser, query: string): Promise<User[]> {
     query = sanitizeQuery(query);
@@ -276,7 +276,10 @@ export async function searchUsers(user: ServerUser, query: string): Promise<User
     );
 }
 
-// -*-*- FRIENDS -*-*-
+/////////////////////////
+// -*-*- FRIENDS -*-*- //
+/////////////////////////
+
 /**
  * Fetches the latests friends
  * @param user The current user
@@ -344,8 +347,15 @@ export async function deleteFriend(user: ServerUser, friendId: Types.ObjectId): 
     }
 }
 
-// Helpers: Groups
+////////////////////////
+// -*-*- Groups -*-*- //
+////////////////////////
 
+/**
+ * Fetches a group's data from de the database
+ * @param id The group id
+ * @returns The group data
+ */
 export async function getGroup(id: Types.ObjectId): Promise<Group | null> {
     const doc = await Groups.findById(id);
     if (!doc) {
@@ -356,6 +366,11 @@ export async function getGroup(id: Types.ObjectId): Promise<Group | null> {
     return group as Group;
 }
 
+/**
+ * Fetches all the user's groups and their data
+ * @param user The target user
+ * @returns An array of groups in which the user is
+ */
 export async function getGroups(user: ServerUser): Promise<Group[]> {
     const groups: Group[] = [];
     for (const groupId of user.groupsId) {
@@ -369,12 +384,19 @@ export async function getGroups(user: ServerUser): Promise<Group[]> {
     return groups;
 }
 
-export async function createGroup(user: User, friendsId: Types.ObjectId[]): Promise<boolean> {
+/**
+ * Creates a new group containing the user and the specified friends
+ * @param user The current user
+ * @param friendsId The friends to add to the new group
+ * @returns True if the operation succeded, false otherwise
+ */
+export async function createGroup(user: ServerUser, friendsId: Types.ObjectId[]): Promise<boolean> {
     if (friendsId.includes(user._id)) return false;
     if (friendsId.length !== new Set(friendsId).size) return false;
 
     try {
         await Groups.create({ usersId: [...friendsId, user._id] });
+        log("New group created");
         return true;
     } catch {
         warn("The function 'createGroup' was called but failed to update the user's data");
@@ -382,8 +404,15 @@ export async function createGroup(user: User, friendsId: Types.ObjectId[]): Prom
     }
 }
 
+/**
+ * Adds a friend to an existing group
+ * @param user The current user
+ * @param group The targeted group
+ * @param friendId The friend to add to the group
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function addToGroup(
-    user: User,
+    user: ServerUser,
     group: Group,
     friendId: Types.ObjectId
 ): Promise<boolean> {
@@ -399,6 +428,12 @@ export async function addToGroup(
     }
 }
 
+/**
+ * Removes a user from a group
+ * @param user The current user
+ * @param group The targeted group
+ * @returns True if the operation succeded, false otherwise
+ */
 export async function quitGroup(user: User, group: Group): Promise<boolean> {
     if (!group.usersId.includes(user._id)) return false;
 
@@ -457,7 +492,10 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
     }
 }
 
-// -*-*- BOOK -*-*-
+//////////////////////
+// -*-*- BOOK -*-*- //
+//////////////////////
+
 /**
  * Fetches the book with the provided ID
  * @param bookId The targeted book's ID
@@ -472,12 +510,24 @@ export async function getBook(bookId: Types.ObjectId): Promise<Book | null> {
     return { ...doc.toObject() };
 }
 
+/**
+ * Fetches the user's books
+ * @param user The targeted user
+ * @returns An array of all the user's books
+ */
 export async function getBooks(user: ServerUser): Promise<Book[]> {
     return (await Books.find({ sellerId: user._id })).map((b: mongoose.Document<Book>) => ({
         ...b.toObject(),
     }));
 }
 
+/**
+ * Searches the database to find books that match the query
+ * @param user The current user
+ * @param query The search query
+ * @param codes An array of book codes
+ * @returns An array of 5 corresponding books, or less
+ */
 export async function searchBooks(
     user: ServerUser,
     query: string,
