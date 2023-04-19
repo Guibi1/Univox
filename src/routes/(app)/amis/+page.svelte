@@ -1,11 +1,15 @@
 <script lang="ts">
+    import { NotificationKind, type User } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import Option from "$lib/components/Option.svelte";
+    import ScheduleView from "$lib/components/ScheduleView.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import notifications from "$lib/stores/notifications";
-    import { NotificationKind, type User } from "$lib/Types";
+    import type { PageData } from "./$types";
+
+    export let data: PageData;
 
     let selectedFriends: User[] = [];
 
@@ -52,30 +56,32 @@
 
         <ul class="flex-grow">
             {#each $friends.filter((u) => friendsFilterQuery(u, query)) as ami}
-                <li class="flex items-center justify-between">
-                    <input type="checkbox" bind:group={selectedFriends} value={ami} />
+                <li>
+                    <a href="?id=${ami._id}" class="flex items-center justify-between">
+                        <input type="checkbox" bind:group={selectedFriends} value={ami} />
 
-                    <span>
-                        {ami.firstName}
-                        {ami.lastName}
-                    </span>
+                        <span>
+                            {ami.firstName}
+                            {ami.lastName}
+                        </span>
 
-                    <Dropdown>
-                        <Option
-                            text="Consulter l'horaire"
-                            onClick={() => console.log("TODO: afficher l'horaire")}
-                        />
-                        <Option
-                            text="Horaire commun"
-                            onClick={() => console.log("TODO: afficher l'horaire")}
-                        />
-                        <Option
-                            separate
-                            text="Retirer l'ami.e"
-                            color="red"
-                            onClick={() => friends.remove(ami._id)}
-                        />
-                    </Dropdown>
+                        <Dropdown>
+                            <Option
+                                text="Consulter l'horaire"
+                                onClick={() => console.log("TODO: afficher l'horaire")}
+                            />
+                            <Option
+                                text="Horaire commun"
+                                onClick={() => console.log("TODO: afficher l'horaire")}
+                            />
+                            <Option
+                                separate
+                                text="Retirer l'ami.e"
+                                color="red"
+                                onClick={() => friends.remove(ami._id)}
+                            />
+                        </Dropdown>
+                    </a>
                 </li>
             {/each}
         </ul>
@@ -142,7 +148,13 @@
         </ul>
     </div>
 
-    <div class="p-4">Affichage de l'horaire commun</div>
+    <div class="p-4">
+        {#if data.schedule}
+            <ScheduleView schedule={data.schedule} />
+        {:else}
+            Affichage de l'horaire commun
+        {/if}
+    </div>
 </div>
 
 <!-- TODO: groupes + régler le bazar quand on rapetisse la page -->
