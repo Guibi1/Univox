@@ -1,13 +1,13 @@
 import { MONGODB_URI } from "$env/static/private";
-import type {
-    Book,
-    Group,
-    Notification,
+import {
     NotificationKind,
-    Period,
-    Schedule,
-    ServerUser,
-    User,
+    type Book,
+    type Group,
+    type Notification,
+    type Period,
+    type Schedule,
+    type ServerUser,
+    type User,
 } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import mongoose, { type FilterQuery } from "mongoose";
@@ -365,6 +365,13 @@ export async function sendNotification(
     kind: NotificationKind,
     receiverId: mongoose.Types.ObjectId
 ): Promise<boolean> {
+    const receiver = await getServerUser(receiverId);
+    if (!receiver) return false;
+
+    if (kind == NotificationKind.FriendRequest && (await friendRequestExists(user, receiver))) {
+        return false;
+    }
+
     const notificationId = (await Notifications.create({ kind, sender: user._id }))._id;
     await Users.findByIdAndUpdate(receiverId, {
         $push: { notificationsId: notificationId },
@@ -384,6 +391,15 @@ export async function deleteNotification(
     });
 
     return true;
+}
+
+export async function friendRequestExists(
+    sender: ServerUser,
+    receiver: ServerUser
+): Promise<boolean> {
+    return (await getNotifications(receiver)).some(
+        (n) => n.kind == NotificationKind.FriendRequest && n.sender._id.equals(sender._id)
+    );
 }
 
 // Helpers: Settings
