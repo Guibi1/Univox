@@ -47,9 +47,7 @@ export const DELETE = (async ({ request, locals }) => {
         throw error(400, "Invalid data.");
     }
 
-    return json({
-        success: await db.deleteNotification(locals.user, notificationId),
-    });
+    return json({ success: await db.deleteNotification(locals.user, notificationId) });
 }) satisfies RequestHandler;
 
 /**

@@ -1,17 +1,16 @@
 <script lang="ts">
-    import { page } from "$app/stores";
-    import SearchBar from "$lib/components/SearchBar.svelte";
     import type { Book } from "$lib/Types";
+    import BookDetails from "$lib/components/BookDetails.svelte";
+    import SearchBar from "$lib/components/SearchBar.svelte";
+    import type { PageData } from "./$types";
     import BookFilter from "./BookFilter.svelte";
-    import BookInfo from "./BookInfo.svelte";
     import BookList from "./BookList.svelte";
+
+    export let data: PageData;
 
     let books: Book[] = [];
     let codes: string[] = [];
     let query = "";
-
-    let bookId: string | null;
-    $: bookId = $page.url.searchParams.get("bookId");
 
     async function handleSearch() {
         books = await (
@@ -51,5 +50,5 @@
 
     <BookList {books} />
 
-    <BookInfo {bookId} />
+    <BookDetails book={data.book} />
 </main>

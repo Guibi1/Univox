@@ -46,6 +46,18 @@ const UserSchema = new Schema<ServerUser>({
         required: true,
         default: [],
     },
+    groupsId: {
+        type: [mongoose.Schema.Types.ObjectId],
+        validate: {
+            validator: function (arr: unknown[]) {
+                return arr.length === new Set(arr).size;
+            },
+            message: "Duplicate values are not allowed in the array.",
+        },
+        ref: "groups",
+        required: true,
+        default: [],
+    },
     settingsId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "settings",

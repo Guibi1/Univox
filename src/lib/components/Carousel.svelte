@@ -6,8 +6,8 @@
     export const maxImagesCount = 4;
     export let images: string[] = [];
     export let files: File[] = [];
-    export let selectedIndex = -1;
     export let readOnly = false;
+    export let selectedIndex = readOnly ? 0 : -1;
 
     // Local state for drag event handling
     let isDragginOver = false;
@@ -125,7 +125,7 @@
                 <button
                     type="button"
                     on:click={() => removeImage(selectedIndex)}
-                    class="absolute top-2 right-2"
+                    class="absolute right-2 top-2"
                 >
                     <i class="bx bx-trash text-3xl text-red-500" />
                 </button>

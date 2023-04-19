@@ -71,11 +71,14 @@
                 {:else}
                     {#each $notifications as notification}
                         {#if notification.kind === "FriendRequest"}
-                            <div class="flex flex-col gap-2 p-2">
-                                <div class="flex h-16 w-52 items-center gap-2">
+                            <div class="flex flex-col gap-4 p-4">
+                                <div
+                                    class="grid min-w-[15rem] grid-cols-[4rem_1fr] items-center gap-2"
+                                >
                                     <Avatar seed={notification.sender.avatar} />
 
-                                    {notification.sender.firstName} veux vous ajouter en ami.
+                                    {notification.sender.firstName}
+                                    {notification.sender.lastName} veux vous ajouter en ami.
                                 </div>
 
                                 <div class="grid h-8 grid-cols-2 gap-2">
