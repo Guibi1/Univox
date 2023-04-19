@@ -9,6 +9,7 @@ const BookSchema = new Schema<Book>({
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
+        ref: "users",
     },
     title: {
         type: String,

@@ -10,7 +10,7 @@ import {
     type User,
 } from "$lib/Types";
 import bcryptjs from "bcryptjs";
-import mongoose, { type FilterQuery } from "mongoose";
+import mongoose, { Types, type FilterQuery } from "mongoose";
 import Books from "./models/books";
 import Groups from "./models/groups";
 import Notifications from "./models/notifications";
@@ -314,6 +314,12 @@ export async function getBook(bookId: mongoose.Types.ObjectId): Promise<Book | n
     return { ...doc.toObject() };
 }
 
+export async function getBooks(user: ServerUser): Promise<Book[]> {
+    return (await Books.find({ sellerId: user._id })).map((b: mongoose.Document<Book>) => ({
+        ...b.toObject(),
+    }));
+}
+
 export async function searchBooks(
     user: ServerUser,
     query: string,
@@ -418,6 +424,27 @@ export async function setSettings(user: ServerUser, settings: Settings): Promise
 }
 
 // Helpers: Query normalization
+export function arrayIdToString<T extends { _id: mongoose.Types.ObjectId }>(arr: T[]): T[] {
+    return arr.map((i) => objectIdToString(i));
+}
+
+export function objectIdToString<T extends { _id: mongoose.Types.ObjectId }>(object: T): T {
+    if (typeof object !== "object" || object === null) return object;
+
+    const keys = Object.keys(object) as Array<keyof T>;
+    keys.forEach((key) => {
+        const value = object[key];
+
+        if (value instanceof Types.ObjectId) {
+            object[key] = value.toHexString() as T[keyof T];
+        } else if (Array.isArray(value)) {
+            object[key] = arrayIdToString(value) as T[keyof T];
+        }
+    });
+
+    return { ...object };
+}
+
 function sanitizeQuery(query: string): string {
     return query.replace(/\./g, "").trim();
 }
