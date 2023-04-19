@@ -1,11 +1,11 @@
 import type { Dayjs } from "dayjs";
-import type mongoose from "mongoose";
+import type { Types } from "mongoose";
 
 /**
  * Represents a user and its public data
  */
 export interface User {
-    _id: mongoose.Types.ObjectId;
+    _id: Types.ObjectId;
     da: string;
     email: string;
     firstName: string;
@@ -19,29 +19,29 @@ export interface User {
  */
 export interface ServerUser extends User {
     passwordHash: string;
-    friendsId: mongoose.Types.ObjectId[];
-    notificationsId: mongoose.Types.ObjectId[];
-    groupsId: mongoose.Types.ObjectId[];
-    settingsId: mongoose.Types.ObjectId;
-    scheduleId: mongoose.Types.ObjectId;
+    friendsId: Types.ObjectId[];
+    notificationsId: Types.ObjectId[];
+    groupsId: Types.ObjectId[];
+    settingsId: Types.ObjectId;
+    scheduleId: Types.ObjectId;
 }
 
 /**
  * Represents a friend group
  */
 export interface Group {
-    _id: mongoose.Types.ObjectId;
+    _id: Types.ObjectId;
     name: string;
-    usersId: mongoose.Types.ObjectId[];
+    usersId: Types.ObjectId[];
 }
 
 /**
  * Represents a book to be sold
  */
 export interface Book {
-    _id: mongoose.Types.ObjectId;
+    _id: Types.ObjectId;
     code: string;
-    sellerId: mongoose.Types.ObjectId;
+    sellerId: Types.ObjectId;
     title: string;
     ISBN: string;
     src: string[];
@@ -54,7 +54,7 @@ export interface Book {
  * Represents a user's schedule
  */
 export interface Schedule {
-    _id: mongoose.Types.ObjectId;
+    _id: Types.ObjectId;
     periods: Period[];
     classes: Class[];
 }
@@ -86,7 +86,7 @@ export interface Class extends Period {
  * Represents a user's notification
  */
 export interface Notification {
-    _id: mongoose.Types.ObjectId;
+    _id: Types.ObjectId;
     kind: NotificationKind;
     sender: User;
 }

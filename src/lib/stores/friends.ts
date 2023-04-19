@@ -1,5 +1,5 @@
 import type { User } from "$lib/Types";
-import type mongoose from "mongoose";
+import type { Types } from "mongoose";
 import { writable } from "svelte/store";
 
 function createFriendsStore() {
@@ -10,11 +10,11 @@ function createFriendsStore() {
         if (success) set(friends);
     }
 
-    async function getUser(id: mongoose.Types.ObjectId) {
+    async function getUser(id: Types.ObjectId) {
         return await (await fetch(`/api/users/${id}`)).json();
     }
 
-    async function add(id: mongoose.Types.ObjectId) {
+    async function add(id: Types.ObjectId) {
         const { success } = await (
             await fetch("/api/friends", {
                 method: "POST",
@@ -27,7 +27,7 @@ function createFriendsStore() {
         if (success) refresh();
     }
 
-    async function remove(id: mongoose.Types.ObjectId) {
+    async function remove(id: Types.ObjectId) {
         const { success } = await (
             await fetch("/api/friends", {
                 method: "DELETE",

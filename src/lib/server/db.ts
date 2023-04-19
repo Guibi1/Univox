@@ -11,7 +11,7 @@ import {
 } from "$lib/Types";
 import bcryptjs from "bcryptjs";
 import chalk from "chalk";
-import mongoose, { type FilterQuery } from "mongoose";
+import mongoose, { Types, type FilterQuery } from "mongoose";
 import Books from "./models/books";
 import Groups from "./models/groups";
 import Notifications from "./models/notifications";
@@ -21,9 +21,9 @@ import Tokens, { type Token } from "./models/tokens";
 import Users from "./models/users";
 
 const log = (...text: unknown[]) =>
-    console.log(chalk.bgBlue(" INFO "), chalk.italic("database"), chalk.blue("➜ "), ...text);
+    console.log(chalk.bgBlue(" INFO "), chalk.magenta("[database]"), chalk.blue("➜ "), ...text);
 const warn = (...text: unknown[]) =>
-    console.warn(chalk.bgRed(" WARNING "), chalk.italic("database"), chalk.red("➜ "), ...text);
+    console.warn(chalk.bgRed(" WARNING "), chalk.magenta("[database]"), chalk.red("➜ "), ...text);
 
 /**
  * Connects the app to the database if its not already connected
@@ -81,7 +81,7 @@ export async function getUserFromToken(token: string | undefined): Promise<Serve
  */
 export async function getUserIdFromToken(
     token: string | undefined
-): Promise<mongoose.Types.ObjectId | null> {
+): Promise<Types.ObjectId | null> {
     if (!token) return null;
 
     const doc: mongoose.HydratedDocument<Token> | null = await Tokens.findOne({
@@ -110,10 +110,10 @@ export async function getUserIdFromToken(
 export function serverUserToUser(serverUser: ServerUser): User {
     const cleanUser = { ...serverUser } as User & {
         passwordHash?: string;
-        friendsId?: mongoose.Types.ObjectId[];
-        notificationsId?: mongoose.Types.ObjectId[];
-        settingsId?: mongoose.Types.ObjectId;
-        scheduleId?: mongoose.Types.ObjectId;
+        friendsId?: Types.ObjectId[];
+        notificationsId?: Types.ObjectId[];
+        settingsId?: Types.ObjectId;
+        scheduleId?: Types.ObjectId;
         __v?: number;
     };
 
@@ -132,7 +132,7 @@ export function serverUserToUser(serverUser: ServerUser): User {
  * @param id The user id
  * @returns The requested server user, or null if it doesn't exist
  */
-export async function getServerUser(id: mongoose.Types.ObjectId): Promise<ServerUser | null> {
+export async function getServerUser(id: Types.ObjectId): Promise<ServerUser | null> {
     const doc: mongoose.HydratedDocument<ServerUser> | null = await Users.findById(id);
     if (!doc) {
         log("A user couldn't be found");
@@ -146,7 +146,7 @@ export async function getServerUser(id: mongoose.Types.ObjectId): Promise<Server
  * @param id The user id
  * @returns The requested user, or null if it doesn't exist
  */
-export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null> {
+export async function getUser(id: Types.ObjectId): Promise<User | null> {
     const user = await getServerUser(id);
     if (!user) {
         log("A user couldn't be found");
@@ -198,8 +198,8 @@ export async function createUser(user: User, password: string): Promise<ServerUs
         return null;
     }
 
-    const scheduleId: mongoose.Types.ObjectId = (await Schedules.create({}))._id;
-    const settingsId: mongoose.Types.ObjectId = (await Settings.create({}))._id;
+    const scheduleId: Types.ObjectId = (await Schedules.create({}))._id;
+    const settingsId: Types.ObjectId = (await Settings.create({}))._id;
     const doc: mongoose.HydratedDocument<ServerUser> = await Users.create({
         ...user,
         scheduleId,
@@ -302,10 +302,7 @@ export async function getFriends(user: ServerUser): Promise<User[]> {
  * @param friendId The friend to add
  * @returns True if the operation succeded, false otherwise
  */
-export async function addFriend(
-    user: ServerUser,
-    friendId: mongoose.Types.ObjectId
-): Promise<boolean> {
+export async function addFriend(user: ServerUser, friendId: Types.ObjectId): Promise<boolean> {
     if (user._id === friendId) return false;
     if (user.friendsId.includes(friendId)) return false;
 
@@ -329,10 +326,7 @@ export async function addFriend(
  * @param friendId The friend to remove
  * @returns True if the operation succeded, false otherwise
  */
-export async function deleteFriend(
-    user: ServerUser,
-    friendId: mongoose.Types.ObjectId
-): Promise<boolean> {
+export async function deleteFriend(user: ServerUser, friendId: Types.ObjectId): Promise<boolean> {
     if (user._id === friendId) return false;
     if (user.friendsId.includes(friendId)) return false;
 
@@ -352,7 +346,7 @@ export async function deleteFriend(
 
 // Helpers: Groups
 
-export async function getGroup(id: mongoose.Types.ObjectId): Promise<Group | null> {
+export async function getGroup(id: Types.ObjectId): Promise<Group | null> {
     const doc = await Groups.findById(id);
     if (!doc) {
         log("A group couldn't be found");
@@ -375,10 +369,7 @@ export async function getGroups(user: ServerUser): Promise<Group[]> {
     return groups;
 }
 
-export async function createGroup(
-    user: User,
-    friendsId: mongoose.Types.ObjectId[]
-): Promise<boolean> {
+export async function createGroup(user: User, friendsId: Types.ObjectId[]): Promise<boolean> {
     if (friendsId.includes(user._id)) return false;
     if (friendsId.length !== new Set(friendsId).size) return false;
 
@@ -394,7 +385,7 @@ export async function createGroup(
 export async function addToGroup(
     user: User,
     group: Group,
-    friendId: mongoose.Types.ObjectId
+    friendId: Types.ObjectId
 ): Promise<boolean> {
     if (!group.usersId.includes(user._id)) return false;
     if (!group.usersId.includes(friendId)) return false;
@@ -472,7 +463,7 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
  * @param bookId The targeted book's ID
  * @returns The requested book or null if it doesn't exist
  */
-export async function getBook(bookId: mongoose.Types.ObjectId): Promise<Book | null> {
+export async function getBook(bookId: Types.ObjectId): Promise<Book | null> {
     const doc: mongoose.HydratedDocument<Book> | null = await Books.findById(bookId);
     if (!doc) {
         log("A book couldn't be found");
@@ -557,7 +548,7 @@ export async function getNotifications(user: ServerUser): Promise<Notification[]
 export async function sendNotification(
     user: ServerUser,
     kind: NotificationKind,
-    receiverId: mongoose.Types.ObjectId
+    receiverId: Types.ObjectId
 ): Promise<boolean> {
     const receiver = await getServerUser(receiverId);
     if (!receiver) return false;
@@ -586,7 +577,7 @@ export async function sendNotification(
  */
 export async function deleteNotification(
     user: ServerUser,
-    notificationId: mongoose.Types.ObjectId
+    notificationId: Types.ObjectId
 ): Promise<boolean> {
     if (!user.notificationsId.some((id) => id.equals(notificationId))) return false;
 
@@ -656,11 +647,11 @@ export async function setSettings(user: ServerUser, settings: Settings): Promise
  * @param query The string to sanitize
  * @returns The sanitized query
  */
-export function arrayIdToString<T extends { _id: mongoose.Types.ObjectId }>(arr: T[]): T[] {
+export function arrayIdToString<T extends { _id: Types.ObjectId }>(arr: T[]): T[] {
     return arr.map((i) => objectIdToString(i));
 }
 
-export function objectIdToString<T extends { _id: mongoose.Types.ObjectId }>(object: T): T {
+export function objectIdToString<T extends { _id: Types.ObjectId }>(object: T): T {
     if (typeof object !== "object" || object === null) return object;
 
     const keys = Object.keys(object) as Array<keyof T>;

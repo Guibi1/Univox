@@ -2,7 +2,7 @@ import * as db from "$lib/server/db";
 import { uploadBookImage } from "$lib/server/storageBucket";
 import { fail, redirect } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 import type { Actions } from "./$types";
 
 export const actions = {
@@ -63,7 +63,7 @@ export const actions = {
         }
 
         const book = {
-            _id: new mongoose.Types.ObjectId(),
+            _id: new Types.ObjectId(),
             code: classCode,
             sellerId: locals.user._id,
             title,
