@@ -10,11 +10,11 @@
     import Navbar from "./Navbar.svelte";
 
     export let data: LayoutData;
-    user.set(JSON.parse(data.storesInitialValue.serializedUser));
-    schedule.set(JSON.parse(data.storesInitialValue.serializedSchedule));
-    friends.set(JSON.parse(data.storesInitialValue.serializedFriends));
-    groups.set(JSON.parse(data.storesInitialValue.serializedGroups));
-    notifications.set(JSON.parse(data.storesInitialValue.serializedNotifications));
+    user.set(data.storesInitialValue.user);
+    schedule.set(data.storesInitialValue.schedule);
+    friends.set(data.storesInitialValue.friends);
+    groups.set(data.storesInitialValue.groups);
+    notifications.set(data.storesInitialValue.notifications);
 
     onMount(() => {
         const bc = new BroadcastChannel("Invalidate user");

@@ -1,4 +1,4 @@
-import { serverUserToUser } from "$lib/server/db";
+import { arrayIdToString, objectIdToString, serverUserToUser } from "$lib/server/db";
 import friends from "$lib/stores/friends";
 import groups from "$lib/stores/groups";
 import notifications from "$lib/stores/notifications";
@@ -22,11 +22,11 @@ export const load = (({ locals, url, depends }) => {
 
     return {
         storesInitialValue: {
-            serializedUser: JSON.stringify(serverUserToUser(locals.user)),
-            serializedSchedule: JSON.stringify(locals.schedule),
-            serializedFriends: JSON.stringify(locals.friends),
-            serializedGroups: JSON.stringify(locals.groups),
-            serializedNotifications: JSON.stringify(locals.notifications),
+            user: objectIdToString(serverUserToUser(locals.user)),
+            schedule: objectIdToString(locals.schedule),
+            friends: arrayIdToString(locals.friends),
+            groups: arrayIdToString(locals.groups),
+            notifications: arrayIdToString(locals.notifications),
         },
     };
 }) satisfies LayoutServerLoad;
