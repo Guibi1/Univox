@@ -1,3 +1,7 @@
+/**
+ * @file Handles the upload/download of images to/from mongoDB
+ */
+
 import "$lib/server/db";
 import mongoose from "mongoose";
 import { Readable } from "stream";

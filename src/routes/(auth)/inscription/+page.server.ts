@@ -1,7 +1,7 @@
 import * as db from "$lib/server/db";
 import * as omnivox from "$lib/server/omnivox";
 import { fail } from "@sveltejs/kit";
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 import type { Actions } from "./$types";
 
 export const actions = {
@@ -80,7 +80,7 @@ export const actions = {
         // Try to create the user
         const user = await db.createUser(
             {
-                _id: new mongoose.Types.ObjectId(),
+                _id: new Types.ObjectId(),
                 da,
                 email,
                 firstName,
