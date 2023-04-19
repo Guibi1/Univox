@@ -1,9 +1,13 @@
 <script lang="ts">
-    export let bookId: string | null;
+    import type { Book } from "$lib/Types";
+
+    export let book: Book | null = null;
 </script>
 
-{#if bookId}
+{#if book}
     <div>
-        {bookId}
+        {book.title}
     </div>
+{:else}
+    <div>Pas de livre sélectionné</div>
 {/if}

@@ -2,9 +2,12 @@
     import { page } from "$app/stores";
     import SearchBar from "$lib/components/SearchBar.svelte";
     import type { Book } from "$lib/Types";
+    import type { PageData } from "./$types";
     import BookFilter from "./BookFilter.svelte";
     import BookInfo from "./BookInfo.svelte";
     import BookList from "./BookList.svelte";
+
+    export let data: PageData;
 
     let books: Book[] = [];
     let codes: string[] = [];
@@ -51,5 +54,5 @@
 
     <BookList {books} />
 
-    <BookInfo {bookId} />
+    <BookInfo book={data.book} />
 </main>
