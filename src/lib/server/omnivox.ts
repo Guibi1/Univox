@@ -7,7 +7,6 @@ import * as cheerio from "cheerio";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import weekday from "dayjs/plugin/weekday";
-import mongoose from "mongoose";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(weekday);
@@ -201,12 +200,11 @@ export function schedulePageToClasses(HTML: string): Class[] {
             }
 
             schedule.push({
-                _id: new mongoose.Types.ObjectId(),
                 name: match[1],
                 code: match[2],
                 group: Number(match[3]),
                 local: match[4],
-                type: match[5] === "T" ? "T" : "L",
+                theory: match[5] === "T",
                 teacher: match[6],
                 virtual: match[7] === "Présentiel",
                 timeStart: timeStart.weekday(day),

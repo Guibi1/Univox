@@ -46,7 +46,7 @@ function createNotificationsStore() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ notification }),
+                body: JSON.stringify({ notificationId: notification._id }),
             })
         ).json();
         if (success) refresh();

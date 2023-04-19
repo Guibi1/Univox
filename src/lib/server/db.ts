@@ -1,28 +1,39 @@
 import { MONGODB_URI } from "$env/static/private";
-import type {
-    Book,
-    Notification,
+import {
     NotificationKind,
-    Period,
-    Schedule,
-    ServerUser,
-    User,
+    type Book,
+    type Group,
+    type Notification,
+    type Period,
+    type Schedule,
+    type ServerUser,
+    type User,
 } from "$lib/Types";
 import bcryptjs from "bcryptjs";
+import chalk from "chalk";
 import mongoose, { type FilterQuery } from "mongoose";
 import Books from "./models/books";
+import Groups from "./models/groups";
 import Notifications from "./models/notifications";
 import Schedules from "./models/schedules";
 import Settings from "./models/settings";
 import Tokens, { type Token } from "./models/tokens";
 import Users from "./models/users";
 
+const log = (...text: unknown[]) =>
+    console.log(chalk.bgBlue(" INFO "), chalk.italic("database"), chalk.blue("➜ "), ...text);
+const warn = (...text: unknown[]) =>
+    console.warn(chalk.bgRed(" WARNING "), chalk.italic("database"), chalk.red("➜ "), ...text);
+
 /**
  * Connects the app to the database if its not already connected
  */
 mongoose.set("strictQuery", false);
 if (mongoose.connection.readyState !== 1) {
-    mongoose.connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox");
+    mongoose
+        .connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox")
+        .then(() => log("Connected to MongoDB!"))
+        .catch(() => warn("Couldn't connect to MongoDB"));
 }
 
 ///////////////////////
@@ -37,6 +48,7 @@ if (mongoose.connection.readyState !== 1) {
 export async function createToken(user: ServerUser) {
     const token: string = await bcryptjs.hash(user.da + Date(), 5);
     await Tokens.create({ token, userId: user._id });
+    log("New user token created");
     return token;
 }
 
@@ -46,6 +58,7 @@ export async function createToken(user: ServerUser) {
  */
 export async function deleteToken(token: string) {
     await Tokens.findOneAndRemove({ token });
+    log("User token deleted");
 }
 
 /**
@@ -95,7 +108,7 @@ export async function getUserIdFromToken(
  * @returns The casted user
  */
 export function serverUserToUser(serverUser: ServerUser): User {
-    const cleanUser = serverUser as User & {
+    const cleanUser = { ...serverUser } as User & {
         passwordHash?: string;
         friendsId?: mongoose.Types.ObjectId[];
         notificationsId?: mongoose.Types.ObjectId[];
@@ -122,6 +135,7 @@ export function serverUserToUser(serverUser: ServerUser): User {
 export async function getServerUser(id: mongoose.Types.ObjectId): Promise<ServerUser | null> {
     const doc: mongoose.HydratedDocument<ServerUser> | null = await Users.findById(id);
     if (!doc) {
+        log("A user couldn't be found");
         return null;
     }
     return { ...doc.toObject() };
@@ -135,6 +149,7 @@ export async function getServerUser(id: mongoose.Types.ObjectId): Promise<Server
 export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null> {
     const user = await getServerUser(id);
     if (!user) {
+        log("A user couldn't be found");
         return null;
     }
     return serverUserToUser(user);
@@ -148,6 +163,7 @@ export async function getUser(id: mongoose.Types.ObjectId): Promise<User | null>
 export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | null> {
     const doc: mongoose.HydratedDocument<ServerUser> | null = await Users.findOne(filter);
     if (!doc) {
+        log("A user couldn't be found");
         return null;
     }
     return serverUserToUser({ ...doc.toObject() });
@@ -178,7 +194,7 @@ export async function compareUserPassword(
  */
 export async function createUser(user: User, password: string): Promise<ServerUser | null> {
     if ((await findUser({ da: user.da })) !== null) {
-        console.error("A user with this 'da' already exists.");
+        warn("The function 'createUser' was called with a 'da' that was already in the database");
         return null;
     }
 
@@ -190,6 +206,7 @@ export async function createUser(user: User, password: string): Promise<ServerUs
         settingsId,
         passwordHash: await bcryptjs.hash(password ?? "", 11),
     });
+    log("New user created!");
     return { ...doc.toObject() };
 }
 
@@ -206,6 +223,7 @@ export async function updateUserPassword(user: User, password: string): Promise<
         });
         return true;
     } catch {
+        warn("The function 'updateUserPassword' was called but failed to update the user's data");
         return false;
     }
 }
@@ -224,6 +242,7 @@ export async function updateUser(
         await Users.findByIdAndUpdate(user, { $set: data });
         return true;
     } catch {
+        warn("The function 'updateUser' was called but failed to update the user's data");
         return false;
     }
 }
@@ -234,9 +253,8 @@ export async function updateUser(
  * @param query The search query
  * @returns An array of matching server user
  */
-export async function searchUsers(user: ServerUser, query: string): Promise<ServerUser[]> {
+export async function searchUsers(user: ServerUser, query: string): Promise<User[]> {
     query = sanitizeQuery(query);
-    if (query.length < 4) return [];
     query = normalizeQuery(query);
 
     return (
@@ -253,7 +271,9 @@ export async function searchUsers(user: ServerUser, query: string): Promise<Serv
                 },
             ],
         }).limit(5)
-    ).map((user: mongoose.HydratedDocument<ServerUser>) => ({ ...user.toObject() }));
+    ).map((user: mongoose.HydratedDocument<ServerUser>) =>
+        serverUserToUser({ ...user.toObject() })
+    );
 }
 
 // -*-*- FRIENDS -*-*-
@@ -268,6 +288,8 @@ export async function getFriends(user: ServerUser): Promise<User[]> {
         const friend = await getUser(friendId);
         if (friend) {
             friends.push(friend);
+        } else {
+            warn("The user's friendsId seems to contain a deleted user");
         }
     }
 
@@ -287,13 +309,18 @@ export async function addFriend(
     if (user._id === friendId) return false;
     if (user.friendsId.includes(friendId)) return false;
 
-    await Users.findByIdAndUpdate(user, {
-        $push: { friendsId: friendId },
-    });
-    await Users.findByIdAndUpdate(friendId, {
-        $push: { friendsId: user._id },
-    });
-    return true;
+    try {
+        await Users.findByIdAndUpdate(user, {
+            $push: { friendsId: friendId },
+        });
+        await Users.findByIdAndUpdate(friendId, {
+            $push: { friendsId: user._id },
+        });
+        return true;
+    } catch {
+        warn("The function 'addFriend' was called but failed to update the user's data");
+        return false;
+    }
 }
 
 /**
@@ -306,17 +333,97 @@ export async function deleteFriend(
     user: ServerUser,
     friendId: mongoose.Types.ObjectId
 ): Promise<boolean> {
-    //Faut voir si pop fonctionne
     if (user._id === friendId) return false;
     if (user.friendsId.includes(friendId)) return false;
 
-    await Users.findByIdAndUpdate(user, {
-        $pull: { friendsId: friendId },
-    });
-    await Users.findByIdAndUpdate(friendId, {
-        $pull: { friendsId: user._id },
-    });
-    return true;
+    try {
+        await Users.findByIdAndUpdate(user, {
+            $pull: { friendsId: friendId },
+        });
+        await Users.findByIdAndUpdate(friendId, {
+            $pull: { friendsId: user._id },
+        });
+        return true;
+    } catch {
+        warn("The function 'deleteFriend' was called but failed to update the user's data");
+        return false;
+    }
+}
+
+// Helpers: Groups
+
+export async function getGroup(id: mongoose.Types.ObjectId): Promise<Group | null> {
+    const doc = await Groups.findById(id);
+    if (!doc) {
+        log("A group couldn't be found");
+        return null;
+    }
+    const group = { ...doc.toObject(), passwordHash: null };
+    return group as Group;
+}
+
+export async function getGroups(user: ServerUser): Promise<Group[]> {
+    const groups: Group[] = [];
+    for (const groupId of user.groupsId) {
+        const group = await getGroup(groupId);
+        if (group) {
+            groups.push(group);
+        } else {
+            warn("The user's groupsId seems to contain a deleted group");
+        }
+    }
+    return groups;
+}
+
+export async function createGroup(
+    user: User,
+    friendsId: mongoose.Types.ObjectId[]
+): Promise<boolean> {
+    if (friendsId.includes(user._id)) return false;
+    if (friendsId.length !== new Set(friendsId).size) return false;
+
+    try {
+        await Groups.create({ usersId: [...friendsId, user._id] });
+        return true;
+    } catch {
+        warn("The function 'createGroup' was called but failed to update the user's data");
+        return false;
+    }
+}
+
+export async function addToGroup(
+    user: User,
+    group: Group,
+    friendId: mongoose.Types.ObjectId
+): Promise<boolean> {
+    if (!group.usersId.includes(user._id)) return false;
+    if (!group.usersId.includes(friendId)) return false;
+
+    try {
+        await Groups.findByIdAndUpdate(group, { $push: { usersId: friendId } });
+        return true;
+    } catch {
+        warn("The function 'addToGroup' was called but failed to update the user's data");
+        return false;
+    }
+}
+
+export async function quitGroup(user: User, group: Group): Promise<boolean> {
+    if (!group.usersId.includes(user._id)) return false;
+
+    try {
+        if (group.usersId.length < 3) {
+            await Groups.findByIdAndDelete(group);
+        } else {
+            await Groups.findByIdAndUpdate(group, { $pull: { usersId: user._id } });
+        }
+
+        // TODO: Remove the group from the users' list
+        return true;
+    } catch {
+        warn("The function 'quitGroup' was called but failed to update the user's data");
+        return false;
+    }
 }
 
 //////////////////////////
@@ -328,12 +435,13 @@ export async function deleteFriend(
  * @param user The targeted user
  * @returns The user's schedule
  */
-export async function getSchedule(user: ServerUser): Promise<Schedule | null> {
+export async function getSchedule(user: ServerUser): Promise<Schedule> {
     const doc: mongoose.HydratedDocument<Schedule> | null = await Schedules.findById(
         user.scheduleId
     );
     if (!doc) {
-        return null;
+        warn("A schedule couldn't be found");
+        return { _id: user.scheduleId, classes: [], periods: [] };
     }
     return { ...doc.toObject() };
 }
@@ -347,10 +455,15 @@ export async function getSchedule(user: ServerUser): Promise<Schedule | null> {
 export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]): Promise<boolean> {
     if (!user.settingsId) return false;
 
-    await Schedules.findByIdAndUpdate(user.scheduleId, {
-        $push: { periods: periods },
-    });
-    return true;
+    try {
+        await Schedules.findByIdAndUpdate(user.scheduleId, {
+            $push: { periods: periods },
+        });
+        return true;
+    } catch {
+        warn("The function 'addPeriodsToSchedule' was called but failed to update the user's data");
+        return false;
+    }
 }
 
 // -*-*- BOOK -*-*-
@@ -362,18 +475,18 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
 export async function getBook(bookId: mongoose.Types.ObjectId): Promise<Book | null> {
     const doc: mongoose.HydratedDocument<Book> | null = await Books.findById(bookId);
     if (!doc) {
+        log("A book couldn't be found");
         return null;
     }
     return { ...doc.toObject() };
 }
 
-/**
- * Searches for corresponding books in the database
- * @param user The current user
- * @param query The search query
- * @param codes The search filters
- * @returns An array of matching books
- */
+export async function getBooks(user: ServerUser): Promise<Book[]> {
+    return (await Books.find({ sellerId: user._id })).map((b: mongoose.Document<Book>) => ({
+        ...b.toObject(),
+    }));
+}
+
 export async function searchBooks(
     user: ServerUser,
     query: string,
@@ -410,6 +523,7 @@ export async function searchBooks(
  */
 export async function addBookListing(book: Book): Promise<boolean> {
     await Books.create(book);
+    log("New book created");
     return true;
 }
 
@@ -427,7 +541,10 @@ export async function getNotifications(user: ServerUser): Promise<Notification[]
         _id: { $in: user.notificationsId },
     }).populate("sender");
 
-    return doc.map((n) => ({ ...n.toObject() }));
+    return doc.map((notification) => {
+        const n = notification.toObject() as Notification;
+        return { ...n, sender: serverUserToUser(n.sender as ServerUser) };
+    });
 }
 
 /**
@@ -442,14 +559,21 @@ export async function sendNotification(
     kind: NotificationKind,
     receiverId: mongoose.Types.ObjectId
 ): Promise<boolean> {
+    const receiver = await getServerUser(receiverId);
+    if (!receiver) return false;
+
+    if (kind == NotificationKind.FriendRequest && (await friendRequestExists(user, receiver))) {
+        return false;
+    }
+
     try {
         const notificationId = (await Notifications.create({ kind, sender: user._id }))._id;
         await Users.findByIdAndUpdate(receiverId, {
             $push: { notificationsId: notificationId },
         });
-
         return true;
     } catch {
+        warn("The function 'sendNotification' was called but failed to update the user's data");
         return false;
     }
 }
@@ -466,11 +590,24 @@ export async function deleteNotification(
 ): Promise<boolean> {
     if (!user.notificationsId.some((id) => id.equals(notificationId))) return false;
 
-    await Users.findByIdAndUpdate(user._id, {
-        $pull: { notificationsId: notificationId },
-    });
+    try {
+        await Users.findByIdAndUpdate(user._id, {
+            $pull: { notificationsId: notificationId },
+        });
+        return true;
+    } catch {
+        warn("The function 'deleteNotification' was called but failed to update the user's data");
+        return false;
+    }
+}
 
-    return true;
+export async function friendRequestExists(
+    sender: ServerUser,
+    receiver: ServerUser
+): Promise<boolean> {
+    return (await getNotifications(receiver)).some(
+        (n) => n.kind == NotificationKind.FriendRequest && n.sender._id.equals(sender._id)
+    );
 }
 
 //////////////////////////
@@ -488,6 +625,7 @@ export async function getSettings(user: ServerUser): Promise<Settings | null> {
     );
 
     if (!doc) {
+        warn("User's settings couldn't be found");
         return null;
     }
     return { ...doc.toObject() };
@@ -504,6 +642,7 @@ export async function setSettings(user: ServerUser, settings: Settings): Promise
         await Settings.findByIdAndUpdate(user.settingsId, { $set: settings });
         return true;
     } catch {
+        warn("The function 'setSettings' was called but failed to update the user's data");
         return false;
     }
 }
@@ -517,6 +656,27 @@ export async function setSettings(user: ServerUser, settings: Settings): Promise
  * @param query The string to sanitize
  * @returns The sanitized query
  */
+export function arrayIdToString<T extends { _id: mongoose.Types.ObjectId }>(arr: T[]): T[] {
+    return arr.map((i) => objectIdToString(i));
+}
+
+export function objectIdToString<T extends { _id: mongoose.Types.ObjectId }>(object: T): T {
+    if (typeof object !== "object" || object === null) return object;
+
+    const keys = Object.keys(object) as Array<keyof T>;
+    keys.forEach((key) => {
+        const value = object[key];
+
+        if (value instanceof Types.ObjectId) {
+            object[key] = value.toHexString() as T[keyof T];
+        } else if (Array.isArray(value)) {
+            object[key] = arrayIdToString(value) as T[keyof T];
+        }
+    });
+
+    return { ...object };
+}
+
 function sanitizeQuery(query: string): string {
     return query.replace(/\./g, "").replace(/\\/g, "\\\\").trim();
 }

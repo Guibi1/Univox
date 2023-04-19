@@ -21,8 +21,18 @@ export interface ServerUser extends User {
     passwordHash: string;
     friendsId: mongoose.Types.ObjectId[];
     notificationsId: mongoose.Types.ObjectId[];
+    groupsId: mongoose.Types.ObjectId[];
     settingsId: mongoose.Types.ObjectId;
     scheduleId: mongoose.Types.ObjectId;
+}
+
+/**
+ * Represents a friend group
+ */
+export interface Group {
+    _id: mongoose.Types.ObjectId;
+    name: string;
+    usersId: mongoose.Types.ObjectId[];
 }
 
 /**
@@ -46,13 +56,13 @@ export interface Book {
 export interface Schedule {
     _id: mongoose.Types.ObjectId;
     periods: Period[];
+    classes: Class[];
 }
 
 /**
  * Represents a time period in a schedule
  */
 export interface Period {
-    _id: mongoose.Types.ObjectId;
     name: string;
     timeStart: Dayjs;
     timeEnd: Dayjs;
@@ -65,7 +75,7 @@ export interface Class extends Period {
     code: string;
     group: number;
     local: string;
-    type: "T" | "L";
+    theory: boolean;
     teacher: string;
     virtual: boolean;
     timeStart: Dayjs;
