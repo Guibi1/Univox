@@ -4,7 +4,6 @@ import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ locals, url }) => {
     const id = url.searchParams.get("id");
-    console.log("🚀 ~ file: +page.server.ts:7 ~ load ~ id:", id);
     if (!id || !isObjectIdOrHexString(id)) return;
 
     const userId = new Types.ObjectId(id);

@@ -306,7 +306,7 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
 }
 
 // Helpers: Book
-export async function findBookById(bookId: mongoose.Types.ObjectId): Promise<Book | null> {
+export async function getBook(bookId: mongoose.Types.ObjectId): Promise<Book | null> {
     const doc: mongoose.Document<Book> | null = await Books.findById(bookId);
     if (!doc) {
         return null;
