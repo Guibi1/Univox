@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Calendar from "$lib/components/Calendar.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
     import WeekSelector from "$lib/components/WeekSelector.svelte";
     import schedule from "$lib/stores/schedule";
@@ -31,7 +32,9 @@
         <ScheduleView bind:currentWeek schedule={$schedule} />
     </div>
 
-    <div>
+    <div class="flex flex-col gap-6">
+        <Calendar bind:currentWeek />
+
         <a href="/horaire/importer" class="filled">Importer d'Omnivox</a>
     </div>
 </div>
