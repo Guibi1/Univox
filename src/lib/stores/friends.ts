@@ -10,7 +10,7 @@ function createFriendsStore() {
         if (success) set(friends);
     }
 
-    async function getUser(id: Types.ObjectId) {
+    async function getfriendUser(id: Types.ObjectId) {
         return await (await fetch(`/api/users/${id}`)).json();
     }
 
