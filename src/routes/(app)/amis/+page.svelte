@@ -57,7 +57,7 @@
         <ul class="flex-grow">
             {#each $friends.filter((u) => friendsFilterQuery(u, query)) as ami}
                 <li>
-                    <a href="?id=${ami._id}" class="flex items-center justify-between">
+                    <a href="?id={ami._id}" class="flex items-center justify-between">
                         <input type="checkbox" bind:group={selectedFriends} value={ami} />
 
                         <span>

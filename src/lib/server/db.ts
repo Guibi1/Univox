@@ -132,7 +132,7 @@ export function serverUserToUser(serverUser: ServerUser): User {
  * @param id The user id
  * @returns The requested server user, or null if it doesn't exist
  */
-export async function getServerUser(id: Types.ObjectId): Promise<ServerUser | null> {
+export async function getServerUser(id: Types.ObjectId | string): Promise<ServerUser | null> {
     const doc: mongoose.HydratedDocument<ServerUser> | null = await Users.findById(id);
     if (!doc) {
         log("A user couldn't be found");
@@ -146,7 +146,7 @@ export async function getServerUser(id: Types.ObjectId): Promise<ServerUser | nu
  * @param id The user id
  * @returns The requested user, or null if it doesn't exist
  */
-export async function getUser(id: Types.ObjectId): Promise<User | null> {
+export async function getUser(id: Types.ObjectId | string): Promise<User | null> {
     const user = await getServerUser(id);
     if (!user) {
         log("A user couldn't be found");
@@ -356,7 +356,7 @@ export async function deleteFriend(user: ServerUser, friendId: Types.ObjectId): 
  * @param id The group id
  * @returns The group data
  */
-export async function getGroup(id: Types.ObjectId): Promise<Group | null> {
+export async function getGroup(id: Types.ObjectId | string): Promise<Group | null> {
     const doc = await Groups.findById(id);
     if (!doc) {
         log("A group couldn't be found");
@@ -501,7 +501,7 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
  * @param bookId The targeted book's ID
  * @returns The requested book or null if it doesn't exist
  */
-export async function getBook(bookId: Types.ObjectId): Promise<Book | null> {
+export async function getBook(bookId: Types.ObjectId | string): Promise<Book | null> {
     const doc: mongoose.HydratedDocument<Book> | null = await Books.findById(bookId);
     if (!doc) {
         log("A book couldn't be found");
@@ -598,7 +598,7 @@ export async function getNotifications(user: ServerUser): Promise<Notification[]
 export async function sendNotification(
     user: ServerUser,
     kind: NotificationKind,
-    receiverId: Types.ObjectId
+    receiverId: Types.ObjectId | string
 ): Promise<boolean> {
     const receiver = await getServerUser(receiverId);
     if (!receiver) return false;
@@ -627,7 +627,7 @@ export async function sendNotification(
  */
 export async function deleteNotification(
     user: ServerUser,
-    notificationId: Types.ObjectId
+    notificationId: Types.ObjectId | string
 ): Promise<boolean> {
     if (!user.notificationsId.some((id) => id.equals(notificationId))) return false;
 
