@@ -22,8 +22,7 @@ export const POST = (async ({ request, locals }) => {
     if (
         typeof kind !== "string" ||
         !(kind in NotificationKind) ||
-        !isObjectIdOrHexString(receiverId) ||
-        (await db.getUser(receiverId)) === null
+        !isObjectIdOrHexString(receiverId)
     ) {
         throw error(400, "Invalid data.");
     }
