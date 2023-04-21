@@ -81,6 +81,10 @@
         @apply cursor-pointer fill-white text-black dark:text-white;
     }
 
+    i.bx {
+        @apply flex items-center justify-center;
+    }
+
     hr {
         @apply border-neutral-700;
         @apply dark:border-white;
