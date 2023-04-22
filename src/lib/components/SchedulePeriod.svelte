@@ -4,12 +4,12 @@
 
     export let period: Period | Class;
     export let rowHeight: number;
-    export let timeOffset: number;
+    export let timeStart: number;
 
     let hovering: boolean;
 
-    export function getTopOffset() {
-        return rowHeight * (period.timeStart.hour() + period.timeStart.minute() / 60 - timeOffset);
+    export function getTopOffset(timeStart: number) {
+        return rowHeight * (period.timeStart.hour() + period.timeStart.minute() / 60 - timeStart);
     }
 
     function getHeight() {
@@ -17,7 +17,7 @@
     }
 </script>
 
-<div class="relative m-0 h-0" style={`top: ${getTopOffset()}rem;`}>
+<div class="relative m-0 h-0" style={`top: ${getTopOffset(timeStart)}rem;`}>
     <div
         class="mx-0.5 flex flex-col justify-between text-ellipsis rounded-lg bg-blue-primary px-2 py-4 text-center"
         style={`height: ${getHeight()}rem;`}

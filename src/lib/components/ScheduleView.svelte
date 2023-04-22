@@ -1,22 +1,32 @@
 <script lang="ts">
     import type { Schedule } from "$lib/Types";
     import { dateAreTheSame, weekdayOffset } from "$lib/stores/firstDayOfTheWeek";
+    import cx from "classnames";
     import dayjs, { Dayjs } from "dayjs";
-    import { onDestroy } from "svelte";
+    import { onDestroy, onMount, tick } from "svelte";
     import SchedulePeriod from "./SchedulePeriod.svelte";
 
     export let schedule: Schedule;
     export let startDay = dayjs();
     export let daysToShow = 7;
 
-    const scheduleTimeStart = 0;
-    const scheduleTimeEnd = 24;
-    const rowHeight = 4;
+    let timeStart = 7;
+    const rowHeight = 3;
 
     let currentTime = dayjs();
+    let scheduleDiv: Element;
 
     // Mise à jour de l'heure actuelle toutes les 60 secondes
-    const interval = setInterval(() => (currentTime = dayjs()), 60000);
+    let interval: NodeJS.Timer;
+    onMount(async () => {
+        interval = setInterval(() => (currentTime = dayjs()), 60000);
+
+        // Small hack to always look at timeStart when loading the page (eliminates a small stutter)
+        let hours = timeStart;
+        timeStart = 0;
+        await tick();
+        scheduleDiv.scroll(0, rowHeight * 16 * hours);
+    });
     onDestroy(() => clearInterval(interval));
 
     function getPeriods(day: Dayjs) {
@@ -33,8 +43,8 @@
         }
     }
 
-    function getCurrentTimeTopOffset() {
-        return rowHeight * (currentTime.hour() + currentTime.minute() / 60 - scheduleTimeStart);
+    function getTopOffset(time: Dayjs, timeStart: number) {
+        return rowHeight * (time.hour() + time.minute() / 60 - timeStart);
     }
 </script>
 
@@ -58,11 +68,12 @@
         <div class="invisible overflow-y-scroll opacity-0" />
     </div>
 
-    <div class="grid grid-cols-[max-content_1fr] overflow-y-scroll">
-        <!-- Time marks -->
+    <!-- Schedule -->
+    <div bind:this={scheduleDiv} class="grid grid-cols-[max-content_1fr] overflow-y-scroll">
+        <!-- Time markers -->
         <div class="w-12">
-            {#each Array.from({ length: scheduleTimeEnd - scheduleTimeStart }, (_, i) => scheduleTimeStart + i) as hour}
-                <div class="first:text-transparent" style={`height: ${rowHeight}rem`}>
+            {#each Array.from({ length: 24 - timeStart }, (_, i) => timeStart + i) as hour}
+                <div class={cx(!!hour || "text-transparent")} style={`height: ${rowHeight}rem`}>
                     <div class="-translate-y-1/2 pr-2 text-right text-xs">
                         {dayjs().hour(hour).format("h A")}
                     </div>
@@ -74,7 +85,7 @@
         <div class="grid grid-rows-[0_1fr]">
             <!-- Horizontal lines -->
             <div>
-                {#each Array.from({ length: scheduleTimeEnd - scheduleTimeStart }) as _}
+                {#each Array.from({ length: 24 - timeStart }) as _}
                     <div
                         class="border-b dark:border-neutral-500"
                         style={`height: ${rowHeight}rem`}
@@ -86,18 +97,18 @@
                 {#each getDaysToShow(startDay) as day}
                     <div
                         class="relative min-w-0 flex-1 border-l dark:border-neutral-400"
-                        style={`height: ${rowHeight * (scheduleTimeEnd - scheduleTimeStart)}rem`}
+                        style={`height: ${rowHeight * (24 - timeStart)}rem`}
                     >
                         <!-- Boucle pour chaque période de l'emploi du temps -->
                         {#each getPeriods(day) as period}
-                            <SchedulePeriod {period} {rowHeight} timeOffset={scheduleTimeStart} />
+                            <SchedulePeriod {period} {rowHeight} {timeStart} />
                         {/each}
 
                         <!-- Pointeur rouge sur l'heure et la date actuelles -->
                         {#if dateAreTheSame(currentTime, day)}
                             <div
                                 class="relative h-0"
-                                style={`top: ${getCurrentTimeTopOffset()}rem;`}
+                                style={`top: ${getTopOffset(currentTime, timeStart)}rem;`}
                             >
                                 <div
                                     class="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-600"

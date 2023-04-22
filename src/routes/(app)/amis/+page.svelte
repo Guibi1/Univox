@@ -50,7 +50,7 @@
     </div>
 </div>
 
-<div class="grid flex-grow grid-cols-[1fr_1fr_2fr] divide-x">
+<div class="grid flex-grow grid-cols-[1fr_1fr_2fr] divide-x overflow-hidden">
     <div class="flex flex-col p-4">
         <h2 class="mb-4 border-b border-black dark:border-white">Vos amis</h2>
 
@@ -148,13 +148,11 @@
         </ul>
     </div>
 
-    <div class="p-4">
-        {#if data.schedule}
-            <ScheduleView schedule={data.schedule} />
-        {:else}
-            Affichage de l'horaire commun
-        {/if}
-    </div>
+    {#if data.schedule}
+        <ScheduleView schedule={data.schedule} />
+    {:else}
+        <div class="p-4">Affichage de l'horaire commun</div>
+    {/if}
 </div>
 
 <!-- TODO: groupes + régler le bazar quand on rapetisse la page -->
