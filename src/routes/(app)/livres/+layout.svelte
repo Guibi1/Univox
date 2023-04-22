@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import classNames from "classnames";
 
     const data = {
         vendre: {
@@ -22,9 +23,9 @@
 
 <a
     href={data[current].href}
-    class="fixed right-8 bottom-8 flex w-48 items-center gap-0.5 rounded-full bg-blue-primary p-2 px-4 text-2xl !text-black"
+    class="fixed bottom-8 right-8 flex w-48 items-center gap-0.5 rounded-full bg-blue-primary p-2 px-4 text-2xl !text-black"
 >
-    <i class={`${data[current].iconName} bx text-3xl`} />
+    <i class={classNames("bx text-3xl", data[current].iconName)} />
     <span class="flex-1 text-center">
         {data[current].text}
     </span>
@@ -32,7 +33,7 @@
 
 <a
     href="vendre"
-    class="fixed left-8 bottom-8 flex items-center gap-0.5 rounded-full bg-blue-primary p-2 px-4 text-2xl !text-black"
+    class="fixed bottom-8 left-8 flex items-center gap-0.5 rounded-full bg-blue-primary p-2 px-4 text-2xl !text-black"
 >
     <i class="bx bx-book-add text-3xl" />
 </a>

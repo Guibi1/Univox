@@ -7,6 +7,7 @@
     import friends from "$lib/stores/friends";
     import notifications from "$lib/stores/notifications";
     import LogoText from "$src/assets/logo-text.svelte";
+    import classNames from "classnames";
 
     const pages = [
         { text: "Accueil", href: "/" },
@@ -61,9 +62,10 @@
             <EmptyDropdown position="bottom-left">
                 <i
                     slot="button"
-                    class={`bx ${
+                    class={classNames(
+                        "bx text-2xl",
                         $notifications.length === 0 ? "bx-bell" : "bxs-bell-ring"
-                    } text-2xl`}
+                    )}
                 />
 
                 {#if $notifications.length === 0}

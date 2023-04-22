@@ -1,6 +1,6 @@
 <script lang="ts">
+    import classNames from "classnames";
     import dayjs, { Dayjs } from "dayjs";
-    import cx from "classnames";
 
     export let selectedDay = dayjs();
     // TODO
@@ -46,7 +46,7 @@
                     <td class="grid">
                         <button
                             on:click={() => handleClick(day)}
-                            class={cx(
+                            class={classNames(
                                 "flex h-8 w-8 items-center justify-center rounded-full hover:bg-black",
                                 {
                                     "opacity-40": day.month() !== displayMonth.month(),

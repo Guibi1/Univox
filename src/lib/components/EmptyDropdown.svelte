@@ -4,6 +4,8 @@
 </script>
 
 <script lang="ts">
+    import classNames from "classnames";
+
     // Exported variable for dropdown position
     export let position: DropdownPosition;
 
@@ -50,13 +52,14 @@
     <!-- Dropdown menu -->
     {#if open}
         <div
-            class={`absolute z-[200] overflow-hidden rounded-lg bg-gray-200 dark:bg-neutral-700 ${
-                position == "bottom-right"
-                    ? "left-0 top-full"
-                    : position == "bottom-left"
-                    ? "right-0 top-full"
-                    : "left-full"
-            }`}
+            class={classNames(
+                "absolute z-[200] overflow-hidden rounded-lg bg-gray-200 dark:bg-neutral-700",
+                {
+                    "left-0 top-full": position == "bottom-right",
+                    "right-0 top-full": position == "bottom-left",
+                    "left-full": position == "side-right",
+                }
+            )}
         >
             <!-- Slot container for dropdown items -->
             <div

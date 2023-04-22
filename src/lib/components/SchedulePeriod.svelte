@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Class, Period } from "$lib/Types";
-    import cx from "classnames";
+    import classNames from "classnames";
 
     export let period: Period | Class;
     export let rowHeight: number;
@@ -25,7 +25,7 @@
         on:mouseleave={() => (hovering = false)}
     >
         <div class="flex flex-col gap-2">
-            <span class={cx("text-sm", { truncate: getHeight() < rowHeight * 2.5 })}>
+            <span class={classNames("text-sm", { truncate: getHeight() < rowHeight * 2.5 })}>
                 {period.name}
             </span>
 

@@ -19,6 +19,7 @@
 <script lang="ts">
     import { setContext } from "svelte";
     import EmptyDropdown, { type DropdownPosition } from "./EmptyDropdown.svelte";
+    import classNames from "classnames";
 
     // Exported position prop and internal actions state
     export let position: DropdownPosition = "side-right";
@@ -64,9 +65,10 @@
             {#each section as action}
                 {#if action.href}
                     <a
-                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                            action
-                        )}`}
+                        class={classNames(
+                            "whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600",
+                            getColor(action)
+                        )}
                         href={action.href}
                         data-closeOnClick
                     >
@@ -74,9 +76,10 @@
                     </a>
                 {:else}
                     <button
-                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                            action
-                        )}`}
+                        class={classNames(
+                            "whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600",
+                            getColor(action)
+                        )}
                         on:click={action.onClick}
                         data-closeOnClick
                     >
