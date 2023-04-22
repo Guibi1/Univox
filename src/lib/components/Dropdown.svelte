@@ -4,6 +4,7 @@
         text: string;
         color?: DropdownColor;
         href?: string;
+        boxIcon?: string;
         onClick?: (
             event: Event & {
                 currentTarget: EventTarget;
@@ -39,7 +40,7 @@
     function getColor(action: DropdownOption) {
         switch (action.color) {
             case "red":
-                return "text-red-400 dark:text-red-400";
+                return "text-red-600 dark:text-red-600";
             case "blue":
                 return "text-blue-400 dark:text-blue-400";
             default:
@@ -66,13 +67,18 @@
                 {#if action.href}
                     <a
                         class={classNames(
-                            "whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600",
+                            "whitespace-nowrap px-4 py-2 text-left text-lg hover:bg-neutral-300 dark:hover:bg-neutral-600",
                             getColor(action)
                         )}
                         href={action.href}
                         data-closeOnClick
                     >
-                        {action.text}
+                        <div class="flex items-center">
+                            {#if action.boxIcon}
+                                <i class={`bx ${action.boxIcon} mr-5 text-2xl`} />
+                            {/if}
+                            {action.text}
+                        </div>
                     </a>
                 {:else}
                     <button
@@ -83,7 +89,12 @@
                         on:click={action.onClick}
                         data-closeOnClick
                     >
-                        {action.text}
+                        <div class="flex items-center">
+                            {#if action.boxIcon}
+                                <i class={`bx ${action.boxIcon} mr-5 text-2xl`} />
+                            {/if}
+                            {action.text}
+                        </div>
                     </button>
                 {/if}
             {/each}
