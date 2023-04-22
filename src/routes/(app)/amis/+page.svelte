@@ -4,6 +4,7 @@
     import Option from "$lib/components/Option.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
+    import { scheduleFromJson } from "$lib/sanitization";
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import notifications from "$lib/stores/notifications";
@@ -149,7 +150,7 @@
     </div>
 
     {#if data.schedule}
-        <ScheduleView schedule={data.schedule} />
+        <ScheduleView schedule={scheduleFromJson(data.schedule)} />
     {:else}
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}

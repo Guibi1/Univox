@@ -1,4 +1,5 @@
-import { arrayIdToString, objectIdToString, serverUserToUser } from "$lib/server/db";
+import { arrayIdToString, objectIdToString } from "$lib/sanitization";
+import { serverUserToUser } from "$lib/server/db";
 import friends from "$lib/stores/friends";
 import groups from "$lib/stores/groups";
 import notifications from "$lib/stores/notifications";
