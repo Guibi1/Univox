@@ -50,7 +50,8 @@
                                 "flex h-8 w-8 items-center justify-center rounded-full hover:bg-black",
                                 {
                                     "opacity-40": day.month() !== displayMonth.month(),
-                                    "bg-neutral-900": day.isSame(selectedDay),
+                                    "bg-neutral-900": day.isSame(selectedDay, "day"),
+                                    "!bg-blue-primary": day.isSame(dayjs(), "day"),
                                 }
                             )}
                         >

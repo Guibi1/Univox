@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Schedule } from "$lib/Types";
-    import { dateAreTheSame, weekdayOffset } from "$lib/stores/firstDayOfTheWeek";
+    import { weekdayOffset } from "$lib/stores/firstDayOfTheWeek";
     import cx from "classnames";
     import dayjs, { Dayjs } from "dayjs";
     import { onDestroy, onMount, tick } from "svelte";
@@ -32,7 +32,7 @@
     function getPeriods(day: Dayjs) {
         return schedule.periods
             .concat(schedule.classes)
-            .filter((p) => dateAreTheSame(p.timeStart, day));
+            .filter((p) => p.timeStart.isSame(day, "day"));
     }
 
     function getDaysToShow(startDay: Dayjs) {
@@ -55,11 +55,15 @@
 
         {#each getDaysToShow(startDay) as day}
             <div
-                class="flex flex-1 flex-col items-center justify-center gap-2 border-b p-2 dark:border-neutral-400"
+                class="flex flex-1 flex-col items-center justify-center gap-1 border-b p-2 dark:border-neutral-400"
             >
                 {day.format("dddd")}
 
-                <span class="text-2xl">
+                <span
+                    class={cx("flex h-10 w-10 items-center justify-center rounded-full text-2xl", {
+                        "bg-blue-primary": currentTime.isSame(day, "day"),
+                    })}
+                >
                     {day.format("D")}
                 </span>
             </div>
@@ -105,7 +109,7 @@
                         {/each}
 
                         <!-- Pointeur rouge sur l'heure et la date actuelles -->
-                        {#if dateAreTheSame(currentTime, day)}
+                        {#if currentTime.isSame(day, "day")}
                             <div
                                 class="relative h-0"
                                 style={`top: ${getTopOffset(currentTime, timeStart)}rem;`}
