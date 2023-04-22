@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Schedule } from "$lib/Types";
     import { weekdayOffset } from "$lib/stores/firstDayOfTheWeek";
-    import cx from "classnames";
+    import classNames from "classnames";
     import dayjs, { Dayjs } from "dayjs";
     import { onDestroy, onMount, tick } from "svelte";
     import SchedulePeriod from "./SchedulePeriod.svelte";
@@ -60,9 +60,12 @@
                 {day.format("dddd")}
 
                 <span
-                    class={cx("flex h-10 w-10 items-center justify-center rounded-full text-2xl", {
-                        "bg-blue-primary": currentTime.isSame(day, "day"),
-                    })}
+                    class={classNames(
+                        "flex h-10 w-10 items-center justify-center rounded-full text-2xl",
+                        {
+                            "bg-blue-primary": currentTime.isSame(day, "day"),
+                        }
+                    )}
                 >
                     {day.format("D")}
                 </span>
@@ -77,7 +80,10 @@
         <!-- Time markers -->
         <div class="w-12">
             {#each Array.from({ length: 24 - timeStart }, (_, i) => timeStart + i) as hour}
-                <div class={cx(!!hour || "text-transparent")} style={`height: ${rowHeight}rem`}>
+                <div
+                    class={classNames({ "text-transparent": hour === 0 })}
+                    style={`height: ${rowHeight}rem`}
+                >
                     <div class="-translate-y-1/2 pr-2 text-right text-xs">
                         {dayjs().hour(hour).format("h A")}
                     </div>
