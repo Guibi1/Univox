@@ -8,6 +8,7 @@
     export let separate = false;
     export let href: string | undefined = undefined;
     export let color: DropdownColor = "normal";
+    export let boxIcon: string | undefined = undefined;
     export let onClick:
         | undefined
         | ((
@@ -19,7 +20,7 @@
     const dropdown: undefined | DropdownContext = getContext("dropdown");
     if (dropdown) {
         if (separate) dropdown.separate();
-        dropdown.addOption({ text, href, color, onClick });
+        dropdown.addOption({ text, href, color, boxIcon, onClick });
     } else {
         const select: undefined | SelectContext = getContext("select");
         if (select) select.addOption({ text, value });
