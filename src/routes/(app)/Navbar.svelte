@@ -11,7 +11,7 @@
     const pages = [
         { text: "Accueil", href: "/" },
         { text: "Livres", href: "/livres" },
-        { text: "Horaires", href: "/horaire" },
+        { text: "Horaire", href: "/horaire" },
         { text: "Amis", href: "/amis" },
     ];
 

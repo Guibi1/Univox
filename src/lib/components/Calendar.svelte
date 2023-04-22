@@ -2,12 +2,14 @@
     import dayjs, { Dayjs } from "dayjs";
     import cx from "classnames";
 
-    export let currentWeek = dayjs();
+    export let selectedDay = dayjs();
+    // TODO
+    export let selectionLength = 1;
 
-    let displayMonth = currentWeek;
+    let displayMonth = selectedDay;
 
     function handleClick(date: Dayjs) {
-        currentWeek = date;
+        selectedDay = date;
         displayMonth = date;
     }
 
@@ -48,7 +50,7 @@
                                 "flex h-8 w-8 items-center justify-center rounded-full hover:bg-black",
                                 {
                                     "opacity-40": day.month() !== displayMonth.month(),
-                                    "bg-neutral-900": day.isSame(currentWeek),
+                                    "bg-neutral-900": day.isSame(selectedDay),
                                 }
                             )}
                         >

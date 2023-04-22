@@ -24,7 +24,7 @@
     });
 </script>
 
-<div class="grid h-[100vh] grid-rows-[min-content_1fr] overflow-hidden">
+<div class="grid h-screen grid-rows-[min-content_1fr] overflow-hidden">
     <Navbar />
 
     <div class="flex flex-col overflow-y-auto">

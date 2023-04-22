@@ -8,7 +8,7 @@ module.exports = {
                 blue: {
                     primary: "#176936",
                     secondary: "#0F2240",
-                    darkPrimary: "#229C50"
+                    darkPrimary: "#229C50",
                 },
                 orange: {
                     primary: "#FF8126",
