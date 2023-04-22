@@ -29,7 +29,7 @@
     });
     onDestroy(() => clearInterval(interval));
 
-    function getPeriods(day: Dayjs) {
+    function getPeriods(schedule: Schedule, day: Dayjs) {
         return schedule.periods
             .concat(schedule.classes)
             .filter((p) => p.timeStart.isSame(day, "day"));
@@ -110,7 +110,7 @@
                         style={`height: ${rowHeight * (24 - timeStart)}rem`}
                     >
                         <!-- Boucle pour chaque période de l'emploi du temps -->
-                        {#each getPeriods(day) as period}
+                        {#each getPeriods(schedule, day) as period}
                             <SchedulePeriod {period} {rowHeight} {timeStart} />
                         {/each}
 
