@@ -19,7 +19,8 @@ const settingsHandle = (async ({ event, resolve }) => {
     if (event.locals.user) {
         event.cookies.set(
             "firstDayOfTheWeek",
-            (await db.getSettings(event.locals.user))?.firstDayOfTheWeek ?? "Dimanche"
+            (await db.getSettings(event.locals.user))?.firstDayOfTheWeek ?? "Dimanche",
+            { path: "/" }
         );
     } else {
         event.cookies.delete("firstDayOfTheWeek");
