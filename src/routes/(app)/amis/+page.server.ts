@@ -1,3 +1,4 @@
+import { objectIdToString } from "$lib/sanitization";
 import * as db from "$lib/server/db";
 import { isObjectIdOrHexString } from "mongoose";
 import type { PageServerLoad } from "./$types";
@@ -10,5 +11,5 @@ export const load = (async ({ locals, url }) => {
     const user = await db.getServerUser(userId);
     if (!user) return;
 
-    return { schedule: db.objectIdToString(await db.getSchedule(user)) };
+    return { schedule: objectIdToString(await db.getSchedule(user)) };
 }) satisfies PageServerLoad;
