@@ -1,22 +1,12 @@
-import type { Class, Period, Schedule } from "$lib/Types";
-import dayjs from "dayjs";
+import type { Period, Schedule } from "$lib/Types";
+import { scheduleFromJson } from "$lib/sanitization";
 import { writable } from "svelte/store";
 
 function createScheduleStore() {
     const { subscribe, set: setStore } = writable<Schedule>();
 
-    async function set(schedule: Schedule) {
-        const classes: Class[] = [];
-        for (const c of schedule.classes) {
-            classes.push({ ...c, timeStart: dayjs(c.timeStart), timeEnd: dayjs(c.timeEnd) });
-        }
-
-        const periods: Period[] = [];
-        for (const p of schedule.periods) {
-            periods.push({ ...p, timeStart: dayjs(p.timeStart), timeEnd: dayjs(p.timeEnd) });
-        }
-
-        setStore({ ...schedule, classes, periods });
+    function set(schedule: Schedule) {
+        setStore(scheduleFromJson(schedule));
     }
 
     async function refresh() {
