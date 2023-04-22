@@ -26,7 +26,7 @@
         <NewPeriodForm />
     </div>
 
-    <div class="flex flex-col items-center gap-4">
+    <div class="flex flex-col gap-4">
         <WeekSelector bind:currentWeek />
 
         <ScheduleView bind:currentWeek schedule={$schedule} />

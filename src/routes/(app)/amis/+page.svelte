@@ -50,7 +50,7 @@
     </div>
 </div>
 
-<div class="grid flex-grow grid-cols-4 divide-x">
+<div class="grid flex-grow grid-cols-[1fr_1fr_2fr] divide-x">
     <div class="flex flex-col p-4">
         <h2 class="mb-4 border-b border-black dark:border-white">Vos amis</h2>
 
