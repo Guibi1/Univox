@@ -206,7 +206,7 @@ export function schedulePageToClasses(HTML: string): Class[] {
                 local: match[4],
                 theory: match[5] === "T",
                 teacher: match[6],
-                virtual: match[7] === "Présentiel",
+                virtual: match[7] !== "Présentiel",
                 timeStart: timeStart.weekday(day),
                 timeEnd: timeEnd.weekday(day),
             });

@@ -2,6 +2,7 @@ import { MONGODB_URI } from "$env/static/private";
 import {
     NotificationKind,
     type Book,
+    type Class,
     type Group,
     type Notification,
     type Period,
@@ -475,7 +476,7 @@ export async function getSchedule(user: ServerUser): Promise<Schedule> {
 /**
  * Adds all the provided periods to the user's schedule
  * @param user The targeted user
- * @param periods An array of periods to add
+ * @param periods The array of periods to add
  * @returns True if the operation succeded, false otherwise
  */
 export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]): Promise<boolean> {
@@ -488,6 +489,26 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
         return true;
     } catch {
         warn("The function 'addPeriodsToSchedule' was called but failed to update the user's data");
+        return false;
+    }
+}
+
+/**
+ * Adds all the provided classes to the user's schedule
+ * @param user The targeted user
+ * @param classes The array of classes to add
+ * @returns True if the operation succeded, false otherwise
+ */
+export async function addClassesToSchedule(user: ServerUser, classes: Class[]): Promise<boolean> {
+    if (!user.settingsId) return false;
+
+    try {
+        await Schedules.findByIdAndUpdate(user.scheduleId, {
+            $push: { classes: classes },
+        });
+        return true;
+    } catch {
+        warn("The function 'addClassesToSchedule' was called but failed to update the user's data");
         return false;
     }
 }
