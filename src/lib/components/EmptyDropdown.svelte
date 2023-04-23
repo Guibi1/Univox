@@ -7,7 +7,7 @@
     import classNames from "classnames";
 
     export let position: DropdownPosition;
-    export let fullWidth: boolean;
+    export let fullWidth: boolean = false;
 
     // State for dropdown open/close
     let open = false;
@@ -16,16 +16,10 @@
     function closeOnClickOutside(node: HTMLElement, enabled: boolean) {
         // Event listener function for clicks outside the dropdown
         const handleOutsideClick = ({ target }: Event) => {
-            if (!(target instanceof HTMLElement)) return;
-            console.log(
-                "🚀 ~ file: EmptyDropdown.svelte:36 ~ handleOutsideClick ~ target:",
-                target
-            );
-
             if (!node.contains(target as HTMLElement)) {
                 open = false;
             } else if (node.contains(target as HTMLElement)) {
-                let element: HTMLElement = target;
+                let element = target as HTMLElement;
                 while (element.parentElement !== node) {
                     if (element.hasAttribute("data-closeOnClick")) {
                         open = false;
