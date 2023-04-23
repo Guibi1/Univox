@@ -17,7 +17,7 @@
     }
 </script>
 
-<div class="relative m-0 h-0" style={`top: ${getTopOffset(timeStart)}rem;`}>
+<div class="relative m-0 h-2 w-full min-w-0" style={`top: ${getTopOffset(timeStart)}rem;`}>
     <div
         class="mx-0.5 flex flex-col justify-between text-ellipsis rounded-lg bg-blue-primary px-2 py-4 text-center"
         style={`height: ${getHeight()}rem;`}

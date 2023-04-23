@@ -76,7 +76,7 @@
     </div>
 
     <!-- Schedule -->
-    <div bind:this={scheduleDiv} class="grid grid-cols-[max-content_1fr] overflow-y-scroll">
+    <div bind:this={scheduleDiv} class="relative flex w-full overflow-x-hidden overflow-y-scroll">
         <!-- Time markers -->
         <div class="w-12">
             {#each Array.from({ length: 24 - timeStart }, (_, i) => timeStart + i) as hour}
@@ -91,44 +91,39 @@
             {/each}
         </div>
 
+        <div class="w-2" />
+
         <!-- Calendar -->
-        <div class="grid grid-rows-[0_1fr]">
-            <!-- Horizontal lines -->
-            <div>
-                {#each Array.from({ length: 24 - timeStart }) as _}
-                    <div
-                        class="border-b dark:border-neutral-500"
-                        style={`height: ${rowHeight}rem`}
-                    />
+        {#each getDaysToShow(startDay) as day}
+            <div
+                class="relative min-w-0 flex-1 border-l dark:border-neutral-400"
+                style={`height: ${rowHeight * (24 - timeStart)}rem`}
+            >
+                <!-- Boucle pour chaque période de l'emploi du temps -->
+                {#each getPeriods(schedule, day) as period}
+                    <SchedulePeriod {period} {rowHeight} {timeStart} />
                 {/each}
-            </div>
 
-            <div class="inline-flex w-full before:w-2">
-                {#each getDaysToShow(startDay) as day}
+                <!-- Pointeur rouge sur l'heure et la date actuelles -->
+                {#if currentTime.isSame(day, "day")}
                     <div
-                        class="relative min-w-0 flex-1 border-l dark:border-neutral-400"
-                        style={`height: ${rowHeight * (24 - timeStart)}rem`}
+                        class="relative h-0"
+                        style={`top: ${getTopOffset(currentTime, timeStart)}rem;`}
                     >
-                        <!-- Boucle pour chaque période de l'emploi du temps -->
-                        {#each getPeriods(schedule, day) as period}
-                            <SchedulePeriod {period} {rowHeight} {timeStart} />
-                        {/each}
-
-                        <!-- Pointeur rouge sur l'heure et la date actuelles -->
-                        {#if currentTime.isSame(day, "day")}
-                            <div
-                                class="relative h-0"
-                                style={`top: ${getTopOffset(currentTime, timeStart)}rem;`}
-                            >
-                                <div
-                                    class="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-600"
-                                />
-                                <hr class="-translate-y-1/2 border-2 !border-red-600" />
-                            </div>
-                        {/if}
+                        <div
+                            class="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-600"
+                        />
+                        <hr class="-translate-y-1/2 border-2 !border-red-600" />
                     </div>
-                {/each}
+                {/if}
             </div>
+        {/each}
+
+        <!-- Horizontal lines -->
+        <div class="absolute inset-0 left-12 -z-10">
+            {#each Array.from({ length: 24 - timeStart }) as _}
+                <div class="border-b dark:border-neutral-500" style={`height: ${rowHeight}rem`} />
+            {/each}
         </div>
     </div>
 </div>
