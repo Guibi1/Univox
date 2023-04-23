@@ -254,7 +254,7 @@ export async function updateUser(
  * @param query The search query
  * @returns An array of 5 matching users, or less
  */
-export async function searchUsers(user: ServerUser, query: string): Promise<User[]> {
+export async function searchUsers(user: ServerUser, query: string): Promise<ServerUser[]> {
     query = sanitizeQuery(query);
     query = normalizeQuery(query);
 
@@ -272,9 +272,7 @@ export async function searchUsers(user: ServerUser, query: string): Promise<User
                 },
             ],
         }).limit(5)
-    ).map((user: mongoose.HydratedDocument<ServerUser>) =>
-        serverUserToUser({ ...user.toObject() })
-    );
+    ).map((user: mongoose.HydratedDocument<ServerUser>) => ({ ...user.toObject() }));
 }
 
 /////////////////////////

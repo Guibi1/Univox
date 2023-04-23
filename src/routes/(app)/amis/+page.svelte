@@ -15,7 +15,7 @@
     let selectedFriends: User[] = [];
 
     let query = "";
-    let searchResults: User[] | null = null;
+    let searchResults: { user: User; friendRequestSent: boolean }[] | null = null;
 
     async function handleSearch() {
         searchResults =
@@ -110,24 +110,31 @@
                 Aucun résultats
             {:else}
                 <div>
-                    {#each searchResults as user}
+                    {#each searchResults as result}
                         <div class="flex items-center justify-between">
-                            {user.firstName}
-                            {user.lastName}
+                            {result.user.firstName}
+                            {result.user.lastName}
                             <i>
-                                {user.da}
+                                {result.user.da}
                             </i>
 
-                            <button
-                                class="filled"
-                                on:click={() => {
-                                    query = "";
-                                    searchResults = [];
-                                    notifications.create(NotificationKind.FriendRequest, user._id);
-                                }}
-                            >
-                                Ajouter en ami
-                            </button>
+                            {#if result.friendRequestSent}
+                                <button class="filled">Demande envoyée</button>
+                            {:else}
+                                <button
+                                    class="filled"
+                                    on:click={() => {
+                                        query = "";
+                                        searchResults = [];
+                                        notifications.create(
+                                            NotificationKind.FriendRequest,
+                                            result.user._id
+                                        );
+                                    }}
+                                >
+                                    Ajouter en ami
+                                </button>
+                            {/if}
                         </div>
                     {/each}
                 </div>
@@ -155,5 +162,3 @@
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}
 </div>
-
-<!-- TODO: groupes + régler le bazar quand on rapetisse la page -->
