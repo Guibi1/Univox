@@ -44,49 +44,39 @@
         </div>
     </div>
 
-    <h1 class="text-center">Paramètres</h1>
+    <div>
+        <h1 class="my-4 text-center">Paramètres</h1>
+        <hr class="my-4" />
+        <div class="grid grid-cols-[3fr_2fr]">
+            <div>
+                <Select bind:value={$firstDayOfTheWeek}>
+                    <Option text="Lundi" />
+                    <Option text="Samedi" />
+                    <Option text="Dimanche" />
+                </Select>
+            </div>
+            Jour de commencement de la semaine
+            <div>
+                <Select bind:value={$firstDayOfTheWeek}>
+                    <Option text="Lundi" />
+                    <Option text="Samedi" />
+                    <Option text="Dimanche" />
+                </Select>
+            </div>
+            Jour de commencement de la semaine
+            <div>
+                <Select bind:value={$firstDayOfTheWeek}>
+                    <Option text="Lundi" />
+                    <Option text="Samedi" />
+                    <Option text="Dimanche" />
+                </Select>
+            </div>
+            Jour de commencement de la semaine
+        </div>
+    </div>
 </div>
-
-<h1 class="text-center">Paramètres</h1>
 
 <ColorSchemeSwitch />
 
 <!--Pour donner un sens de sécurité aux utilisateurs-->
 <a href="/">Sauvgarder et quitter</a>
-
-<svelte:head>
-    <title>Univox | Mon Profil</title>
-</svelte:head>
-
-<main class="m-auto flex w-fit gap-4">
-    <div class="flex flex-col">
-        <Avatar />
-
-        <button class="filled gap-2" on:click={refresh}>
-            <i class="bx bx-dice-6 text-2xl" />
-            Avatar au hasard
-        </button>
-    </div>
-
-    <div class="flex flex-col items-start gap-1 pt-6">
-        <h1>
-            {$user.firstName}
-            {$user.lastName}
-        </h1>
-
-        <span class="flex items-center gap-1">
-            <i class="bx bx-map text-2xl" />
-            Étudiant au Collège Bois de Boulogne
-        </span>
-
-        <span>
-            Numéro de DA :
-            <b>{$user.da}</b>
-        </span>
-
-        <a href={"mailto:" + $user.email} class="flex items-center gap-1">
-            <i class="bx bx-envelope text-2xl" />
-            {$user.email}
-        </a>
-    </div>
-</main>
