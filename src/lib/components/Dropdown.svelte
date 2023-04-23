@@ -66,10 +66,9 @@
             {#each section as action}
                 {#if action.href}
                     <a
-                        class={classNames(
-                            "whitespace-nowrap px-4 py-2 text-left text-lg hover:bg-neutral-300 dark:hover:bg-neutral-600",
-                            getColor(action)
-                        )}
+                        class={`whitespace-nowrap px-4 py-2 text-left text-lg hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                            action
+                        )}`}
                         href={action.href}
                         data-closeOnClick
                     >
