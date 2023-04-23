@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
     import { NotificationKind, type User } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import Option from "$lib/components/Option.svelte";
@@ -69,9 +70,7 @@
                         <Dropdown>
                             <Option
                                 text="Consulter l'horaire"
-                                onClick={() => {
-                                    window.location.href = `?id=${ami._id}`;
-                                }}
+                                onClick={() => goto(`/amis?id=${ami._id}`)}
                             />
                             <Option
                                 text="Horaire commun"
