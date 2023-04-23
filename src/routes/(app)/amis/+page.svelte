@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
     import { NotificationKind, type User } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import Option from "$lib/components/Option.svelte";
@@ -63,15 +62,15 @@
                         <input type="checkbox" bind:group={selectedFriends} value={ami} />
 
                         <span>
-                            {ami.firstName}
-                            {ami.lastName}
+                            <a
+                                href="?id={ami._id}"
+                                class="transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
+                                >{ami.firstName}
+                                {ami.lastName}</a
+                            >
                         </span>
 
                         <Dropdown>
-                            <Option
-                                text="Consulter l'horaire"
-                                onClick={() => goto(`/amis?id=${ami._id}`)}
-                            />
                             <Option
                                 text="Horaire commun"
                                 onClick={() => console.log("TODO: afficher l'horaire")}
