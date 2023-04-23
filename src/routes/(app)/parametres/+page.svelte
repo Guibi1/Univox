@@ -10,7 +10,7 @@
     const refresh = () => user.setAvatar(Math.random() + $user.firstName + $user.da);
 </script>
 
-<div class="mx-auto grid grid-cols-[max-content_40rem] gap-6 divide-x px-10 py-4">
+<div class="mx-auto grid gap-6 py-4 laptop:grid-cols-[max-content_40rem] laptop:divide-x">
     <div class="flex flex-col items-center gap-2 text-center">
         <div class="h-32">
             <Avatar />
@@ -42,7 +42,7 @@
         </a>
     </div>
 
-    <div class="pl-6">
+    <div class="laptop:pl-6">
         <h1 class="my-4 gap-4 border-b-2 pb-2">Paramètres</h1>
 
         <div class="grid grid-cols-2 items-center gap-x-2 gap-y-4">
