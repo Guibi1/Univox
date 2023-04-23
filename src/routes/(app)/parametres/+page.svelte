@@ -6,6 +6,7 @@
 
     import Avatar from "$lib/components/Avatar.svelte";
     import user from "$lib/stores/user";
+    import colorScheme from "$lib/stores/colorScheme";
 
     const refresh = () => user.setAvatar(Math.random() + $user.firstName + $user.da);
 </script>
@@ -47,31 +48,38 @@
     <div>
         <h1 class="my-4 text-center">Paramètres</h1>
         <hr class="my-4" />
-        <div class="grid grid-cols-[3fr_2fr]">
-            <div>
-                <Select bind:value={$firstDayOfTheWeek}>
-                    <Option text="Lundi" />
-                    <Option text="Samedi" />
-                    <Option text="Dimanche" />
-                </Select>
+        <div class="my-4 flex flex-col items-center">
+            <div class="my-4 flex items-center space-x-32">
+                <div>
+                    <Select bind:value={$firstDayOfTheWeek}>
+                        <Option text="Lundi" />
+                        <Option text="Samedi" />
+                        <Option text="Dimanche" />
+                    </Select>
+                </div>
+                <span class="ml-2 text-2xl">Jour de commencement de la semaine</span>
             </div>
-            Jour de commencement de la semaine
-            <div>
-                <Select bind:value={$firstDayOfTheWeek}>
-                    <Option text="Lundi" />
-                    <Option text="Samedi" />
-                    <Option text="Dimanche" />
-                </Select>
+
+            <div class="my-4 flex items-center space-x-32">
+                <div>
+                    <Select bind:value={$colorScheme}>
+                        <Option text="dark" onClick={() => console.log("Hi")} />
+                        <Option text="light" />
+                    </Select>
+                </div>
+                <span class="ml-2 text-2xl">Jour de commencement de la semaine</span>
             </div>
-            Jour de commencement de la semaine
-            <div>
-                <Select bind:value={$firstDayOfTheWeek}>
-                    <Option text="Lundi" />
-                    <Option text="Samedi" />
-                    <Option text="Dimanche" />
-                </Select>
+
+            <div class="my-4 flex items-center space-x-32">
+                <div>
+                    <Select bind:value={$firstDayOfTheWeek}>
+                        <Option text="Lundi" />
+                        <Option text="Samedi" />
+                        <Option text="Dimanche" />
+                    </Select>
+                </div>
+                <span class="ml-2 text-2xl">Jour de commencement de la semaine</span>
             </div>
-            Jour de commencement de la semaine
         </div>
     </div>
 </div>
