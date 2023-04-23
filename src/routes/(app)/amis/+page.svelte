@@ -58,7 +58,7 @@
         <ul class="flex-grow">
             {#each $friends.filter((u) => friendsFilterQuery(u, query)) as ami}
                 <li>
-                    <a href="?id={ami._id}" class="flex items-center justify-between">
+                    <div class="flex items-center justify-between">
                         <input type="checkbox" bind:group={selectedFriends} value={ami} />
 
                         <span>
@@ -69,7 +69,9 @@
                         <Dropdown>
                             <Option
                                 text="Consulter l'horaire"
-                                onClick={() => console.log("TODO: afficher l'horaire")}
+                                onClick={() => {
+                                    window.location.href = `?id=${ami._id}`;
+                                }}
                             />
                             <Option
                                 text="Horaire commun"
@@ -82,7 +84,7 @@
                                 onClick={() => friends.remove(ami._id)}
                             />
                         </Dropdown>
-                    </a>
+                    </div>
                 </li>
             {/each}
         </ul>
