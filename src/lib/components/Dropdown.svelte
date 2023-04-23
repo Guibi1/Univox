@@ -24,6 +24,7 @@
 
     // Exported position prop and internal actions state
     export let position: DropdownPosition = "side-right";
+    export let fullWidth: boolean = false;
     export let actions: DropdownOption[][] = [];
 
     // Set the context for managing dropdown options and separators
@@ -50,7 +51,7 @@
 </script>
 
 <!-- Main component, wraps EmptyDropdown and handles button and dropdown items -->
-<EmptyDropdown bind:position>
+<EmptyDropdown bind:position bind:fullWidth>
     <!-- Button slot -->
     <div slot="button" class="w-full">
         {#if $$slots.button}
@@ -86,6 +87,7 @@
                             getColor(action)
                         )}
                         on:click={action.onClick}
+                        type="button"
                         data-closeOnClick
                     >
                         <div class="flex items-center">
