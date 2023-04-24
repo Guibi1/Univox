@@ -22,7 +22,7 @@
                 firstStep = false;
             }
             loading = false;
-            update({ reset: true });
+            update();
         };
     }) satisfies SubmitFunction;
 </script>
