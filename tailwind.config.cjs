@@ -14,6 +14,9 @@ module.exports = {
                     primary: "#FF8126",
                     secondary: "#FF7F25",
                 },
+                gray1: "#343434",
+                gray2: "#353535",
+                gray3: "#202020",
             },
         },
         screens: {

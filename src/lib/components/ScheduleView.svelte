@@ -10,10 +10,10 @@
     export let startDay = dayjs();
     export let daysToShow = 7;
 
-    let timeStart = 7;
-    const rowHeight = 3;
+    const rowHeight = 4;
 
     let currentTime = dayjs();
+    let timeStart = Math.min(Math.max(currentTime.hour() - 3, 0), 16);
     let scheduleDiv: Element;
 
     // Mise à jour de l'heure actuelle toutes les 60 secondes
@@ -28,6 +28,9 @@
         scheduleDiv.scroll(0, rowHeight * 16 * hours);
     });
     onDestroy(() => clearInterval(interval));
+
+    // Fonction de déplacement d'une semaine en arrière ou en avant
+    const moveWeek = (weeks: number) => (startDay = startDay.add(weeks, "weeks"));
 
     function getPeriods(schedule: Schedule, day: Dayjs) {
         return schedule.periods
@@ -48,27 +51,46 @@
     }
 </script>
 
-<div class="grid grid-rows-[min-content_1fr] overflow-hidden">
+<div class="grid grid-rows-[min-content_min-content_1fr] overflow-hidden rounded-2xl bg-gray3">
+    <div class="m-4 flex items-center justify-between">
+        <!-- Display the current week with start and end days -->
+        <p class="text-2xl">
+            <b>
+                {startDay.format("MMMM").charAt(0).toUpperCase() +
+                    startDay.format("MMMM").slice(1).toLowerCase()}
+            </b>
+
+            {startDay.year()}
+        </p>
+
+        <!-- Buttons for navigating to the previous or next week -->
+        <div class="flex h-8 items-stretch gap-0.5">
+            <button on:click={() => moveWeek(-1)} class="rounded-lg bg-gray2">
+                <i class="bx bxs-left-arrow w-8 text-sm" />
+            </button>
+
+            <button on:click={() => (startDay = dayjs())} class="rounded-lg bg-gray2 px-4">
+                Aujourd'hui
+            </button>
+
+            <button on:click={() => moveWeek(1)} class="rounded-lg bg-gray2">
+                <i class="bx bxs-right-arrow w-8 text-sm" />
+            </button>
+        </div>
+    </div>
+
     <!-- Day header -->
-    <div class="flex w-full before:w-2">
+    <div class="flex w-full gap-1">
         <div class="w-12" />
 
         {#each getDaysToShow(startDay) as day}
-            <div
-                class="flex flex-1 flex-col items-center justify-center gap-1 border-b p-2 dark:border-neutral-400"
-            >
-                {day.format("dddd")}
+            <div class="flex flex-1 items-center gap-2 p-2 text-sm">
+                {#if currentTime.isSame(day, "day")}
+                    <div class="h-2 w-2 rounded-full bg-red-600" />
+                {/if}
 
-                <span
-                    class={classNames(
-                        "flex h-10 w-10 items-center justify-center rounded-full text-2xl",
-                        {
-                            "bg-blue-primary": currentTime.isSame(day, "day"),
-                        }
-                    )}
-                >
-                    {day.format("D")}
-                </span>
+                {day.format("dd").charAt(0).toUpperCase() +
+                    day.format("ddd D").slice(1).toLowerCase()}
             </div>
         {/each}
 
@@ -85,18 +107,26 @@
                     style={`height: ${rowHeight}rem`}
                 >
                     <div class="-translate-y-1/2 pr-2 text-right text-xs">
-                        {dayjs().hour(hour).format("h A")}
+                        {dayjs().hour(hour).format("H[h]")}
                     </div>
                 </div>
             {/each}
         </div>
 
-        <div class="w-2" />
+        <!-- Horizontal lines -->
+        <div class="absolute left-12 right-0 h-0">
+            {#each Array.from({ length: 24 - timeStart }) as _}
+                <div
+                    class="border-b bg-gray2 dark:border-gray3"
+                    style={`height: ${rowHeight}rem`}
+                />
+            {/each}
+        </div>
 
         <!-- Calendar -->
         {#each getDaysToShow(startDay) as day}
             <div
-                class="relative min-w-0 flex-1 border-l dark:border-neutral-400"
+                class="relative min-w-0 flex-1 border-l-2 dark:border-gray3"
                 style={`height: ${rowHeight * (24 - timeStart)}rem`}
             >
                 <!-- Boucle pour chaque période de l'emploi du temps -->
@@ -118,12 +148,5 @@
                 {/if}
             </div>
         {/each}
-
-        <!-- Horizontal lines -->
-        <div class="absolute inset-0 left-12 -z-10">
-            {#each Array.from({ length: 24 - timeStart }) as _}
-                <div class="border-b dark:border-neutral-500" style={`height: ${rowHeight}rem`} />
-            {/each}
-        </div>
     </div>
 </div>
