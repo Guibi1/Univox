@@ -18,10 +18,12 @@
         loading = true;
 
         return async ({ result, update }) => {
+            if (firstStep || result.type !== "success") {
+                loading = false;
+            }
             if (result.type === "success") {
                 firstStep = false;
             }
-            loading = false;
             update();
         };
     }) satisfies SubmitFunction;
