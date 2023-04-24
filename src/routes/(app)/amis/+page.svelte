@@ -22,12 +22,17 @@
             query.length === 0 ? null : await (await fetch("/api/search/users/" + query)).json();
     }
 
-    function friendsFilterQuery(user: User, query: string) {
-        if (query.length === 0) return true;
-        if (user.da.includes(query)) return true;
-        if (`${user.firstName} ${user.lastName}`.toLowerCase().includes(query.toLowerCase()))
-            return true;
-        return false;
+    function friendsFilterQuery(friends: User[], query: string) {
+        return friends.reduce<User[]>((prev, user) => {
+            if (
+                query.length === 0 &&
+                user.da.includes(query) &&
+                `${user.firstName} ${user.lastName}`.toLowerCase().includes(query.toLowerCase())
+            ) {
+                return [user, ...prev];
+            }
+            return [...prev, user];
+        }, []);
     }
 </script>
 
@@ -56,7 +61,7 @@
         <h2 class="mb-4 border-b border-black dark:border-white">Vos amis</h2>
 
         <ul class="flex-grow">
-            {#each $friends.filter((u) => friendsFilterQuery(u, query)) as ami}
+            {#each friendsFilterQuery($friends, query) as ami}
                 <li>
                     <div class="flex items-center justify-between">
                         <input type="checkbox" bind:group={selectedFriends} value={ami} />
