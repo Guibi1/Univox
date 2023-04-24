@@ -1,6 +1,7 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
     import schedule from "$lib/stores/schedule";
+    import Loader from "$lib/components/Loader.svelte";
     import type { ActionData } from "../$types";
 
     export let form: ActionData;
@@ -28,11 +29,11 @@
     <h1>Importer mon horaire depuis Omnivox</h1>
 </div>
 
-<div class="flex items-center justify-center">
-    {#if loading}
-        <i class="bx bx-loader-circle bx-spin my-2 text-5xl" />
-    {/if}
-</div>
+{#if loading}
+    <div class="flex items-center justify-center">
+        <Loader />
+    </div>
+{/if}
 
 <form
     use:enhance={handleSubmit}
