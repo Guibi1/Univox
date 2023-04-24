@@ -2,7 +2,6 @@
     import { enhance, type SubmitFunction } from "$app/forms";
     import { page } from "$app/stores";
     import Loader from "$lib/components/Loader.svelte";
-    import user from "$lib/stores/user";
     import LogoText from "$src/assets/logo-text.svelte";
     import Logo from "$src/assets/logo.svelte";
     import type { ActionData } from "./$types";
@@ -12,10 +11,7 @@
 
     const handleSubmit = (() => {
         loading = true;
-        return async ({ result, update }) => {
-            if (result.type === "redirect") {
-                user.refresh();
-            }
+        return async ({ update }) => {
             loading = false;
             update();
         };

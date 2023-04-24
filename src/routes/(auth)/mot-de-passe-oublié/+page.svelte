@@ -10,10 +10,7 @@
 
     const handleSubmit = (() => {
         loading = true;
-        return async ({ result, update }) => {
-            if (result.type === "redirect") {
-                user.refresh();
-            }
+        return async ({ update }) => {
             loading = false;
             update();
         };
