@@ -2,13 +2,14 @@
     import type { Book } from "$lib/Types";
     import BookDetails from "$lib/components/BookDetails.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
+    import { onMount } from "svelte";
     import type { PageData } from "./$types";
     import BookFilter from "./BookFilter.svelte";
     import BookList from "./BookList.svelte";
 
     export let data: PageData;
 
-    let books: Book[] = [];
+    let books: Book[] = data.books ?? [];
     let codes: string[] = [];
     let query = "";
 
