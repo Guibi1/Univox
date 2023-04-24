@@ -6,14 +6,15 @@ import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
-// TODO: Change to a GET
-export const POST = (async ({ locals, request, params }) => {
+export const POST = (async ({ locals, request }) => {
     if (!locals.user) throw error(401);
 
-    const { codes } = await request.json();
+    const { query, codes } = await request.json();
 
     // Input validation
-    if (!Array.isArray(codes)) throw error(400);
+    if (typeof query !== "string" || !Array.isArray(codes)) {
+        throw error(400);
+    }
 
-    return json(await db.searchBooks(locals.user, params.query, codes));
+    return json(await db.searchBooks(locals.user, query, codes));
 }) satisfies RequestHandler;
