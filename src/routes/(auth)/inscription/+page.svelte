@@ -1,6 +1,7 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
     import { page } from "$app/stores";
+    import Loader from "$lib/components/Loader.svelte";
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
@@ -125,7 +126,7 @@
         </button>
     {:else}
         <div class="flex items-center justify-center">
-            <i class="bx bx-loader-circle bx-spin my-2 text-5xl" />
+            <Loader />
         </div>
     {/if}
 </form>
