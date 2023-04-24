@@ -2,7 +2,6 @@
     import { enhance, type SubmitFunction } from "$app/forms";
     import { page } from "$app/stores";
     import Loader from "$lib/components/Loader.svelte";
-    import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
@@ -10,8 +9,10 @@
 
     const handleSubmit = (() => {
         loading = true;
-        return async ({ update }) => {
-            loading = false;
+        return async ({ update, result }) => {
+            if (result.type !== "success") {
+                loading = false;
+            }
             update();
         };
     }) satisfies SubmitFunction;
