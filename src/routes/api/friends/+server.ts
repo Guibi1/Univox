@@ -12,8 +12,6 @@ import type { RequestHandler } from "./$types";
  * @param {Types.ObjectId} friendId The user to befriend
  */
 export const POST = (async ({ request, locals }) => {
-    if (!locals.user) throw error(401);
-
     const { friendId } = await request.json();
 
     // Input validation
@@ -31,8 +29,6 @@ export const POST = (async ({ request, locals }) => {
  * @param {Types.ObjectId} friendId The user to unfriend
  */
 export const DELETE = (async ({ request, locals }) => {
-    if (!locals.user) throw error(401);
-
     const { friendId } = await request.json();
 
     // Input validation
@@ -49,7 +45,5 @@ export const DELETE = (async ({ request, locals }) => {
  * Returns an up to date array of friends
  */
 export const GET = (async ({ locals }) => {
-    if (!locals.user) throw error(401);
-
     return json({ success: true, friends: locals.friends });
 }) satisfies RequestHandler;

@@ -3,8 +3,6 @@ import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
 export const POST = (async ({ request, locals }) => {
-    if (!locals.user) throw error(401);
-
     const { periods } = await request.json();
 
     if (!Array.isArray(periods) || periods.length === 0) {
@@ -15,6 +13,5 @@ export const POST = (async ({ request, locals }) => {
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {
-    if (!locals.user) throw error(401);
     return json({ success: true, schedule: locals.schedule });
 }) satisfies RequestHandler;

@@ -7,8 +7,6 @@ import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
 export const POST = (async ({ locals, request }) => {
-    if (!locals.user) throw error(401);
-
     const { query, codes } = await request.json();
 
     // Input validation
