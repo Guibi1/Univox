@@ -11,8 +11,6 @@ import type { RequestHandler } from "./$types";
  * @param {string} firstDayOfTheWeek The new first day of the week
  */
 export const PUT = (async ({ locals, request, cookies }) => {
-    if (!locals.user) throw error(401);
-
     const firstDayOfTheWeek = await request.text();
 
     // Input validation

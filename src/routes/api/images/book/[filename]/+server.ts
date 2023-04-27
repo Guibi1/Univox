@@ -9,9 +9,7 @@ import type { RequestHandler } from "./$types";
 /**
  * Returns the requested image
  */
-export const GET = (async ({ locals, setHeaders, params }) => {
-    if (!locals.user) throw error(401);
-
+export const GET = (async ({ setHeaders, params }) => {
     const img = await downloadBookImage(params.filename);
     if (!img) throw error(404, "File not found");
 
