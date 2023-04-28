@@ -132,8 +132,7 @@
         </div>
 
         <!--The books list is in a box with a border and it is scrollable-->
-        <div class="flex h-64 flex-col gap-3 overflow-y-scroll p-3">
-            <hr class="border-4 border-gray-600 dark:border-gray-600" />
+        <div class="flex h-64 flex-col gap-3 overflow-y-scroll border-t-4 border-gray-600 p-3">
             <h2 class="text-center">Livres</h2>
             <!--Loop through the books-->
             {#each books as book}
