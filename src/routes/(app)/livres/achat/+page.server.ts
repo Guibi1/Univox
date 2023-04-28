@@ -1,15 +1,24 @@
 import { arrayIdToString, objectIdToString } from "$lib/sanitization";
 import * as db from "$lib/server/db";
 import { isObjectIdOrHexString } from "mongoose";
-import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ locals, url }) => {
-    const id = url.searchParams.get("id");
-    let book;
-    if (id && isObjectIdOrHexString(id)) book = await db.getBook(id);
+export const load = async ({ locals, url }) => {
+    const query = url.searchParams.get("query") ?? "";
+    const codes = url.searchParams.getAll("codes");
+    const bookId = url.searchParams.get("bookId") ?? "";
+
+    const results = await db.searchBooks(locals.user, query, codes);
+
+    let selectedBook;
+    if (isObjectIdOrHexString(bookId)) {
+        selectedBook = await db.getBook(bookId);
+    }
 
     return {
-        books: arrayIdToString(await db.searchBooks(locals.user, "", [])),
-        book: book ? objectIdToString(book) : null,
+        query,
+        codes,
+        bookId,
+        searchResults: arrayIdToString(results),
+        selectedBook: selectedBook ? objectIdToString(selectedBook) : null,
     };
-}) satisfies PageServerLoad;
+};

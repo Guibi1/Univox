@@ -1,6 +1,7 @@
 <script lang="ts">
     export let query = "";
     export let handleSearch: (query: string) => void;
+    export let reactiveSearch = false;
 
     let timeout: NodeJS.Timeout | null;
     function timedSearch() {
@@ -12,7 +13,7 @@
 <input
     type="text"
     bind:value={query}
-    on:input={timedSearch}
+    on:input={reactiveSearch ? timedSearch : null}
     on:keypress={(e) => {
         if (e.key == "Enter") {
             if (timeout) clearTimeout(timeout);
