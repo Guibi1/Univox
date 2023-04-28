@@ -361,7 +361,7 @@ export async function getGroup(id: Types.ObjectId | string): Promise<Group | nul
         log("A group couldn't be found");
         return null;
     }
-    const group = { ...doc.toObject(), passwordHash: null };
+    const group = { ...doc.toObject() };
     return group as Group;
 }
 
@@ -371,6 +371,7 @@ export async function getGroup(id: Types.ObjectId | string): Promise<Group | nul
  * @returns An array of groups in which the user is
  */
 export async function getGroups(user: ServerUser): Promise<Group[]> {
+    console.log("🚀 ~ file: db.ts:376 ~ getGroups ~ user.groupsId:", user.groupsId);
     const groups: Group[] = [];
     for (const groupId of user.groupsId) {
         const group = await getGroup(groupId);
@@ -394,7 +395,18 @@ export async function createGroup(user: ServerUser, friendsId: Types.ObjectId[])
     if (friendsId.length !== new Set(friendsId).size) return false;
 
     try {
-        await Groups.create({ usersId: [...friendsId, user._id] });
+        const groupId: Types.ObjectId = (
+            await Groups.create({
+                name: "Nouveau groupe",
+                usersId: [...friendsId, user._id],
+            })
+        )._id;
+
+        for (const id of [user._id, ...friendsId]) {
+            await Users.findByIdAndUpdate(id, {
+                $push: { groupsId: groupId },
+            });
+        }
         log("New group created");
         return true;
     } catch {
@@ -434,16 +446,20 @@ export async function addToGroup(
  * @returns True if the operation succeded, false otherwise
  */
 export async function quitGroup(user: User, group: Group): Promise<boolean> {
-    if (!group.usersId.includes(user._id)) return false;
+    if (!group.usersId.some((id) => id.equals(user._id))) return false;
 
     try {
         if (group.usersId.length < 3) {
             await Groups.findByIdAndDelete(group);
+
+            for (const id of group.usersId) {
+                await Users.findByIdAndUpdate(id, { $pull: { groupsId: group._id } });
+            }
         } else {
             await Groups.findByIdAndUpdate(group, { $pull: { usersId: user._id } });
+            await Users.findByIdAndUpdate(user, { $pull: { groupsId: group._id } });
         }
 
-        // TODO: Remove the group from the users' list
         return true;
     } catch {
         warn("The function 'quitGroup' was called but failed to update the user's data");

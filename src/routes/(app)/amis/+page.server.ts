@@ -9,6 +9,7 @@ export const load = (async ({ locals, url, depends }) => {
 
     const query = url.searchParams.get("query") ?? "";
     const friendId = url.searchParams.get("friendId") ?? "";
+    const groupId = url.searchParams.get("groupId") ?? "";
 
     let friend;
     if (
@@ -29,6 +30,7 @@ export const load = (async ({ locals, url, depends }) => {
     return {
         query,
         friendId,
+        groupId,
         schedule: friend ? objectIdToString(await db.getSchedule(friend)) : null,
         searchResults: arrayIdToString(result),
     };

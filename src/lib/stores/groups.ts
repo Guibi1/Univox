@@ -32,7 +32,10 @@ function createGroupsStore() {
                 body: JSON.stringify({ groupId: group._id }),
             })
         ).json();
-        if (success) refresh();
+        if (success) {
+            refresh();
+            console.log("waw");
+        }
     }
 
     return {

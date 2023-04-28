@@ -12,6 +12,8 @@
 
     export let data;
 
+    $: console.log($groups);
+
     let query = data.query ?? "";
     let selectedFriends: User[] = [];
 
@@ -89,8 +91,8 @@
                 <button
                     class="filled"
                     on:click={() => {
-                        selectedFriends = [];
                         groups.create(selectedFriends);
+                        selectedFriends = [];
                     }}
                 >
                     Créer un groupe
@@ -142,8 +144,22 @@
         <ul>
             {#each $groups as group}
                 <li>
-                    <div class="flex items-center">
+                    <div class="flex items-center justify-between">
                         {group.name}
+
+                        <Dropdown>
+                            <Option
+                                text="Horaire commun"
+                                onClick={() => console.log("TODO: afficher l'horaire")}
+                            />
+                            <Option separate text="Renommer" />
+                            <Option
+                                separate
+                                text="Quitter le groupe"
+                                color="red"
+                                onClick={() => groups.quit(group)}
+                            />
+                        </Dropdown>
                     </div>
                 </li>
             {/each}
