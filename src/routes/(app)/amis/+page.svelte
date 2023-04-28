@@ -55,13 +55,15 @@
         <ul class="flex-grow py-4">
             {#each friendsFilterQuery($friends, query) as ami}
                 <li>
-                    <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center justify-between rounded-md bg-gray-200 px-4 dark:bg-gray-400"
+                    >
                         <input type="checkbox" bind:group={selectedFriends} value={ami} />
 
                         <span>
                             <a
                                 href="?id={ami._id}"
-                                class="transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
+                                class="transition-[color] duration-300 ease-in-out dark:text-white"
                                 >{ami.firstName}
                                 {ami.lastName}</a
                             >
@@ -142,7 +144,7 @@
         <ul>
             {#each $groups as group}
                 <li>
-                    <div class="flex items-center">
+                    <div class="flex items-center rounded-md bg-gray-200 px-4 dark:bg-gray-400">
                         {group.name}
                     </div>
                 </li>
