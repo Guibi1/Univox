@@ -5,6 +5,7 @@
     export let period: Period | Class;
     export let rowHeight: number;
     export let timeStart: number;
+    export let isRight = true;
 
     export function getTopOffset(timeStart: number) {
         return rowHeight * (period.timeStart.hour() + period.timeStart.minute() / 60 - timeStart);
@@ -13,9 +14,19 @@
     function getHeight() {
         return rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60) - 0.15;
     }
+
+    let tooltipY = 0;
+
+    function handleMousemove(event: MouseEvent) {
+        tooltipY = event.clientY - (event.currentTarget! as Element).getBoundingClientRect().top;
+    }
 </script>
 
-<div class="group relative m-0 h-0 w-full min-w-0" style={`top: ${getTopOffset(timeStart)}rem;`}>
+<div
+    class="group relative m-0 h-0 w-full min-w-0"
+    style={`top: ${getTopOffset(timeStart)}rem;`}
+    on:mousemove={handleMousemove}
+>
     <div
         class={classNames(
             "mx-0.5 flex flex-col justify-between text-ellipsis rounded-lg bg-blue-primary px-2 text-center",
@@ -52,9 +63,14 @@
 
         <!-- Affiche les informations supplémentaires lorsqu'on survole le div -->
         <div
-            class="absolute left-full z-10 ml-2 hidden w-max flex-col rounded border-2 border-blue-primary bg-zinc-700 p-4 text-left group-hover:flex"
+            class={classNames(
+                "pointer-events-none absolute z-10 mx-2 hidden w-max flex-col rounded border-2 border-blue-primary bg-zinc-700 p-4 text-left group-hover:flex",
+                isRight ? "right-full" : "left-full"
+            )}
+            style={`top: ${tooltipY}px;`}
         >
             {period.name}
+            {isRight}
 
             {#if "group" in period}
                 <small>

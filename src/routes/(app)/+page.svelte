@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Book } from "$lib/Types";
     import Avatar from "$lib/components/Avatar.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
     import friends from "$lib/stores/friends";
@@ -31,25 +30,21 @@
                     <!--Make the friends have some space in between them-->
                     <div class="flex flex-row justify-between">
                         <div class="flex flex-row gap-2 px-3">
-                            <div class=" h-16 w-16 rounded-full"><Avatar /></div>
+                            <div class=" h-16 w-16 rounded-full">
+                                <Avatar seed={friend.avatar} />
+                            </div>
                             <div class="flex flex-col">
                                 <div>{friend.lastName + ", " + friend.firstName}</div>
                                 <div class="text-sm text-gray-500">{friend.email}</div>
                             </div>
                         </div>
-                        <div class="flex flex-row gap-3 px-3">
+                        <div class="flex flex-row items-center gap-3 px-5">
                             <a
                                 class="flex h-10 w-24 items-center justify-center rounded bg-blue-primary font-bold hover:bg-green-900"
                                 href="/amis?id={friend._id}"
                             >
                                 Horaire
                             </a>
-                            <button
-                                class="flex h-10 w-24 items-center justify-center rounded bg-blue-600 font-bold hover:bg-blue-800"
-                                on:click={() => {}}
-                            >
-                                Profil
-                            </button>
                         </div>
                     </div>
                     <!-- {/each} -->
@@ -73,18 +68,13 @@
                                 <div class="text-sm text-gray-500">{book.author}</div>
                             </div>
                         </div>
-                        <div class="flex flex-row gap-3 px-3">
+                        <div class="flex flex-row items-center gap-3 px-5">
                             <a
                                 class="flex h-10 w-24 items-center justify-center rounded bg-blue-primary font-bold hover:bg-blue-primary"
                                 href="/livres/mes-livres"
                             >
                                 Voir
                             </a>
-                            <button
-                                class="flex h-10 w-24 items-center justify-center rounded bg-red-600 font-bold hover:bg-red-800"
-                            >
-                                Retirer
-                            </button>
                         </div>
                     </div>
                 {/each}
