@@ -1,27 +1,21 @@
 <script lang="ts">
-    import type { Book } from "$lib/Types";
+    import { goto } from "$app/navigation";
     import BookDetails from "$lib/components/BookDetails.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
-    import type { PageData } from "./$types";
     import BookFilter from "./BookFilter.svelte";
     import BookList from "./BookList.svelte";
 
-    export let data: PageData;
+    export let data;
 
-    let books: Book[] = data.books ?? [];
-    let codes: string[] = [];
-    let query = "";
+    let query = data.query;
+    let codes = data.codes;
 
-    async function handleSearch() {
-        books = await (
-            await fetch("/api/search/books", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ query, codes }),
-            })
-        ).json();
+    function handleSearch() {
+        const params = new URLSearchParams({ query, bookId: data.bookId });
+        for (let code of codes) {
+            params.append("codes", code);
+        }
+        goto(`?${params}`);
     }
 </script>
 
@@ -48,7 +42,7 @@
 <main class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8">
     <BookFilter bind:codes onChange={handleSearch} />
 
-    <BookList {books} />
+    <BookList books={data.searchResults} />
 
-    <BookDetails book={data.book} />
+    <BookDetails book={data.selectedBook} />
 </main>
