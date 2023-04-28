@@ -41,7 +41,7 @@
                         <div class="flex flex-row items-center gap-3 px-5">
                             <a
                                 class="flex h-10 w-24 items-center justify-center rounded bg-blue-primary font-bold hover:bg-green-900"
-                                href="/amis?id={friend._id}"
+                                href="/amis?friendId={friend._id}"
                             >
                                 Horaire
                             </a>
