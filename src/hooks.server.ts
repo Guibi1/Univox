@@ -16,7 +16,10 @@ const userLocalsHandle = (async ({ event, resolve }) => {
         }
     } else if (event.route.id?.startsWith("/(app)")) {
         throw redirect(302, `/connexion?ref=${event.url.pathname}`);
-    } else if (event.route.id?.startsWith("/api")) {
+    } else if (
+        event.route.id?.startsWith("/api") &&
+        event.route.id !== "/api/settings/colorScheme"
+    ) {
         throw fail(401);
     }
 
