@@ -11,10 +11,6 @@
 
     body {
         @apply dark:bg-neutral-800 dark:fill-white dark:text-white;
-
-        /* Firefox Scrollbar (parce que c'est des petits rigolos à pas vouloir marcher avec webkit comme les autres) */
-        scrollbar-width: thin; /* FONCTIONNE PAS */
-        scrollbar-color: black grey;
     }
 
     h1 {
@@ -80,20 +76,38 @@
         @apply dark:border-blue-darkPrimary dark:fill-white dark:text-white;
     }
 
+    /* [data-colorscheme="dark"] * {
+        /* Firefox Scrollbar (parce que c'est des petits rigolos à pas vouloir marcher avec webkit comme les autres) */
+    /* scrollbar-width: thin; FONCTIONNE PAS */
+    /* scrollbar-color: black grey; */
+    /* }  */
+
     /* Scrollbar (ne fonctionne pas avec Firefox) */
-    ::-webkit-scrollbar{
-        width: 7px;
-      }
-    ::-webkit-scrollbar-thumb {
-        background-color: black;
+
+    /* ::-webkit-scrollbar-thumb {
+        background-color: gray;
         border-radius: 20px;
-      }
+    }
     ::-webkit-scrollbar-thumb:hover {
-        background-color: black;
-      }
+        background-color: white;
+    }
+
+    [data-colorscheme="dark"] * {
+        &::-webkit-scrollbar-thumb {
+            background-color: gray;
+            border-radius: 20px;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+            background-color: black;
+        }
+    } */
+
+    * {
+        @apply scrollbar-thin scrollbar-track-white scrollbar-thumb-light-gray scrollbar-thumb-rounded-full;
+        @apply dark:scrollbar-track-gray3 dark:scrollbar-thumb-light-gray;
+    }
 
     a {
-        @apply cursor-pointer fill-white text-black dark:text-white;
         @apply cursor-pointer fill-white text-black dark:text-white;
     }
 
