@@ -31,11 +31,23 @@ function createUserStore() {
         update((user) => ({ ...user, avatar: seed }));
     }
 
+    async function setEmail(email: string) {
+        fetch("/api/user/email", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: email }),
+        });
+        update((user) => ({ ...user, email: email }));
+    }
     return {
         subscribe,
         set,
         refresh,
         setAvatar,
+        setEmail,
+        update,
     };
 }
 
