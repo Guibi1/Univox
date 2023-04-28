@@ -1,15 +1,23 @@
 <script lang="ts">
+    import { page } from "$app/stores";
     import type { Book } from "$lib/Types";
 
     export let books: Book[];
+
+    // Generates the search params that redirects to the book's details
+    $: getBookUrl = (book: Book) => {
+        const params = new URLSearchParams($page.url.searchParams);
+        params.set("bookId", book._id.toString());
+        return `?${params}`;
+    };
 </script>
 
 <ul class="flex flex-col divide-y">
     {#each books as book}
         <li>
             <a
+                href={getBookUrl(book)}
                 class="grid cursor-pointer grid-cols-[8rem_1fr_5rem] grid-rows-[min-content_min-content_min-content_1fr_min-content] gap-x-6 p-6"
-                href={`?id=${book._id}`}
             >
                 <img
                     src={book.src[0]}
@@ -36,7 +44,7 @@
 
                 <small class="italic">ISBN: {book.ISBN}</small>
 
-                <a href={`?id=${book._id}`} class="text-right">Détails ></a>
+                <a href={getBookUrl(book)} class="text-right">Détails ></a>
             </a>
         </li>
     {/each}
