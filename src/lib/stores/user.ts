@@ -32,15 +32,10 @@ function createUserStore() {
     }
 
     async function setEmail(email: string) {
-        fetch("/api/user/email", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: email }),
-        });
+        fetch("/api/user/email", { method: "POST", body: email });
         update((user) => ({ ...user, email: email }));
     }
+
     return {
         subscribe,
         set,
