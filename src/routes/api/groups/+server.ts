@@ -1,3 +1,4 @@
+import { arrayIdToString } from "$lib/sanitization";
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
 import { isObjectIdOrHexString } from "mongoose";
@@ -29,5 +30,5 @@ export const DELETE = (async ({ request, locals }) => {
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {
-    return json(locals.groups);
+    return json(arrayIdToString(locals.groups));
 }) satisfies RequestHandler;

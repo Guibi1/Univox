@@ -10,25 +10,29 @@ function createGroupsStore() {
     }
 
     async function create(users: User[]) {
-        await fetch("/api/groups", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ usersId: users.map((u) => u._id) }),
-        });
-        refresh();
+        const { success } = await (
+            await fetch("/api/groups", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ usersId: users.map((u) => u._id) }),
+            })
+        ).json();
+        if (success) refresh();
     }
 
     async function quit(group: Group) {
-        await fetch("/api/groups", {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ groupId: group._id }),
-        });
-        refresh();
+        const { success } = await (
+            await fetch("/api/groups", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ groupId: group._id }),
+            })
+        ).json();
+        if (success) refresh();
     }
 
     return {
