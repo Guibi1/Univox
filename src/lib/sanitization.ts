@@ -26,7 +26,7 @@ export function scheduleFromJson(schedule: Schedule) {
  * @param arr The array to iterate through
  * @returns A new array without any ObjectId
  */
-export function arrayIdToString<T extends { _id: Types.ObjectId }>(arr: T[]): T[] {
+export function arrayIdToString<T extends object>(arr: T[]): T[] {
     return arr.map((i) => objectIdToString(i));
 }
 
@@ -35,8 +35,12 @@ export function arrayIdToString<T extends { _id: Types.ObjectId }>(arr: T[]): T[
  * @param object The object to iterate through
  * @returns The object without any ObjectId
  */
-export function objectIdToString<T extends { _id: Types.ObjectId }>(object: T): T {
-    if (typeof object !== "object" || object === null) return object;
+export function objectIdToString<T extends object>(object: T): T {
+    if (object instanceof Types.ObjectId) {
+        return object.toString() as unknown as T;
+    } else if (typeof object !== "object" || object === null) {
+        return object;
+    }
 
     const keys = Object.keys(object) as Array<keyof T>;
     keys.forEach((key) => {

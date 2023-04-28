@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto, invalidate } from "$app/navigation";
     import { NotificationKind, type User } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import Option from "$lib/components/Option.svelte";
@@ -8,18 +9,15 @@
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import notifications from "$lib/stores/notifications";
-    import type { PageData } from "./$types";
 
-    export let data: PageData;
+    export let data;
 
+    let query = data.query ?? "";
     let selectedFriends: User[] = [];
 
-    let query = "";
-    let searchResults: { user: User; friendRequestSent: boolean }[] | null = null;
-
-    async function handleSearch() {
-        searchResults =
-            query.length === 0 ? null : await (await fetch("/api/search/users/" + query)).json();
+    function handleSearch() {
+        const params = new URLSearchParams({ query, friendId: data.friendId ?? "" });
+        goto(`?${params}`);
     }
 
     function friendsFilterQuery(friends: User[], query: string) {
@@ -45,7 +43,7 @@
         <h2 class="mb-4 border-b border-black dark:border-white">Vos amis</h2>
 
         <div class="flex flex-row items-center gap-3">
-            <SearchBar bind:query {handleSearch} reactiveSearch />
+            <SearchBar bind:query {handleSearch} />
 
             <i
                 class="bx bx-search-alt h-10 w-10 cursor-pointer text-4xl"
@@ -100,16 +98,14 @@
             </div>
         {/if}
 
-        {#if query}
+        {#if data.query}
             <h2 class="mb-4 border-b border-black dark:border-white">Autres utilisateurs</h2>
 
-            {#if searchResults === null}
-                Chargement en cours
-            {:else if searchResults.length === 0}
+            {#if data.searchResults.length === 0}
                 Aucun résultats
             {:else}
                 <div>
-                    {#each searchResults as result}
+                    {#each data.searchResults as result}
                         <div class="flex items-center justify-between">
                             {result.user.firstName}
                             {result.user.lastName}
@@ -122,13 +118,12 @@
                             {:else}
                                 <button
                                     class="filled"
-                                    on:click={() => {
-                                        query = "";
-                                        searchResults = [];
-                                        notifications.create(
+                                    on:click={async () => {
+                                        await notifications.create(
                                             NotificationKind.FriendRequest,
                                             result.user._id
                                         );
+                                        invalidate("app:notifications");
                                     }}
                                 >
                                     Ajouter en ami
