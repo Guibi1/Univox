@@ -36,7 +36,11 @@ export function arrayIdToString<T extends object>(arr: T[]): T[] {
  * @returns The object without any ObjectId
  */
 export function objectIdToString<T extends object>(object: T): T {
-    if (typeof object !== "object" || object === null) return object;
+    if (object instanceof Types.ObjectId) {
+        return object.toString() as unknown as T;
+    } else if (typeof object !== "object" || object === null) {
+        return object;
+    }
 
     const keys = Object.keys(object) as Array<keyof T>;
     keys.forEach((key) => {
