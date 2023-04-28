@@ -8,7 +8,7 @@ const BookCheck = () => {
 
         await page.click('nav a[href="/livres"]');
 
-        await expect(page).toHaveURL(univox.getAbsoluteURI("/livres/achat"));
+        await expect(page).toHaveURL(univox.getAbsoluteURI("/livres"));
     });
 };
 
