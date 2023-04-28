@@ -5,18 +5,18 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                blue: {
+                "blue": {
                     primary: "#176936",
                     secondary: "#0F2240",
                     darkPrimary: "#229C50",
                 },
-                orange: {
+                "orange": {
                     primary: "#FF8126",
                     secondary: "#FF7F25",
                 },
-                gray1: "#343434",
-                gray2: "#353535",
-                gray3: "#202020",
+                "light-gray": "#606060",
+                "gray2": "#353535",
+                "gray3": "#202020",
             },
         },
         screens: {
@@ -25,5 +25,5 @@ module.exports = {
             desktop: "1280px",
         },
     },
-    plugins: [],
+    plugins: [require("tailwind-scrollbar")({ nocompatible: true })],
 };
