@@ -78,7 +78,6 @@
 
     a {
         @apply cursor-pointer fill-white text-black dark:text-white;
-        @apply cursor-pointer fill-white text-black dark:text-white;
     }
 
     i.bx {
@@ -88,6 +87,11 @@
     hr {
         @apply border-neutral-700;
         @apply dark:border-white;
+    }
+
+    * {
+        @apply scrollbar-thin scrollbar-track-white scrollbar-thumb-light-gray scrollbar-thumb-rounded-full;
+        @apply dark:scrollbar-track-gray3 dark:scrollbar-thumb-light-gray;
     }
 
     [hidden] {
