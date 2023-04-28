@@ -70,7 +70,6 @@
             style={`top: ${tooltipY}px;`}
         >
             {period.name}
-            {isRight}
 
             {#if "group" in period}
                 <small>
