@@ -69,21 +69,21 @@
         <div class="flex h-8 items-stretch gap-0.5">
             <button
                 on:click={() => moveWeek(-1)}
-                class="rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700"
+                class="rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray2 dark:hover:bg-gray3"
             >
                 <i class="bx bxs-left-arrow w-8 text-sm" />
             </button>
 
             <button
                 on:click={() => (startDay = dayjs())}
-                class="rounded-lg bg-gray-300 px-4 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700"
+                class="rounded-lg bg-gray-300 px-4 hover:bg-gray-400 dark:bg-gray2 dark:hover:bg-gray3"
             >
                 Aujourd'hui
             </button>
 
             <button
                 on:click={() => moveWeek(1)}
-                class="rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700"
+                class="rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray2 dark:hover:bg-gray3"
             >
                 <i class="bx bxs-right-arrow w-8 text-sm" />
             </button>
@@ -128,7 +128,7 @@
         <div class="absolute left-12 right-0 h-0">
             {#each Array.from({ length: 24 - timeStart }) as _}
                 <div
-                    class="border-b bg-gray-300 dark:border-gray3"
+                    class="border-b bg-gray-300 dark:border-gray3 dark:bg-gray2"
                     style={`height: ${rowHeight}rem`}
                 />
             {/each}
