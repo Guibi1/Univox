@@ -1,170 +1,152 @@
 <script lang="ts">
     import type { Schedule } from "$lib/Types";
-    import { dateAreTheSame, weekdayOffset } from "$lib/stores/firstDayOfTheWeek";
-    import dayjs from "dayjs";
-    import { onDestroy } from "svelte";
-    import Hoverable from "./Hoverable.svelte";
+    import { weekdayOffset } from "$lib/stores/firstDayOfTheWeek";
+    import classNames from "classnames";
+    import dayjs, { Dayjs } from "dayjs";
+    import { onDestroy, onMount, tick } from "svelte";
+    import SchedulePeriod from "./SchedulePeriod.svelte";
 
     export let schedule: Schedule;
-    export let currentWeek = dayjs();
+    export let startDay = dayjs();
+    export let daysToShow = 7;
 
-    // Déclaration des propriétés
-    let rowTitles: string[] = [];
+    const rowHeight = 4;
+
     let currentTime = dayjs();
-
-    // Définition des constantes
-    const scheduleTimeStart = 0;
-    const scheduleTimeEnd = 24;
-    const rowHeight = 3;
-    const cellWidth = 6;
-
-    const timeOffset = scheduleTimeStart - 1;
-
-    // Génération des heures de début de chaque ligne
-    for (let i = scheduleTimeStart; i <= scheduleTimeEnd; i++) {
-        rowTitles.push(i + ":00");
-    }
+    let timeStart = Math.min(Math.max(currentTime.hour() - 3, 0), 16);
+    let scheduleDiv: Element;
 
     // Mise à jour de l'heure actuelle toutes les 60 secondes
-    const interval = setInterval(() => (currentTime = dayjs()), 60000);
+    let interval: NodeJS.Timer;
+    onMount(async () => {
+        interval = setInterval(() => (currentTime = dayjs()), 60000);
+
+        // Small hack to always look at timeStart when loading the page (eliminates a small stutter)
+        let hours = timeStart;
+        timeStart = 0;
+        await tick();
+        scheduleDiv.scroll(0, rowHeight * 16 * hours);
+    });
     onDestroy(() => clearInterval(interval));
+
+    // Fonction de déplacement d'une semaine en arrière ou en avant
+    const moveWeek = (weeks: number) => (startDay = startDay.add(weeks, "weeks"));
+
+    function getPeriods(schedule: Schedule, day: Dayjs) {
+        return schedule.periods
+            .concat(schedule.classes)
+            .filter((p) => p.timeStart.isSame(day, "day"));
+    }
+
+    function getDaysToShow(startDay: Dayjs) {
+        if (daysToShow >= 7 || daysToShow <= 0) {
+            return Array.from({ length: 7 }, (_, i) => startDay.day(i + $weekdayOffset));
+        } else {
+            return Array.from({ length: daysToShow }, (_, i) => startDay.add(i, "days"));
+        }
+    }
+
+    function getTopOffset(time: Dayjs, timeStart: number) {
+        return rowHeight * (time.hour() + time.minute() / 60 - timeStart);
+    }
 </script>
 
-<!-- Tableau qui contiendra l'emploi du temps -->
-<table class="relative">
-    <!-- Ligne pour les jours de la semaine -->
-    <tr class="grid grid-cols-8" style={`height: ${rowHeight}rem;`}>
-        <th
-            class="flex translate-y-1/2 items-center justify-center"
-            style={`width: ${cellWidth}rem;`}
-        >
-            {rowTitles[0]}
-        </th>
+<div class="grid grid-rows-[min-content_min-content_1fr] overflow-hidden rounded-2xl bg-gray3">
+    <div class="m-4 flex items-center justify-between">
+        <!-- Display the current week with start and end days -->
+        <p class="text-2xl">
+            <b>
+                {startDay.format("MMMM").charAt(0).toUpperCase() +
+                    startDay.format("MMMM").slice(1).toLowerCase()}
+            </b>
 
-        <!-- Boucle pour chaque jour de la semaine -->
-        {#each [...Array(7)].map((_, i) => currentWeek.weekday(i + $weekdayOffset)) as day}
-            <th>
-                <!-- Affiche le nom complet du jour -->
-                {day.format("dddd")}
-                <br />
-                {day.format("D")}
+            {startDay.year()}
+        </p>
 
+        <!-- Buttons for navigating to the previous or next week -->
+        <div class="flex h-8 items-stretch gap-0.5">
+            <button on:click={() => moveWeek(-1)} class="rounded-lg bg-gray2">
+                <i class="bx bxs-left-arrow w-8 text-sm" />
+            </button>
+
+            <button on:click={() => (startDay = dayjs())} class="rounded-lg bg-gray2 px-4">
+                Aujourd'hui
+            </button>
+
+            <button on:click={() => moveWeek(1)} class="rounded-lg bg-gray2">
+                <i class="bx bxs-right-arrow w-8 text-sm" />
+            </button>
+        </div>
+    </div>
+
+    <!-- Day header -->
+    <div class="flex w-full gap-1">
+        <div class="w-12" />
+
+        {#each getDaysToShow(startDay) as day}
+            <div class="flex flex-1 items-center gap-2 p-2 text-sm">
+                {#if currentTime.isSame(day, "day")}
+                    <div class="h-2 w-2 rounded-full bg-red-600" />
+                {/if}
+
+                {day.format("dd").charAt(0).toUpperCase() +
+                    day.format("ddd D").slice(1).toLowerCase()}
+            </div>
+        {/each}
+
+        <div class="invisible overflow-y-scroll opacity-0" />
+    </div>
+
+    <!-- Schedule -->
+    <div bind:this={scheduleDiv} class="relative flex w-full overflow-x-hidden overflow-y-scroll">
+        <!-- Time markers -->
+        <div class="w-12">
+            {#each Array.from({ length: 24 - timeStart }, (_, i) => timeStart + i) as hour}
+                <div
+                    class={classNames({ "text-transparent": hour === 0 })}
+                    style={`height: ${rowHeight}rem`}
+                >
+                    <div class="-translate-y-1/2 pr-2 text-right text-xs">
+                        {dayjs().hour(hour).format("H[h]")}
+                    </div>
+                </div>
+            {/each}
+        </div>
+
+        <!-- Horizontal lines -->
+        <div class="absolute left-12 right-0 h-0">
+            {#each Array.from({ length: 24 - timeStart }) as _}
+                <div
+                    class="border-b bg-gray2 dark:border-gray3"
+                    style={`height: ${rowHeight}rem`}
+                />
+            {/each}
+        </div>
+
+        <!-- Calendar -->
+        {#each getDaysToShow(startDay) as day}
+            <div
+                class="relative min-w-0 flex-1 border-l-2 dark:border-gray3"
+                style={`height: ${rowHeight * (24 - timeStart)}rem`}
+            >
                 <!-- Boucle pour chaque période de l'emploi du temps -->
-                {#each schedule.periods.filter((p) => dateAreTheSame(p.timeStart, day)) as period}
-                    <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
-                    <Hoverable let:hovering>
-                        <div
-                            class="absolute border-red-200 bg-sky-500 hover:border-2"
-                            style={`top: ${
-                                rowHeight *
-                                (period.timeStart.hour() +
-                                    period.timeStart.minute() / 60 -
-                                    timeOffset)
-                            }rem; 
-                                width: ${cellWidth}rem;
-                                height: ${
-                                    rowHeight *
-                                    (period.timeEnd.diff(period.timeStart, "minute") / 60)
-                                }rem;`}
-                        >
-                            <p class="truncate text-center">
-                                {period.name}
-                            </p>
-
-                            <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
-                            {#if hovering}
-                                <div
-                                    class="absolute top-1/2 z-10 max-w-xs bg-blue-400 p-4"
-                                    style={`transform: translate(${cellWidth}rem,-50%`}
-                                >
-                                    <p class="break-words text-center">
-                                        {period.name} <br />
-                                        <br />
-                                        {period.timeStart} <br />
-                                        {period.timeEnd}
-                                    </p>
-                                </div>
-                            {/if}
-                        </div>
-                    </Hoverable>
-                {/each}
-
-                <!-- Boucle pour chaque période de l'emploi du temps -->
-                {#each schedule.classes.filter((p) => dateAreTheSame(p.timeStart, day)) as period}
-                    <!-- Ajoute une div "Hoverable" qui affiche des informations supplémentaires lorsqu'elle est survolée -->
-                    <Hoverable let:hovering>
-                        <div
-                            class="absolute border-red-200 bg-sky-500 hover:border-2"
-                            style={`top: ${
-                                rowHeight *
-                                (period.timeStart.hour() +
-                                    period.timeStart.minute() / 60 -
-                                    timeOffset)
-                            }rem; 
-                                width: ${cellWidth}rem;
-                                height: ${
-                                    rowHeight *
-                                    (period.timeEnd.diff(period.timeStart, "minute") / 60)
-                                }rem;`}
-                        >
-                            <p class="truncate text-center">
-                                {period.name}<br />
-                                {period.group}
-                            </p>
-
-                            <!-- Affiche les informations supplémentaires lorsqu'on survole la div -->
-                            {#if hovering}
-                                <div
-                                    class="absolute top-1/2 z-10 max-w-xs bg-blue-400 p-4"
-                                    style={`transform: translate(${cellWidth}rem,-50%`}
-                                >
-                                    <p class="break-words text-center">
-                                        {period.name} <br />
-                                        {period.group} <br />
-                                        {period.local} <br />
-                                        <br />
-                                        {period.teacher} <br />
-                                        {period.virtual} <br />
-                                        {period.timeStart} <br />
-                                        {period.timeEnd}
-                                    </p>
-                                </div>
-                            {/if}
-                        </div>
-                    </Hoverable>
+                {#each getPeriods(schedule, day) as period}
+                    <SchedulePeriod {period} {rowHeight} {timeStart} />
                 {/each}
 
                 <!-- Pointeur rouge sur l'heure et la date actuelles -->
-                {#if dateAreTheSame(currentTime, day)}
+                {#if currentTime.isSame(day, "day")}
                     <div
-                        class="absolute"
-                        style={`top: ${
-                            rowHeight *
-                            (currentTime.hour() + currentTime.minute() / 60 - timeOffset)
-                        }rem; width: ${cellWidth}rem;`}
+                        class="relative h-0"
+                        style={`top: ${getTopOffset(currentTime, timeStart)}rem;`}
                     >
-                        <!-- La marque est un cercle rouge et une ligne rouge -->
                         <div
                             class="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-600"
                         />
                         <hr class="-translate-y-1/2 border-2 !border-red-600" />
                     </div>
                 {/if}
-            </th>
+            </div>
         {/each}
-    </tr>
-
-    <!-- Boucle pour chaque heure de la journée -->
-    {#each rowTitles.slice(1) as hour}
-        <tr class="grid grid-cols-8" style={`height: ${rowHeight}rem;`}>
-            <th class="flex translate-y-1/2 items-center justify-center">
-                {hour}
-            </th>
-
-            <!-- Ajouter des cases vides pour les autres jours de la semaine -->
-            {#each Array(7) as _}
-                <td class="border border-neutral-400 dark:border-white" />
-            {/each}
-        </tr>
-    {/each}
-</table>
+    </div>
+</div>

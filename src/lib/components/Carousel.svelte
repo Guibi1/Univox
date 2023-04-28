@@ -1,4 +1,6 @@
 <script lang="ts">
+    import classNames from "classnames";
+
     // Importing easing function for fade transition
     import { cubicInOut } from "svelte/easing";
 
@@ -117,7 +119,7 @@
             <img
                 src={images[selectedIndex]}
                 alt="Livre"
-                class={`pointer-events-none h-full w-full object-cover`}
+                class="pointer-events-none h-full w-full object-cover"
             />
 
             {#if !readOnly}
@@ -153,9 +155,10 @@
                 <button type="button" on:click={() => (selectedIndex = i)}>
                     <img
                         src={image}
-                        class={`aspect-square w-20 cursor-pointer border-2 object-cover transition duration-100 ease-in-out hover:scale-110 ${
+                        class={classNames(
+                            "aspect-square w-20 cursor-pointer border-2 object-cover transition duration-100 ease-in-out hover:scale-110",
                             selectedIndex === i ? "border-blue-primary" : "border-neutral-300"
-                        }`}
+                        )}
                         alt=""
                     />
                 </button>

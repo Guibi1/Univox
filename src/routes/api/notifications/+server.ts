@@ -14,16 +14,13 @@ import type { RequestHandler } from "./$types";
  * @param {Types.ObjectId} receiverId The user that will receive the notification
  */
 export const POST = (async ({ request, locals }) => {
-    if (!locals.user) throw error(401);
-
     const { kind, receiverId } = await request.json();
 
     // Input validation
     if (
         typeof kind !== "string" ||
         !(kind in NotificationKind) ||
-        !isObjectIdOrHexString(receiverId) ||
-        (await db.getUser(receiverId)) === null
+        !isObjectIdOrHexString(receiverId)
     ) {
         throw error(400, "Invalid data.");
     }
@@ -38,8 +35,6 @@ export const POST = (async ({ request, locals }) => {
  * @param {Types.ObjectId} notificationId The ID of the notification to remove
  */
 export const DELETE = (async ({ request, locals }) => {
-    if (!locals.user) throw error(401);
-
     const { notificationId } = await request.json();
 
     // Input validation
@@ -54,7 +49,5 @@ export const DELETE = (async ({ request, locals }) => {
  * Returns an up to date array of notifications
  */
 export const GET = (async ({ locals }) => {
-    if (!locals.user) throw error(401);
-
     return json({ success: true, notifications: locals.notifications });
 }) satisfies RequestHandler;

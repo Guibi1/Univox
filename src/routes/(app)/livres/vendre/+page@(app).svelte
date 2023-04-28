@@ -1,9 +1,9 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
     import Carousel from "$lib/components/Carousel.svelte";
+    import Loader from "$lib/components/Loader.svelte";
     import Option from "$lib/components/Option.svelte";
     import Select from "$lib/components/Select.svelte";
-    import user from "$lib/stores/user";
     import type { ActionData } from "./$types";
 
     export let form: ActionData;
@@ -17,10 +17,9 @@
         }
 
         return async ({ result, update }) => {
-            if (result.type === "redirect") {
-                user.refresh();
+            if (result.type !== "redirect") {
+                loading = false;
             }
-            loading = false;
             update();
         };
     }) satisfies SubmitFunction;
@@ -104,6 +103,7 @@
                 name="isbn"
                 type="text"
                 required
+                pattern={"^(?:ISBN(?:-1[03])?:? )?(?=[-0-9 ]{17}$|[-0-9X ]{13}$|[0-9X]{10}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?(?:[0-9]+[- ]?){2}[0-9X]$"}
                 value={form?.isbn ?? ""}
                 placeholder=" "
                 on:input={() => form && (form.invalidISBN = false)}
@@ -132,6 +132,12 @@
     <div class="flex flex-col items-stretch gap-5">
         <Carousel bind:files={images} />
 
-        <button class="filled" type="submit"> Créer l'annonce </button>
+        {#if loading}
+            <button class="filled" type="submit"> Créer l'annonce </button>
+        {:else}
+            <div class="flex justify-center">
+                <Loader />
+            </div>
+        {/if}
     </div>
 </form>

@@ -4,6 +4,7 @@
     import Option from "$lib/components/Option.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
+    import { scheduleFromJson } from "$lib/sanitization";
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import notifications from "$lib/stores/notifications";
@@ -14,19 +15,24 @@
     let selectedFriends: User[] = [];
 
     let query = "";
-    let searchResults: User[] | null = null;
+    let searchResults: { user: User; friendRequestSent: boolean }[] | null = null;
 
     async function handleSearch() {
         searchResults =
             query.length === 0 ? null : await (await fetch("/api/search/users/" + query)).json();
     }
 
-    function friendsFilterQuery(user: User, query: string) {
-        if (query.length === 0) return true;
-        if (user.da.includes(query)) return true;
-        if (`${user.firstName} ${user.lastName}`.toLowerCase().includes(query.toLowerCase()))
-            return true;
-        return false;
+    function friendsFilterQuery(friends: User[], query: string) {
+        return friends.reduce<User[]>((prev, user) => {
+            if (
+                query.length === 0 &&
+                user.da.includes(query) &&
+                `${user.firstName} ${user.lastName}`.toLowerCase().includes(query.toLowerCase())
+            ) {
+                return [user, ...prev];
+            }
+            return [...prev, user];
+        }, []);
     }
 </script>
 
@@ -50,26 +56,26 @@
     </div>
 </div>
 
-<div class="grid flex-grow grid-cols-4 divide-x">
+<div class="grid flex-grow grid-cols-[1fr_1fr_2fr] divide-x overflow-hidden">
     <div class="flex flex-col p-4">
         <h2 class="mb-4 border-b border-black dark:border-white">Vos amis</h2>
 
         <ul class="flex-grow">
-            {#each $friends.filter((u) => friendsFilterQuery(u, query)) as ami}
+            {#each friendsFilterQuery($friends, query) as ami}
                 <li>
-                    <a href="?id=${ami._id}" class="flex items-center justify-between">
+                    <div class="flex items-center justify-between">
                         <input type="checkbox" bind:group={selectedFriends} value={ami} />
 
                         <span>
-                            {ami.firstName}
-                            {ami.lastName}
+                            <a
+                                href="?id={ami._id}"
+                                class="transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
+                                >{ami.firstName}
+                                {ami.lastName}</a
+                            >
                         </span>
 
                         <Dropdown>
-                            <Option
-                                text="Consulter l'horaire"
-                                onClick={() => console.log("TODO: afficher l'horaire")}
-                            />
                             <Option
                                 text="Horaire commun"
                                 onClick={() => console.log("TODO: afficher l'horaire")}
@@ -81,7 +87,7 @@
                                 onClick={() => friends.remove(ami._id)}
                             />
                         </Dropdown>
-                    </a>
+                    </div>
                 </li>
             {/each}
         </ul>
@@ -109,24 +115,31 @@
                 Aucun résultats
             {:else}
                 <div>
-                    {#each searchResults as user}
+                    {#each searchResults as result}
                         <div class="flex items-center justify-between">
-                            {user.firstName}
-                            {user.lastName}
+                            {result.user.firstName}
+                            {result.user.lastName}
                             <i>
-                                {user.da}
+                                {result.user.da}
                             </i>
 
-                            <button
-                                class="filled"
-                                on:click={() => {
-                                    query = "";
-                                    searchResults = [];
-                                    notifications.create(NotificationKind.FriendRequest, user._id);
-                                }}
-                            >
-                                Ajouter en ami
-                            </button>
+                            {#if result.friendRequestSent}
+                                <button class="filled">Demande envoyée</button>
+                            {:else}
+                                <button
+                                    class="filled"
+                                    on:click={() => {
+                                        query = "";
+                                        searchResults = [];
+                                        notifications.create(
+                                            NotificationKind.FriendRequest,
+                                            result.user._id
+                                        );
+                                    }}
+                                >
+                                    Ajouter en ami
+                                </button>
+                            {/if}
                         </div>
                     {/each}
                 </div>
@@ -148,13 +161,9 @@
         </ul>
     </div>
 
-    <div class="p-4">
-        {#if data.schedule}
-            <ScheduleView schedule={data.schedule} />
-        {:else}
-            Affichage de l'horaire commun
-        {/if}
-    </div>
+    {#if data.schedule}
+        <ScheduleView schedule={scheduleFromJson(data.schedule)} />
+    {:else}
+        <div class="p-4">Affichage de l'horaire commun</div>
+    {/if}
 </div>
-
-<!-- TODO: groupes + régler le bazar quand on rapetisse la page -->

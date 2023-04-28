@@ -1,16 +1,15 @@
+import { objectIdToString } from "$lib/sanitization";
 import * as db from "$lib/server/db";
-import { Types, isObjectIdOrHexString } from "mongoose";
+import { isObjectIdOrHexString } from "mongoose";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ locals, url }) => {
-    const id = url.searchParams.get("id");
-    if (!id || !isObjectIdOrHexString(id)) return;
-
-    const userId = new Types.ObjectId(id);
-    if (!locals.user.friendsId.includes(userId)) return;
+    const userId = url.searchParams.get("id");
+    if (!userId || !isObjectIdOrHexString(userId)) return;
+    if (!locals.user.friendsId.some((id) => id.equals(userId))) return;
 
     const user = await db.getServerUser(userId);
     if (!user) return;
 
-    return { schedule: await db.getSchedule(user) };
+    return { schedule: objectIdToString(await db.getSchedule(user)) };
 }) satisfies PageServerLoad;

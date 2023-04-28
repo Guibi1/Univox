@@ -1,21 +1,20 @@
 <script lang="ts">
     import { enhance, type SubmitFunction } from "$app/forms";
     import { page } from "$app/stores";
-    import user from "$lib/stores/user";
-    import type { ActionData } from "./$types";
+    import Loader from "$lib/components/Loader.svelte";
     import LogoText from "$src/assets/logo-text.svelte";
     import Logo from "$src/assets/logo.svelte";
+    import type { ActionData } from "./$types";
 
     export let form: ActionData;
     let loading = false;
 
     const handleSubmit = (() => {
         loading = true;
-        return async ({ result, update }) => {
-            if (result.type === "redirect") {
-                user.refresh();
+        return async ({ update, result }) => {
+            if (result.type !== "success") {
+                loading = false;
             }
-            loading = false;
             update();
         };
     }) satisfies SubmitFunction;
@@ -79,7 +78,7 @@
         </button>
     {:else}
         <div class="flex items-center justify-center">
-            <i class="bx bx-loader-circle bx-spin my-2 text-5xl" />
+            <Loader />
         </div>
     {/if}
 </form>

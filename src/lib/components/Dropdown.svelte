@@ -4,6 +4,7 @@
         text: string;
         color?: DropdownColor;
         href?: string;
+        boxIcon?: string;
         onClick?: (
             event: Event & {
                 currentTarget: EventTarget;
@@ -19,9 +20,11 @@
 <script lang="ts">
     import { setContext } from "svelte";
     import EmptyDropdown, { type DropdownPosition } from "./EmptyDropdown.svelte";
+    import classNames from "classnames";
 
     // Exported position prop and internal actions state
     export let position: DropdownPosition = "side-right";
+    export let fullWidth: boolean = false;
     export let actions: DropdownOption[][] = [];
 
     // Set the context for managing dropdown options and separators
@@ -38,7 +41,7 @@
     function getColor(action: DropdownOption) {
         switch (action.color) {
             case "red":
-                return "text-red-400 dark:text-red-400";
+                return "text-red-600 dark:text-red-600";
             case "blue":
                 return "text-blue-400 dark:text-blue-400";
             default:
@@ -48,7 +51,7 @@
 </script>
 
 <!-- Main component, wraps EmptyDropdown and handles button and dropdown items -->
-<EmptyDropdown bind:position>
+<EmptyDropdown bind:position bind:fullWidth>
     <!-- Button slot -->
     <div slot="button" class="w-full">
         {#if $$slots.button}
@@ -64,23 +67,35 @@
             {#each section as action}
                 {#if action.href}
                     <a
-                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                        class={`whitespace-nowrap px-4 py-2 text-left text-lg hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
                             action
                         )}`}
                         href={action.href}
                         data-closeOnClick
                     >
-                        {action.text}
+                        <div class="flex items-center">
+                            {#if action.boxIcon}
+                                <i class={`bx ${action.boxIcon} mr-5 text-2xl`} />
+                            {/if}
+                            {action.text}
+                        </div>
                     </a>
                 {:else}
                     <button
-                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
-                            action
-                        )}`}
+                        class={classNames(
+                            "whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600",
+                            getColor(action)
+                        )}
                         on:click={action.onClick}
+                        type="button"
                         data-closeOnClick
                     >
-                        {action.text}
+                        <div class="flex items-center">
+                            {#if action.boxIcon}
+                                <i class={`bx ${action.boxIcon} mr-5 text-2xl`} />
+                            {/if}
+                            {action.text}
+                        </div>
                     </button>
                 {/if}
             {/each}

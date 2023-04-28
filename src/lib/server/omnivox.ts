@@ -6,10 +6,8 @@ import type { Class } from "$lib/Types";
 import * as cheerio from "cheerio";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import weekday from "dayjs/plugin/weekday";
 
 dayjs.extend(customParseFormat);
-dayjs.extend(weekday);
 
 /**
  * Represents the differents Semesters
@@ -187,13 +185,13 @@ export function schedulePageToClasses(HTML: string): Class[] {
             );
             const timeEnd = timeStart.add(Number($(tdTag).attr("rowspan") ?? 0) / 2, "hours");
 
-            let day = index;
+            let day = index + 1;
             for (const c of schedule) {
                 if (
-                    c.timeStart.weekday() - 1 <= day &&
-                    c.timeStart != timeStart &&
-                    c.timeStart.isBefore(timeEnd) &&
-                    c.timeEnd.isAfter(timeStart)
+                    c.timeStart.day() <= day &&
+                    !c.timeStart.date(1).isSame(timeStart.date(1)) &&
+                    c.timeStart.date(1).isBefore(timeEnd.date(1)) &&
+                    timeStart.date(1).isBefore(c.timeEnd.date(1))
                 ) {
                     day += 1;
                 }
@@ -206,9 +204,9 @@ export function schedulePageToClasses(HTML: string): Class[] {
                 local: match[4],
                 theory: match[5] === "T",
                 teacher: match[6],
-                virtual: match[7] === "Présentiel",
-                timeStart: timeStart.weekday(day),
-                timeEnd: timeEnd.weekday(day),
+                virtual: match[7] !== "Présentiel",
+                timeStart: timeStart.day(day),
+                timeEnd: timeEnd.day(day),
             });
         });
     }

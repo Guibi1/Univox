@@ -7,11 +7,12 @@
     import friends from "$lib/stores/friends";
     import notifications from "$lib/stores/notifications";
     import LogoText from "$src/assets/logo-text.svelte";
+    import classNames from "classnames";
 
     const pages = [
         { text: "Accueil", href: "/" },
         { text: "Livres", href: "/livres" },
-        { text: "Horaires", href: "/horaire" },
+        { text: "Horaire", href: "/horaire" },
         { text: "Amis", href: "/amis" },
     ];
 
@@ -40,14 +41,14 @@
             <li class="relative h-full">
                 <a
                     href={page.href}
-                    class="flex h-full items-center px-4 text-center text-lg text-white transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
+                    class="flex h-full items-center px-8 text-center text-xl text-white transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
                 >
                     {page.text}
 
                     {#if currentPage === i}
                         <span class="absolute bottom-0 left-1/2 -translate-x-1/2">
                             <hr
-                                class="w-16 border-2 !border-blue-primary transition duration-300 ease-in-out"
+                                class="w-20 border-2 !border-blue-primary transition duration-300 ease-in-out"
                             />
                         </span>
                     {/if}
@@ -61,9 +62,10 @@
             <EmptyDropdown position="bottom-left">
                 <i
                     slot="button"
-                    class={`bx ${
+                    class={classNames(
+                        "bx text-2xl",
                         $notifications.length === 0 ? "bx-bell" : "bxs-bell-ring"
-                    } text-2xl`}
+                    )}
                 />
 
                 {#if $notifications.length === 0}
@@ -108,13 +110,17 @@
 
         <div class="grid aspect-square">
             <Dropdown position="bottom-left">
-                <div slot="button" class="m-2 rounded-full bg-blue-primary">
+                <div slot="button" class="m-2 rounded-2xl bg-blue-primary">
                     <Avatar />
                 </div>
 
-                <Option text="Mon Profil" href="/profil" />
-                <Option text="Paramètres" href="/parametres" />
-                <Option text="Se déconnecter" href="/deconnexion" color="red" separate />
+                <Option text="Paramètres" href="/parametres" boxIcon="bx-cog" />
+                <Option
+                    text="Se déconnecter"
+                    href="/deconnexion"
+                    color="red"
+                    boxIcon="bx-log-out"
+                />
             </Dropdown>
         </div>
     </div>

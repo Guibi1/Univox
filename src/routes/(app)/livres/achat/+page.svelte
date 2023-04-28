@@ -8,7 +8,7 @@
 
     export let data: PageData;
 
-    let books: Book[] = [];
+    let books: Book[] = data.books ?? [];
     let codes: string[] = [];
     let query = "";
 

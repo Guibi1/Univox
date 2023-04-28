@@ -2,6 +2,7 @@ import { MONGODB_URI } from "$env/static/private";
 import {
     NotificationKind,
     type Book,
+    type Class,
     type Group,
     type Notification,
     type Period,
@@ -132,7 +133,7 @@ export function serverUserToUser(serverUser: ServerUser): User {
  * @param id The user id
  * @returns The requested server user, or null if it doesn't exist
  */
-export async function getServerUser(id: Types.ObjectId): Promise<ServerUser | null> {
+export async function getServerUser(id: Types.ObjectId | string): Promise<ServerUser | null> {
     const doc: mongoose.HydratedDocument<ServerUser> | null = await Users.findById(id);
     if (!doc) {
         log("A user couldn't be found");
@@ -146,7 +147,7 @@ export async function getServerUser(id: Types.ObjectId): Promise<ServerUser | nu
  * @param id The user id
  * @returns The requested user, or null if it doesn't exist
  */
-export async function getUser(id: Types.ObjectId): Promise<User | null> {
+export async function getUser(id: Types.ObjectId | string): Promise<User | null> {
     const user = await getServerUser(id);
     if (!user) {
         log("A user couldn't be found");
@@ -253,7 +254,7 @@ export async function updateUser(
  * @param query The search query
  * @returns An array of 5 matching users, or less
  */
-export async function searchUsers(user: ServerUser, query: string): Promise<User[]> {
+export async function searchUsers(user: ServerUser, query: string): Promise<ServerUser[]> {
     query = sanitizeQuery(query);
     query = normalizeQuery(query);
 
@@ -271,9 +272,7 @@ export async function searchUsers(user: ServerUser, query: string): Promise<User
                 },
             ],
         }).limit(5)
-    ).map((user: mongoose.HydratedDocument<ServerUser>) =>
-        serverUserToUser({ ...user.toObject() })
-    );
+    ).map((user: mongoose.HydratedDocument<ServerUser>) => ({ ...user.toObject() }));
 }
 
 /////////////////////////
@@ -356,7 +355,7 @@ export async function deleteFriend(user: ServerUser, friendId: Types.ObjectId): 
  * @param id The group id
  * @returns The group data
  */
-export async function getGroup(id: Types.ObjectId): Promise<Group | null> {
+export async function getGroup(id: Types.ObjectId | string): Promise<Group | null> {
     const doc = await Groups.findById(id);
     if (!doc) {
         log("A group couldn't be found");
@@ -475,7 +474,7 @@ export async function getSchedule(user: ServerUser): Promise<Schedule> {
 /**
  * Adds all the provided periods to the user's schedule
  * @param user The targeted user
- * @param periods An array of periods to add
+ * @param periods The array of periods to add
  * @returns True if the operation succeded, false otherwise
  */
 export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]): Promise<boolean> {
@@ -492,6 +491,26 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
     }
 }
 
+/**
+ * Adds all the provided classes to the user's schedule
+ * @param user The targeted user
+ * @param classes The array of classes to add
+ * @returns True if the operation succeded, false otherwise
+ */
+export async function addClassesToSchedule(user: ServerUser, classes: Class[]): Promise<boolean> {
+    if (!user.settingsId) return false;
+
+    try {
+        await Schedules.findByIdAndUpdate(user.scheduleId, {
+            $push: { classes: classes },
+        });
+        return true;
+    } catch {
+        warn("The function 'addClassesToSchedule' was called but failed to update the user's data");
+        return false;
+    }
+}
+
 //////////////////////
 // -*-*- BOOK -*-*- //
 //////////////////////
@@ -501,7 +520,7 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
  * @param bookId The targeted book's ID
  * @returns The requested book or null if it doesn't exist
  */
-export async function getBook(bookId: Types.ObjectId): Promise<Book | null> {
+export async function getBook(bookId: Types.ObjectId | string): Promise<Book | null> {
     const doc: mongoose.HydratedDocument<Book> | null = await Books.findById(bookId);
     if (!doc) {
         log("A book couldn't be found");
@@ -598,7 +617,7 @@ export async function getNotifications(user: ServerUser): Promise<Notification[]
 export async function sendNotification(
     user: ServerUser,
     kind: NotificationKind,
-    receiverId: Types.ObjectId
+    receiverId: Types.ObjectId | string
 ): Promise<boolean> {
     const receiver = await getServerUser(receiverId);
     if (!receiver) return false;
@@ -627,7 +646,7 @@ export async function sendNotification(
  */
 export async function deleteNotification(
     user: ServerUser,
-    notificationId: Types.ObjectId
+    notificationId: Types.ObjectId | string
 ): Promise<boolean> {
     if (!user.notificationsId.some((id) => id.equals(notificationId))) return false;
 
@@ -697,27 +716,6 @@ export async function setSettings(user: ServerUser, settings: Settings): Promise
  * @param query The string to sanitize
  * @returns The sanitized query
  */
-export function arrayIdToString<T extends { _id: Types.ObjectId }>(arr: T[]): T[] {
-    return arr.map((i) => objectIdToString(i));
-}
-
-export function objectIdToString<T extends { _id: Types.ObjectId }>(object: T): T {
-    if (typeof object !== "object" || object === null) return object;
-
-    const keys = Object.keys(object) as Array<keyof T>;
-    keys.forEach((key) => {
-        const value = object[key];
-
-        if (value instanceof Types.ObjectId) {
-            object[key] = value.toHexString() as T[keyof T];
-        } else if (Array.isArray(value)) {
-            object[key] = arrayIdToString(value) as T[keyof T];
-        }
-    });
-
-    return { ...object };
-}
-
 function sanitizeQuery(query: string): string {
     return query.replace(/\./g, "").replace(/\\/g, "\\\\").trim();
 }

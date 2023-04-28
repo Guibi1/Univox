@@ -78,8 +78,6 @@ export interface Class extends Period {
     theory: boolean;
     teacher: string;
     virtual: boolean;
-    timeStart: Dayjs;
-    timeEnd: Dayjs;
 }
 
 /**

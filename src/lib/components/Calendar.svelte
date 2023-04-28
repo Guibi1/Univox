@@ -1,13 +1,15 @@
 <script lang="ts">
+    import classNames from "classnames";
     import dayjs, { Dayjs } from "dayjs";
-    import cx from "classnames";
 
-    export let currentWeek = dayjs();
+    export let selectedDay = dayjs();
+    // TODO
+    export let selectionLength = 1;
 
-    let displayMonth = currentWeek;
+    let displayMonth = selectedDay;
 
     function handleClick(date: Dayjs) {
-        currentWeek = date;
+        selectedDay = date;
         displayMonth = date;
     }
 
@@ -44,11 +46,12 @@
                     <td class="grid">
                         <button
                             on:click={() => handleClick(day)}
-                            class={cx(
+                            class={classNames(
                                 "flex h-8 w-8 items-center justify-center rounded-full hover:bg-black",
                                 {
                                     "opacity-40": day.month() !== displayMonth.month(),
-                                    "bg-neutral-900": day.isSame(currentWeek),
+                                    "bg-neutral-900": day.isSame(selectedDay, "day"),
+                                    "!bg-blue-primary": day.isSame(dayjs(), "day"),
                                 }
                             )}
                         >

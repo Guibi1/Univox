@@ -1,11 +1,13 @@
 <script context="module" lang="ts">
-    // Exported DropdownPosition type to determine the position of the dropdown menu
+    // Dermines the position of the dropdown menu
     export type DropdownPosition = "side-right" | "bottom-left" | "bottom-right";
 </script>
 
 <script lang="ts">
-    // Exported variable for dropdown position
+    import classNames from "classnames";
+
     export let position: DropdownPosition;
+    export let fullWidth: boolean = false;
 
     // State for dropdown open/close
     let open = false;
@@ -14,11 +16,19 @@
     function closeOnClickOutside(node: HTMLElement, enabled: boolean) {
         // Event listener function for clicks outside the dropdown
         const handleOutsideClick = ({ target }: Event) => {
-            if (
-                !node.contains(target as HTMLElement) ||
-                (target as HTMLElement).hasAttribute("data-closeOnClick")
-            ) {
+            if (!node.contains(target as HTMLElement)) {
                 open = false;
+            } else if (node.contains(target as HTMLElement)) {
+                let element = target as HTMLElement;
+                while (element.parentElement !== node) {
+                    if (element.hasAttribute("data-closeOnClick")) {
+                        open = false;
+                        break;
+                    }
+
+                    if (element.parentElement === null) break;
+                    element = element.parentElement;
+                }
             }
         };
 
@@ -50,13 +60,15 @@
     <!-- Dropdown menu -->
     {#if open}
         <div
-            class={`absolute z-[200] overflow-hidden rounded-lg bg-gray-200 dark:bg-neutral-700 ${
-                position == "bottom-right"
-                    ? "left-0 top-full"
-                    : position == "bottom-left"
-                    ? "right-0 top-full"
-                    : "left-full"
-            }`}
+            class={classNames(
+                "absolute z-[200] overflow-hidden rounded-lg bg-gray-200 dark:bg-neutral-700",
+                {
+                    "left-0 top-full": position == "bottom-right",
+                    "right-0 top-full": position == "bottom-left",
+                    "left-full": position == "side-right",
+                    "w-full": fullWidth,
+                }
+            )}
         >
             <!-- Slot container for dropdown items -->
             <div

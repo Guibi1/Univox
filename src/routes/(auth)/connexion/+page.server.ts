@@ -12,7 +12,11 @@ export const actions = {
             return fail(400, { da, missing: true });
         }
 
-        const passwordsMatch = await db.compareUserPassword(da, password);
+        const [passwordsMatch] = await Promise.all([
+            await db.compareUserPassword(da, password),
+            new Promise((r) => setTimeout(r, 600)),
+        ]);
+
         if (!passwordsMatch) {
             return fail(401, { da, incorrect: true });
         }
