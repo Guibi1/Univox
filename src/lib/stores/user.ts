@@ -32,8 +32,11 @@ function createUserStore() {
     }
 
     async function setEmail(email: string) {
-        fetch("/api/user/email", { method: "POST", body: email });
-        update((user) => ({ ...user, email: email }));
+        const response = await fetch("/api/user/email", { method: "POST", body: email });
+        if (response.ok) {
+            update((user) => ({ ...user, email: email }));
+        }
+        return response;
     }
 
     return {

@@ -2,20 +2,24 @@
     import Option from "$lib/components/Option.svelte";
     import Select from "$lib/components/Select.svelte";
     import firstDayOfTheWeek from "$lib/stores/firstDayOfTheWeek";
-
     import Avatar from "$lib/components/Avatar.svelte";
     import colorScheme from "$lib/stores/colorScheme";
     import user from "$lib/stores/user";
+    import { enhance, type SubmitFunction } from "$app/forms";
+    import type { ActionData } from "./$types";
+
+    export let form: ActionData;
 
     const refresh = () => user.setAvatar(Math.random() + $user.firstName + $user.da);
 
-    // Add a temporary email variable
-    let tempEmail = $user.email;
-
-    // Update this function to handle email update
-    const updateEmail = async () => {
-        user.setEmail(tempEmail);
-    };
+    const handleSubmit = (() => {
+        return async ({ result, update }) => {
+            if (result.type === "success") {
+                user.refresh();
+            }
+            update();
+        };
+    }) satisfies SubmitFunction;
 </script>
 
 <div class="mx-auto mb-5 grid gap-6 py-4 laptop:grid-cols-[max-content_40rem] laptop:divide-x">
@@ -53,7 +57,12 @@
     <div class="space-x-14 space-y-10 laptop:pl-6">
         <h1 class="my-4 flex justify-center gap-4 border-b-2 pb-2">Paramètres</h1>
 
-        <div class="grid grid-cols-2 items-center gap-x-16 gap-y-16">
+        <form
+            use:enhance={handleSubmit}
+            class="grid grid-cols-2 items-center gap-x-16 gap-y-16"
+            method="post"
+            action="?/save"
+        >
             <Select bind:value={$firstDayOfTheWeek}>
                 <Option text="Lundi" />
                 <Option text="Samedi" />
@@ -68,14 +77,25 @@
             <span class="ml-2 text-2xl">Thème du site</span>
 
             <!-- Make the email input field editable and bind its value to tempEmail -->
-            <input type="email" name="email" bind:value={tempEmail} />
+            <div class="label" data-error={form?.emailExists}>
+                <input
+                    name="email"
+                    type="email"
+                    pattern="[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+"
+                    value={form?.email ?? $user.email}
+                    on:input={() => form?.emailExists && (form.emailExists = false)}
+                />
+                {#if form?.emailExists}
+                    <span>Un compte avec cette adresse courriel existe déjà</span>
+                {/if}
+            </div>
             <span class="ml-2 text-2xl">Adresse courriel</span>
 
             <!-- Add the button to change email right under the email field -->
-            <button class="outlined col-span-2 gap-2" on:click={updateEmail}>
+            <button class="outlined col-span-2 gap-2" type="submit" on:click={updateEmail}>
                 Changer l'adresse courriel
             </button>
-        </div>
+        </form>
     </div>
 </div>
 
