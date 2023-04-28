@@ -4,15 +4,13 @@
 
 import type { User } from "$lib/Types";
 import * as db from "$lib/server/db";
-import { error, json } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
 /**
  * Returns data about some users that matched with the query
  */
 export const GET = (async ({ params, locals }) => {
-    if (!locals.user) throw error(401);
-
     const result: { user: User; friendRequestSent: boolean }[] = [];
 
     const users = await db.searchUsers(locals.user, params.query);

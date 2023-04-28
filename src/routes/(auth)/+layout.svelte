@@ -1,17 +1,8 @@
 <script lang="ts">
-    import { invalidate } from "$app/navigation";
     import ColorSchemeSwitch from "$lib/components/ColorSchemeSwitch.svelte";
-    import { onMount } from "svelte";
     import WavesBackground from "./WavesBackground.svelte";
 
     let height: number | null;
-
-    onMount(() => {
-        const bc = new BroadcastChannel("Invalidate user");
-        bc.postMessage("");
-        bc.addEventListener("message", () => invalidate("app:user"));
-        return () => bc.close();
-    });
 </script>
 
 <WavesBackground />
@@ -28,7 +19,7 @@
             <slot />
         </main>
 
-        <div class="absolute right-4 bottom-4 z-10">
+        <div class="absolute bottom-4 right-4 z-10">
             <ColorSchemeSwitch />
         </div>
     </div>

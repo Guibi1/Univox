@@ -1,15 +1,23 @@
 import * as db from "$lib/server/db";
-import type { Handle } from "@sveltejs/kit";
+import { fail, redirect, type Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 
 const userLocalsHandle = (async ({ event, resolve }) => {
     const user = await db.getUserFromToken(event.cookies.get("token"));
     if (user) {
-        event.locals.user = user;
-        event.locals.schedule = await db.getSchedule(user);
-        event.locals.friends = await db.getFriends(user);
-        event.locals.groups = await db.getGroups(user);
-        event.locals.notifications = await db.getNotifications(user);
+        if (event.route.id?.startsWith("/(auth)")) {
+            throw redirect(302, event.url.searchParams.get("ref") ?? `/`);
+        } else {
+            event.locals.user = user;
+            event.locals.schedule = await db.getSchedule(user);
+            event.locals.friends = await db.getFriends(user);
+            event.locals.groups = await db.getGroups(user);
+            event.locals.notifications = await db.getNotifications(user);
+        }
+    } else if (event.route.id?.startsWith("/(app)")) {
+        throw redirect(302, `/connexion?ref=${event.url.pathname}`);
+    } else if (event.route.id?.startsWith("/api")) {
+        throw fail(401);
     }
 
     return resolve(event);

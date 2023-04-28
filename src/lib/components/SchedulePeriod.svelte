@@ -6,8 +6,6 @@
     export let rowHeight: number;
     export let timeStart: number;
 
-    let hovering: boolean;
-
     export function getTopOffset(timeStart: number) {
         return rowHeight * (period.timeStart.hour() + period.timeStart.minute() / 60 - timeStart);
     }
@@ -17,15 +15,13 @@
     }
 </script>
 
-<div class="relative m-0 w-full min-w-0" style={`top: ${getTopOffset(timeStart)}rem;`}>
+<div class="group relative m-0 h-0 w-full min-w-0" style={`top: ${getTopOffset(timeStart)}rem;`}>
     <div
         class={classNames(
             "mx-0.5 flex flex-col justify-between text-ellipsis rounded-lg bg-blue-primary px-2 text-center",
-            { "py-4": getHeight() >= rowHeight * 1.9 }
+            getHeight() >= rowHeight * 1.9 ? "py-4" : "py-2"
         )}
         style={`height: ${getHeight()}rem;`}
-        on:mouseenter={() => (hovering = true)}
-        on:mouseleave={() => (hovering = false)}
     >
         <div class="flex flex-col gap-2">
             <span class={classNames("text-sm", { truncate: getHeight() < rowHeight * 2.5 })}>
@@ -55,45 +51,43 @@
         {/if}
 
         <!-- Affiche les informations supplémentaires lorsqu'on survole le div -->
-        {#if hovering}
-            <div
-                class="absolute left-full z-10 ml-2 flex w-max flex-col rounded border-2 border-blue-primary bg-zinc-700 p-4 text-left"
-            >
-                {period.name}
+        <div
+            class="absolute left-full z-10 ml-2 hidden w-max flex-col rounded border-2 border-blue-primary bg-zinc-700 p-4 text-left group-hover:flex"
+        >
+            {period.name}
 
+            {#if "group" in period}
+                <small>
+                    Gr. {`${period.group}`.padStart(5, "0")} - <i>{period.code}</i>
+                </small>
+            {/if}
+
+            <div class="grid grid-cols-[min-content_1fr] items-center gap-2">
+                <i class="bx bx-time-five text-2xl" />
+                <span>
+                    {period.timeStart.format("dddd DD MMMM • H[h]mm")} à
+                    {period.timeEnd.format("H[h]mm")}
+                </span>
+
+                <!-- If is a Class -->
                 {#if "group" in period}
-                    <small>
-                        Gr. {`${period.group}`.padStart(5, "0")} - <i>{period.code}</i>
-                    </small>
-                {/if}
-
-                <div class="grid grid-cols-[min-content_1fr] items-center gap-2">
-                    <i class="bx bx-time-five text-2xl" />
-                    <span>
-                        {period.timeStart.format("dddd DD MMMM • H[h]mm")} à
-                        {period.timeEnd.format("H[h]mm")}
-                    </span>
-
-                    <!-- If is a Class -->
-                    {#if "group" in period}
-                        {#if period.virtual}
-                            <i class="bx bx-desktop text-2xl" />
-                            Virtuel
-                        {:else}
-                            <i class="bx bx-chalkboard text-2xl" />
-                            Local {period.local}
-                        {/if}
-
-                        {#if !period.theory}
-                            <i class="bx bxs-flask text-2xl" />
-                            Laboratoire
-                        {/if}
-
-                        <i class="bx bx-male text-2xl" />
-                        {period.teacher}
+                    {#if period.virtual}
+                        <i class="bx bx-desktop text-2xl" />
+                        Virtuel
+                    {:else}
+                        <i class="bx bx-chalkboard text-2xl" />
+                        Local {period.local}
                     {/if}
-                </div>
+
+                    {#if !period.theory}
+                        <i class="bx bxs-flask text-2xl" />
+                        Laboratoire
+                    {/if}
+
+                    <i class="bx bx-male text-2xl" />
+                    {period.teacher}
+                {/if}
             </div>
-        {/if}
+        </div>
     </div>
 </div>
