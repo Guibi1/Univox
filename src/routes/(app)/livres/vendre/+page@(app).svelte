@@ -132,7 +132,7 @@
     <div class="flex flex-col items-stretch gap-5">
         <Carousel bind:files={images} />
 
-        {#if loading}
+        {#if !loading}
             <button class="filled" type="submit"> Créer l'annonce </button>
         {:else}
             <div class="flex justify-center">

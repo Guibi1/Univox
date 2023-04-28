@@ -62,7 +62,6 @@
 
             {startDay.year()}
         </p>
-
         <!-- Buttons for navigating to the previous or next week -->
         <div class="flex h-8 items-stretch gap-0.5">
             <button on:click={() => moveWeek(-1)} class="rounded-lg bg-gray2">
