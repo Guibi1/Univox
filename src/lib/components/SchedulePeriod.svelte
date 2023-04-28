@@ -7,6 +7,8 @@
     export let timeStart: number;
     export let isRight = true;
 
+    let tooltipY = 0;
+
     export function getTopOffset(timeStart: number) {
         return rowHeight * (period.timeStart.hour() + period.timeStart.minute() / 60 - timeStart);
     }
@@ -14,8 +16,6 @@
     function getHeight() {
         return rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60) - 0.15;
     }
-
-    let tooltipY = 0;
 
     function handleMousemove(event: MouseEvent) {
         tooltipY = event.clientY - (event.currentTarget! as Element).getBoundingClientRect().top;
