@@ -37,7 +37,7 @@
             <input name="email" type="email" value={$form.email} readonly={$submitting} />
 
             {#if $errors.email}
-                <span>{$errors.email}</span>
+                <span>{$errors.email[0]}</span>
             {/if}
         </label>
 
@@ -46,7 +46,7 @@
             <input name="password" type="password" value={$form.password} readonly={$submitting} />
 
             {#if $errors.password}
-                <span>{$errors.password}</span>
+                <span>{$errors.password[0]}</span>
             {/if}
         </label>
 

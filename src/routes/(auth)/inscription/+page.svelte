@@ -1,13 +1,34 @@
 <script context="module" lang="ts">
     import { z } from "zod";
 
-    export const formSchema = z.object({
-        email: z.string().email("Courriel invalide"),
-        omnivoxPassword: z.string(),
+    export const firstFormSchema = z.object({
+        email: z
+            .string()
+            .email("Courriel invalide")
+            .endsWith(".qc.ca", "Assurez-vous d'utiliser votre courriel étudiant"),
+        omnivoxPassword: z.string().min(1, "Entrez votre mot de passe"),
         password: z.string(),
-        firstName: z.string(),
-        lastName: z.string(),
+        confirmPassword: z.string(),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+        firstStep: z.boolean().default(true),
     });
+
+    export const formSchema = firstFormSchema
+        .extend({
+            password: z.string().min(8, "Mot de passe trop court"),
+            confirmPassword: z.string(),
+            firstStep: z.boolean().default(false),
+        })
+        .superRefine(({ confirmPassword, password }, ctx) => {
+            if (confirmPassword !== password) {
+                ctx.addIssue({
+                    path: ["confirmPassword"],
+                    message: "Les mots de passe correspondent pas",
+                    code: "custom",
+                });
+            }
+        });
 </script>
 
 <script lang="ts">
@@ -17,34 +38,34 @@
 
     export let data;
 
-    const { form, errors, submitting, enhance } = superForm(data.form);
-
-    $: firstStep = !$form.firstName;
+    const { form, errors, delayed, enhance } = superForm(data.form);
 </script>
 
 <svelte:head>
     <title>Univox | Inscription</title>
 </svelte:head>
 
-<h1 class="pb-4 text-center">{firstStep ? "Inscription" : `Bonjour, ${$form.firstName} !`}</h1>
+<h1 class="pb-4 text-center">
+    {$form.firstStep ? "Inscription" : `Bonjour, ${$form.firstName} !`}
+</h1>
 
 <form
     use:enhance
     class="m-auto flex w-9/12 flex-col gap-6"
     method="post"
-    action={firstStep ? "?/firstStep" : "?/secondStep"}
+    action={$form.firstStep ? "?/firstStep" : "?/secondStep"}
 >
     <div
         class="relative grid w-[250%] grid-cols-2 gap-[20%] transition-[right]"
-        style="right: {firstStep ? '0' : '150'}%;"
+        style="right: {$form.firstStep ? '0' : '150'}%;"
     >
         <div class="flex flex-col gap-4">
             <label data-error={$errors.email}>
                 Adresse courriel étudiante
-                <input name="email" type="text" value={$form.email} readonly={$submitting} />
+                <input name="email" type="text" value={$form.email} readonly={$delayed} />
 
                 {#if $errors.email}
-                    <span>{$errors.email}</span>
+                    <span>{$errors.email[0]}</span>
                 {/if}
             </label>
 
@@ -54,36 +75,45 @@
                     name="omnivoxPassword"
                     type="password"
                     value={$form.omnivoxPassword}
-                    readonly={$submitting}
+                    readonly={$delayed}
                 />
 
                 {#if $errors.omnivoxPassword}
-                    <span>{$errors.omnivoxPassword}</span>
+                    <span>{$errors.omnivoxPassword[0]}</span>
                 {/if}
             </label>
         </div>
 
-        <div hidden={firstStep} class="flex flex-col gap-4">
+        <div hidden={$form.firstStep} class="flex flex-col gap-4">
             <span>Il manque quelques information pour finaliser votre compte :</span>
 
             <label data-error={$errors.password}>
                 Mot de passe
-                <input
-                    name="password"
-                    type="password"
-                    value={$form.password}
-                    readonly={$submitting}
-                />
+                <input name="password" type="password" value={$form.password} readonly={$delayed} />
 
                 {#if $errors.password}
-                    <span>{$errors.password}</span>
+                    <span>{$errors.password[0]}</span>
+                {/if}
+            </label>
+
+            <label data-error={$errors.confirmPassword}>
+                Confirmer le mot de passe
+                <input
+                    name="confirmPassword"
+                    type="password"
+                    value={$form.confirmPassword}
+                    readonly={$delayed}
+                />
+
+                {#if $errors.confirmPassword}
+                    <span>{$errors.confirmPassword[0]}</span>
                 {/if}
             </label>
 
             <button
                 class="flex items-center self-start"
                 type="button"
-                on:click={() => (firstStep = true)}
+                on:click={() => ($form.firstStep = true)}
             >
                 <i class="bx bx-chevron-left text-lg" />
                 Retour
@@ -91,9 +121,13 @@
         </div>
     </div>
 
-    {#if !$submitting}
+    <input hidden name="firstStep" type="checkbox" bind:checked={$form.firstStep} readonly />
+    <input hidden name="firstName" type="text" bind:value={$form.firstName} readonly />
+    <input hidden name="lastName" type="text" bind:value={$form.lastName} readonly />
+
+    {#if !$delayed}
         <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
-            {firstStep ? "Suivant" : "S'inscrire"} <i class="bx bx-chevron-right text-lg" />
+            {$form.firstStep ? "Suivant" : "S'inscrire"} <i class="bx bx-chevron-right text-lg" />
         </button>
     {:else}
         <div class="flex items-center justify-center">
@@ -102,7 +136,7 @@
     {/if}
 </form>
 
-{#if !$submitting}
+{#if !$delayed}
     <div class="my-3 flex items-center gap-6">
         <hr class="w-full" />
         <span> ou </span>
