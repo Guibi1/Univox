@@ -62,7 +62,7 @@
                     <!--Make the books have some space in between them-->
                     <div class="flex flex-row justify-between">
                         <div class="flex flex-row gap-2 px-3">
-                            <img src={book.src[0]} class="h-20 w-20" />
+                            <img src={book.src[0]} class="h-20 w-20" alt="Page couverture" />
                             <div class="flex flex-col">
                                 <div>{book.title}</div>
                                 <div class="text-sm text-gray-500">{book.author}</div>
