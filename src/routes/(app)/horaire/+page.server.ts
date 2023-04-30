@@ -60,7 +60,7 @@ export const actions = {
         }
 
         try {
-            const cookie = await omnivox.login(locals.user.da, omnivoxPassword);
+            const cookie = await omnivox.login(locals.user.email, omnivoxPassword);
             const html = await omnivox.fetchSchedulePageHTML(
                 cookie,
                 dayjs().year(),
