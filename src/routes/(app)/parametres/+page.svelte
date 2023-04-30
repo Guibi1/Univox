@@ -1,11 +1,12 @@
 <script lang="ts">
+    import Avatar from "$lib/components/Avatar.svelte";
     import Option from "$lib/components/Option.svelte";
     import Select from "$lib/components/Select.svelte";
-    import firstDayOfTheWeek from "$lib/stores/firstDayOfTheWeek";
-
-    import Avatar from "$lib/components/Avatar.svelte";
     import colorScheme from "$lib/stores/colorScheme";
+    import firstDayOfTheWeek from "$lib/stores/firstDayOfTheWeek";
     import user from "$lib/stores/user";
+
+    export let data;
 
     const refresh = () => user.setAvatar(Math.random() + $user.firstName + $user.da);
 </script>
@@ -28,7 +29,7 @@
 
         <span class="flex items-center justify-center gap-2">
             <i class="bx bx-map text-2xl" />
-            Étudiant au Collège Bois de Boulogne
+            Étudiant au {data.schoolName}
         </span>
 
         <span>
