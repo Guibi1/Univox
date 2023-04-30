@@ -1,28 +1,22 @@
 <script lang="ts">
-    import { enhance, type SubmitFunction } from "$app/forms";
     import Carousel from "$lib/components/Carousel.svelte";
     import Loader from "$lib/components/Loader.svelte";
     import Option from "$lib/components/Option.svelte";
     import Select from "$lib/components/Select.svelte";
-    import type { ActionData } from "./$types";
+    import { superForm } from "sveltekit-superforms/client";
 
-    export let form: ActionData;
-    let loading = false;
-    let images: File[] = [];
+    export let data;
 
-    const handleSubmit = (({ data }) => {
-        loading = true;
-        for (const i in images) {
-            data.append("image" + i, images[i]);
-        }
-
-        return async ({ result, update }) => {
-            if (result.type !== "redirect") {
-                loading = false;
+    const { form, errors, delayed, enhance } = superForm(data.form, {
+        taintedMessage: null,
+        onSubmit: ({ data }) => {
+            for (const i in images) {
+                data.append("image" + i, images[i]);
             }
-            update();
-        };
-    }) satisfies SubmitFunction;
+        },
+    });
+
+    let images: File[] = [];
 </script>
 
 <svelte:head>
@@ -31,108 +25,86 @@
 
 <h1 class="text-center">Vendre un livre</h1>
 
-<form
-    use:enhance={handleSubmit}
-    class="m-auto grid max-w-5xl grid-cols-[2fr_2fr] gap-6"
-    method="post"
->
+<form use:enhance class="m-auto grid max-w-5xl grid-cols-[2fr_2fr] gap-6" method="post">
     <div class="flex flex-col items-stretch gap-5">
-        <label data-error={form?.invalidTitle}>
+        <label data-error={$errors.title}>
             Nom du livre
-            <input
-                name="title"
-                type="text"
-                required
-                value={form?.title ?? ""}
-                placeholder=" "
-                on:input={() => form && (form.invalidTitle = false)}
-            />
-            {#if form?.invalidTitle}
-                <span>non</span>
+
+            <input name="title" type="text" value={$form.title} />
+
+            {#if $errors.title}
+                <span>{$errors.title[0]}</span>
             {/if}
         </label>
 
-        <label data-error={form?.invalidAuthor}>
+        <label data-error={$errors.author}>
             Nom de(s) l'auteur(s)
-            <input
-                name="author"
-                type="text"
-                required
-                value={form?.author ?? ""}
-                placeholder=" "
-                on:input={() => form && (form.invalidAuthor = false)}
-            />
-            {#if form?.invalidAuthor}
-                <span>non</span>
+
+            <input name="author" type="text" value={$form.author} />
+
+            {#if $errors.author}
+                <span>{$errors.author[0]}</span>
             {/if}
         </label>
 
-        <div class="label" data-error={form?.invalidState}>
+        <div class="label" data-error={$errors.state}>
             L'état du livre
-            <Select name="state" on:change={() => form && (form.invalidState = false)}>
+
+            <Select name="state">
                 <Option text="Neuf" />
                 <Option text="Usagé - Comme neuf" />
                 <Option text="Usagé - Bon état" />
                 <Option text="Usagé - Endommagé" />
             </Select>
-            {#if form?.invalidState}
-                <span>non</span>
+
+            {#if $errors.state}
+                <span>{$errors.state[0]}</span>
             {/if}
         </div>
 
-        <label data-error={form?.invalidPrice}>
+        <label data-error={$errors.price}>
             Prix de vente
-            <input
-                name="price"
-                type="text"
-                maxlength="3"
-                required
-                pattern={"\\d{1,3}"}
-                value={form?.price ?? ""}
-                placeholder=" "
-                on:input={() => form && (form.invalidPrice = false)}
-            />
-            {#if form?.invalidPrice}
-                <span>non</span>
+
+            <input name="price" type="text" value={$form.price} />
+
+            {#if $errors.price}
+                <span>{$errors.price[0]}</span>
             {/if}
         </label>
 
-        <label data-error={form?.invalidISBN}>
+        <label data-error={$errors.ISBN}>
             ISBN
-            <input
-                name="isbn"
-                type="text"
-                required
-                pattern={"^(?:ISBN(?:-1[03])?:? )?(?=[-0-9 ]{17}$|[-0-9X ]{13}$|[0-9X]{10}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?(?:[0-9]+[- ]?){2}[0-9X]$"}
-                value={form?.isbn ?? ""}
-                placeholder=" "
-                on:input={() => form && (form.invalidISBN = false)}
-            />
-            {#if form?.invalidISBN}
-                <span>non</span>
+
+            <input name="ISBN" type="text" value={$form.ISBN} />
+
+            {#if $errors.ISBN}
+                <span>{$errors.ISBN[0]}</span>
             {/if}
         </label>
 
-        <label data-error={form?.invalidClassCode}>
+        <label data-error={$errors.classCode}>
             Cours
-            <input
-                name="classCode"
-                type="text"
-                required
-                value={form?.classCode ?? ""}
-                placeholder=" "
-                on:input={() => form && (form.invalidClassCode = false)}
-            />
-            {#if form?.invalidClassCode}
-                <span>non</span>
+
+            <input name="classCode" type="text" value={$form.classCode} />
+
+            {#if $errors.classCode}
+                <span>{$errors.classCode[0]}</span>
             {/if}
         </label>
     </div>
 
     <div class="flex flex-col items-stretch gap-5">
-        <Carousel bind:files={images} />
+        <div class="label" data-error={$errors.images}>
+            Images
 
-        {#if !loading}
+            <Carousel bind:files={images} />
+
+            {#if $errors.images}
+                <span>{$errors.images[0]}</span>
+            {/if}
+        </div>
+
+        {#if !$delayed}
             <button class="filled" type="submit"> Créer l'annonce </button>
         {:else}
             <div class="flex justify-center">
