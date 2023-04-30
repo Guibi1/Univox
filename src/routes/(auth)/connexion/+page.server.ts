@@ -23,7 +23,7 @@ export const actions = {
         ]);
 
         if (!user) {
-            return setError(form, "password", "Mot de passe eronné");
+            return setError(form, "password", "Mot de passe erroné");
         }
 
         const token = await db.createToken(user);
