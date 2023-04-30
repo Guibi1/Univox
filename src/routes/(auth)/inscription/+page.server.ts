@@ -4,16 +4,17 @@ import { fail } from "@sveltejs/kit";
 import { Types } from "mongoose";
 import { setError, superValidate } from "sveltekit-superforms/client";
 import type { Actions } from "./$types";
-import { formSchema } from "./+page.svelte";
+import { firstFormSchema, formSchema } from "./+page.svelte";
 
 export const load = async () => {
     const form = await superValidate(formSchema);
+    form.data.firstStep = true;
     return { form };
 };
 
 export const actions = {
     firstStep: async ({ request }) => {
-        const form = await superValidate(request, formSchema);
+        const form = await superValidate(request, firstFormSchema);
 
         if (!form.valid) {
             return fail(400, { form });
@@ -30,9 +31,13 @@ export const actions = {
                 return setError(form, "email", "Un compte avec ce courriel existe déjà");
             }
 
-            form.data.firstName = info.firstName;
-
             // Everything it good!
+            form.data.firstStep = false;
+            form.data.password = "";
+            form.data.confirmPassword = "";
+            form.data.firstName = info.firstName;
+            form.data.lastName = info.lastName;
+
             return { form };
         } catch (e) {
             return setError(form, "omnivoxPassword", "Mot de passe erroné");
@@ -54,7 +59,8 @@ export const actions = {
 
             form.data.firstName = info.firstName;
             form.data.lastName = info.lastName;
-        } catch (e) {
+        } catch {
+            form.data.firstStep = true;
             return setError(form, "omnivoxPassword", "Mot de passe erroné");
         }
 
@@ -73,6 +79,7 @@ export const actions = {
 
         // Make sure the DA doesn't already has an account
         if (!user) {
+            form.data.firstStep = true;
             return setError(form, "email", "Un compte avec ce courriel existe déjà");
         }
 
