@@ -1,36 +1,3 @@
-<script context="module" lang="ts">
-    import { z } from "zod";
-
-    export const firstFormSchema = z.object({
-        email: z
-            .string()
-            .email("Courriel invalide")
-            .endsWith(".qc.ca", "Assurez-vous d'utiliser votre courriel étudiant"),
-        omnivoxPassword: z.string().min(1, "Entrez votre mot de passe"),
-        password: z.string(),
-        confirmPassword: z.string(),
-        firstName: z.string().optional(),
-        lastName: z.string().optional(),
-        firstStep: z.boolean().default(true),
-    });
-
-    export const formSchema = firstFormSchema
-        .extend({
-            password: z.string().min(8, "Mot de passe trop court"),
-            confirmPassword: z.string(),
-            firstStep: z.boolean().default(false),
-        })
-        .superRefine(({ confirmPassword, password }, ctx) => {
-            if (confirmPassword !== password) {
-                ctx.addIssue({
-                    path: ["confirmPassword"],
-                    message: "Les mots de passe correspondent pas",
-                    code: "custom",
-                });
-            }
-        });
-</script>
-
 <script lang="ts">
     import { page } from "$app/stores";
     import Loader from "$lib/components/Loader.svelte";
@@ -38,7 +5,7 @@
 
     export let data;
 
-    const { form, errors, delayed, enhance } = superForm(data.form);
+    const { form, errors, delayed, enhance } = superForm(data.form, { taintedMessage: null });
 </script>
 
 <svelte:head>

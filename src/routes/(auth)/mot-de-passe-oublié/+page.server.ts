@@ -1,18 +1,18 @@
 import * as db from "$lib/server/db";
 import * as omnivox from "$lib/server/omnivox";
-import { fail, redirect } from "@sveltejs/kit";
-import { setError, superValidate } from "sveltekit-superforms/server";
+import { fail,redirect } from "@sveltejs/kit";
+import { setError,superValidate } from "sveltekit-superforms/server";
+import { resetPasswordSchema } from "../formSchema";
 import type { Actions } from "./$types";
-import { formSchema } from "./+page.svelte";
 
 export const load = async () => {
-    const form = await superValidate(formSchema);
+    const form = await superValidate(resetPasswordSchema);
     return { form };
 };
 
 export const actions = {
     reset: async ({ request, url }) => {
-        const form = await superValidate(request, formSchema);
+        const form = await superValidate(request, resetPasswordSchema);
 
         if (!form.valid) {
             return fail(400, { form });

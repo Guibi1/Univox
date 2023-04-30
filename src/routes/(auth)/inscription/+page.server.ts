@@ -3,18 +3,18 @@ import * as omnivox from "$lib/server/omnivox";
 import { fail } from "@sveltejs/kit";
 import { Types } from "mongoose";
 import { setError, superValidate } from "sveltekit-superforms/client";
+import { inscriptionPartialSchema, inscriptionSchema } from "../formSchema";
 import type { Actions } from "./$types";
-import { firstFormSchema, formSchema } from "./+page.svelte";
 
 export const load = async () => {
-    const form = await superValidate(formSchema);
+    const form = await superValidate(inscriptionSchema);
     form.data.firstStep = true;
     return { form };
 };
 
 export const actions = {
     firstStep: async ({ request }) => {
-        const form = await superValidate(request, firstFormSchema);
+        const form = await superValidate(request, inscriptionPartialSchema);
 
         if (!form.valid) {
             return fail(400, { form });
@@ -45,7 +45,7 @@ export const actions = {
     },
 
     secondStep: async ({ request, cookies }) => {
-        const form = await superValidate(request, formSchema);
+        const form = await superValidate(request, inscriptionSchema);
 
         if (!form.valid) {
             return fail(400, { form });
