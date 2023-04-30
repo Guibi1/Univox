@@ -1,7 +1,7 @@
+import { connexionSchema } from "$lib/formSchema";
 import * as db from "$lib/server/db";
 import { fail } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
-import { connexionSchema } from "../formSchema";
 import type { Actions } from "./$types";
 
 export const load = async () => {
