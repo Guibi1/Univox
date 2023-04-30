@@ -37,7 +37,7 @@ export async function fetchSchedulePageHTML(
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            "Cookie": `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
+            "Cookie": `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; ${cookie.TK}; ${sessionID}; ${rvpMod}`,
         },
         body: `AnSession=${year + semester}&Confirm=Consulter+mon+horaire`,
     });
@@ -52,7 +52,7 @@ export async function fetchSchedulePageHTML(
         `https://${cookie.baseUrl}-estd.omnivox.ca:443/estd/hrre/${visualiseURL}&typeHoraire=Session`,
         {
             headers: {
-                Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
+                Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; ${cookie.TK}; ${sessionID}; ${rvpMod}`,
             },
         }
     );
@@ -117,9 +117,9 @@ export async function login(email: string, password: string): Promise<OmnivoxCoo
 
     const cookies = res.headers.get("set-cookie");
     const K = regexFind(cookies, /k=(.+?);/)[1];
-    const TKSBDBP = regexFind(cookies, /TKSBDBP=(.+?);/)[1];
+    const TK = regexFind(cookies, /(TK(?!INTR).+?=.+?);/)[1];
 
-    return { baseUrl, COMN, DTKS, K, TKSBDBP };
+    return { baseUrl, COMN, DTKS, K, TK };
 }
 
 /**
@@ -132,14 +132,14 @@ async function getScheduleCookies(cookie: OmnivoxCookie): Promise<ScheduleCookie
         `https://${cookie.baseUrl}-estd.omnivox.ca:443/estd/vl.ovx?lk=%2festd%2fhrre%2fHoraire.ovx`,
         {
             headers: {
-                Cookie: `DTKS=${cookie.DTKS}; ln=FRA; L=FRA; comn=${cookie.COMN}; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}`,
+                Cookie: `DTKS=${cookie.DTKS}; ln=FRA; L=FRA; comn=${cookie.COMN}; k=${cookie.K}; ${cookie.TK}`,
             },
         }
     );
 
     const cookies = res.headers.get("set-cookie");
     const sessionID = regexFind(cookies, /(ASPSESSIONID.+?=.+?);/)[1];
-    const rvpMod = regexFind(cookies, /(rvp-omnivox-mod-bdb.+?=.+?);/)[1];
+    const rvpMod = regexFind(cookies, /(rvp-omnivox-mod.+?=.+?);/)[1];
 
     // Get the load session url
     const text = await res.text();
@@ -150,7 +150,7 @@ async function getScheduleCookies(cookie: OmnivoxCookie): Promise<ScheduleCookie
     // This is so that omnvivox allows us to look at the schedule
     await fetch(`https://${cookie.baseUrl}-estd.omnivox.ca:443/estd/${loadSessionURL}`, {
         headers: {
-            Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
+            Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; ${cookie.TK}; ${sessionID}; ${rvpMod}`,
         },
     });
 
@@ -238,7 +238,7 @@ type OmnivoxCookie = {
     COMN: string;
     DTKS: string;
     K: string;
-    TKSBDBP: string;
+    TK: string;
     baseUrl: string;
 };
 
