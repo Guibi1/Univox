@@ -1,9 +1,9 @@
+import { inscriptionPartialSchema, inscriptionSchema } from "$lib/formSchema";
 import * as db from "$lib/server/db";
 import * as omnivox from "$lib/server/omnivox";
 import { fail } from "@sveltejs/kit";
 import { Types } from "mongoose";
-import { setError, superValidate } from "sveltekit-superforms/client";
-import { inscriptionPartialSchema, inscriptionSchema } from "../formSchema";
+import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
 
 export const load = async () => {

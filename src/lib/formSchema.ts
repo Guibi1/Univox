@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { z } from "zod";
 
 const email = z
@@ -29,9 +30,9 @@ export const inscriptionSchema = inscriptionPartialSchema
         confirmPassword: z.string(),
         firstStep: z.boolean().default(false),
     })
-    .superRefine(({ confirmPassword, password }, ctx) => {
+    .superRefine(({ confirmPassword, password }, { addIssue }) => {
         if (confirmPassword !== password) {
-            ctx.addIssue({
+            addIssue({
                 path: ["confirmPassword"],
                 message: "Les mots de passe correspondent pas",
                 code: "custom",
@@ -40,3 +41,22 @@ export const inscriptionSchema = inscriptionPartialSchema
     });
 
 export const resetPasswordSchema = z.object({ email, omnivoxPassword, password });
+
+export const importSchema = z.object({ omnivoxPassword });
+
+export const newPeriodSchema = z
+    .object({
+        name: z.string().min(1, "Requis"),
+        date: z.string().regex(/\d\d\d\d-\d\d-\d\d/),
+        startTime: z.string().regex(/\d\d:\d\d/),
+        endTime: z.string().regex(/\d\d:\d\d/),
+    })
+    .superRefine(({ startTime, endTime }, { addIssue }) => {
+        if (!dayjs(startTime, "HH:mm").isBefore(dayjs(endTime, "HH:mm"), "minutes")) {
+            addIssue({
+                path: ["endTime"],
+                message: "La fin de l'évenement doit être après le début",
+                code: "custom",
+            });
+        }
+    });

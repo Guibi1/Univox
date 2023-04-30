@@ -14,12 +14,7 @@
 
 <h1 class="pb-4 text-center">Mot de passe oublié</h1>
 
-<form
-    use:enhance
-    class="m-auto flex w-9/12 flex-col gap-6"
-    method="post"
-    action="?/reset"
->
+<form use:enhance class="m-auto flex w-9/12 flex-col gap-6" method="post" action="?/reset">
     <div class="flex flex-col gap-4">
         <label data-error={$errors.email}>
             Adresse courriel étudiante
@@ -29,7 +24,7 @@
                 <span>{$errors.email[0]}</span>
             {/if}
         </label>
-        
+
         <label data-error={$errors.omnivoxPassword}>
             Mot de passe Omnivox
             <input
@@ -46,12 +41,7 @@
 
         <label data-error={$errors.password}>
             Mot de passe
-            <input
-                name="password"
-                type="password"
-                value={$form.password}
-                readonly={$submitting}
-            />
+            <input name="password" type="password" value={$form.password} readonly={$submitting} />
 
             {#if $errors.password}
                 <span>{$errors.password[0]}</span>
