@@ -36,7 +36,7 @@
             <input name="email" type="email" value={$form.email} readonly={$submitting} />
 
             {#if $errors.email}
-                <span>{$errors.email}</span>
+                <span>{$errors.email[0]}</span>
             {/if}
         </label>
         
@@ -50,7 +50,7 @@
             />
 
             {#if $errors.omnivoxPassword}
-                <span>{$errors.omnivoxPassword}</span>
+                <span>{$errors.omnivoxPassword[0]}</span>
             {/if}
         </label>
 
@@ -64,7 +64,7 @@
             />
 
             {#if $errors.password}
-                <span>{$errors.password}</span>
+                <span>{$errors.password[0]}</span>
             {/if}
         </label>
 
