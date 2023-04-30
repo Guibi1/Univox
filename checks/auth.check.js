@@ -7,7 +7,7 @@ const AuthCheck = () => {
         await univox.goto("/connexion");
 
         // Fill "da" on <input> [name="da"]
-        await page.fill('[name="da"]', "0000000");
+        await page.fill('[name="email"]', "0000000");
 
         // Fill "password" on <input> [name="password"]
         await page.fill('[name="password"]', "00000000");
@@ -24,7 +24,7 @@ const AuthCheck = () => {
         await univox.goto("/connexion");
 
         // Fill "da" on <input> [name="da"]
-        await page.fill('[name="da"]', process.env.DA);
+        await page.fill('[name="email"]', process.env.EMAIL);
 
         // Fill "password" on <input> [name="password"]
         await page.fill('[name="password"]', process.env.PASSWORD);
