@@ -33,7 +33,7 @@ export async function fetchSchedulePageHTML(
     const { sessionID, rvpMod } = await getScheduleCookies(cookie);
 
     // Get the 'visualise' link
-    const res = await fetch("https://bdeb-estd.omnivox.ca:443/estd/hrre/Horaire.ovx", {
+    const res = await fetch(`https://${cookie.baseUrl}-estd.omnivox.ca:443/estd/hrre/Horaire.ovx`, {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -49,7 +49,7 @@ export async function fetchSchedulePageHTML(
 
     // Fetch the actual schedule data
     const visualiseRes = await fetch(
-        "https://bdeb-estd.omnivox.ca:443/estd/hrre/" + visualiseURL + "&typeHoraire=Session",
+        `https://${cookie.baseUrl}-estd.omnivox.ca:443/estd/hrre/${visualiseURL}&typeHoraire=Session`,
         {
             headers: {
                 Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
@@ -76,13 +76,17 @@ export function schedulePageToName(HTML: string) {
 
 /**
  * Sends a login request to omnivox
- * @param {string} da The student's DA
+ * @param {string} email The student's email adresse
  * @param {string} password The student's password
  * @returns An object containing all the usefull information
  */
-export async function login(da: string, password: string): Promise<OmnivoxCookie> {
+export async function login(email: string, password: string): Promise<OmnivoxCookie> {
+    const match = regexFind(email, /(\d{7})@(.*).qc.ca/);
+    const da = match[1];
+    const baseUrl = match[2];
+
     // GET COOKIES
-    const firstRes = await fetch("https://bdeb.omnivox.ca:443/Login/Account/Login");
+    const firstRes = await fetch(`https://${baseUrl}.omnivox.ca:443/Login/Account/Login`);
     const formK = regexFind(
         await firstRes.text(),
         /<input id="k" name="k" type="hidden" value="(.*?)" \/>/
@@ -95,7 +99,7 @@ export async function login(da: string, password: string): Promise<OmnivoxCookie
 
     // LOGIN
     const res = await fetch(
-        "https://bdeb.omnivox.ca:443/intr/Module/Identification/Login/Login.aspx",
+        `https://${baseUrl}.omnivox.ca:443/intr/Module/Identification/Login/Login.aspx`,
         {
             method: "POST",
             headers: {
@@ -115,7 +119,7 @@ export async function login(da: string, password: string): Promise<OmnivoxCookie
     const K = regexFind(cookies, /k=(.+?);/)[1];
     const TKSBDBP = regexFind(cookies, /TKSBDBP=(.+?);/)[1];
 
-    return { COMN, DTKS, K, TKSBDBP };
+    return { baseUrl, COMN, DTKS, K, TKSBDBP };
 }
 
 /**
@@ -125,7 +129,7 @@ export async function login(da: string, password: string): Promise<OmnivoxCookie
  */
 async function getScheduleCookies(cookie: OmnivoxCookie): Promise<ScheduleCookie> {
     const res = await fetch(
-        "https://bdeb-estd.omnivox.ca:443/estd/vl.ovx?lk=%2festd%2fhrre%2fHoraire.ovx",
+        `https://${cookie.baseUrl}-estd.omnivox.ca:443/estd/vl.ovx?lk=%2festd%2fhrre%2fHoraire.ovx`,
         {
             headers: {
                 Cookie: `DTKS=${cookie.DTKS}; ln=FRA; L=FRA; comn=${cookie.COMN}; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}`,
@@ -144,7 +148,7 @@ async function getScheduleCookies(cookie: OmnivoxCookie): Promise<ScheduleCookie
     );
 
     // This is so that omnvivox allows us to look at the schedule
-    await fetch("https://bdeb-estd.omnivox.ca:443/estd/" + loadSessionURL, {
+    await fetch(`https://${cookie.baseUrl}-estd.omnivox.ca:443/estd/${loadSessionURL}`, {
         headers: {
             Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; TKSBDBP=${cookie.TKSBDBP}; ${sessionID}; ${rvpMod}`,
         },
@@ -235,6 +239,7 @@ type OmnivoxCookie = {
     DTKS: string;
     K: string;
     TKSBDBP: string;
+    baseUrl: string;
 };
 
 type ScheduleCookie = {
