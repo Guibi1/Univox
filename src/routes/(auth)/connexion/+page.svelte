@@ -1,12 +1,3 @@
-<script context="module" lang="ts">
-    import { z } from "zod";
-
-    export const formSchema = z.object({
-        email: z.string().email("Courriel invalide"),
-        password: z.string().min(8, "Mot de passe trop court"),
-    });
-</script>
-
 <script lang="ts">
     import { page } from "$app/stores";
     import Loader from "$lib/components/Loader.svelte";
@@ -16,7 +7,7 @@
 
     export let data;
 
-    const { form, errors, submitting, enhance } = superForm(data.form);
+    const { form, errors, submitting, enhance } = superForm(data.form, { taintedMessage: null });
 </script>
 
 <svelte:head>
