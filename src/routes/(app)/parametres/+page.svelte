@@ -11,6 +11,10 @@
     const refresh = () => user.setAvatar(Math.random() + $user.firstName + $user.da);
 </script>
 
+<svelte:head>
+    <title>Univox | Paramètres</title>
+</svelte:head>
+
 <div class="mx-auto grid gap-6 py-4 laptop:grid-cols-[max-content_40rem] laptop:divide-x">
     <div class="flex flex-col items-center gap-2 text-center">
         <div class="h-32">
