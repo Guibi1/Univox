@@ -177,10 +177,10 @@ export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | 
  * @returns The server user with the provided credentials, or null if no user matched them
  */
 export async function compareUserPassword(
-    da: string,
+    email: string,
     password: string
 ): Promise<ServerUser | null> {
-    const user = await Users.findOne({ da });
+    const user = await Users.findOne({ email });
     if (user && (await bcryptjs.compare(password, user.passwordHash))) {
         return user;
     }

@@ -1,23 +1,22 @@
+<script context="module" lang="ts">
+    import { z } from "zod";
+
+    export const formSchema = z.object({
+        email: z.string().email("Courriel invalide"),
+        password: z.string().min(8, "Mot de passe trop court"),
+    });
+</script>
+
 <script lang="ts">
-    import { enhance, type SubmitFunction } from "$app/forms";
     import { page } from "$app/stores";
     import Loader from "$lib/components/Loader.svelte";
     import LogoText from "$src/assets/logo-text.svelte";
     import Logo from "$src/assets/logo.svelte";
-    import type { ActionData } from "./$types";
+    import { superForm } from "sveltekit-superforms/client";
 
-    export let form: ActionData;
-    let loading = false;
+    export let data;
 
-    const handleSubmit = (() => {
-        loading = true;
-        return async ({ update, result }) => {
-            if (result.type !== "success") {
-                loading = false;
-            }
-            update();
-        };
-    }) satisfies SubmitFunction;
+    const { form, errors, submitting, enhance } = superForm(data.form);
 </script>
 
 <svelte:head>
@@ -31,48 +30,32 @@
     <Logo size="4rem" />
 </div>
 
-<form
-    use:enhance={handleSubmit}
-    class="m-auto flex w-9/12 flex-col gap-6"
-    method="post"
-    action="?/login"
->
+<form use:enhance class="m-auto flex w-9/12 flex-col gap-6" method="post" action="?/login">
     <div class="flex flex-col gap-4">
-        <label>
-            No de DA
-            <input
-                name="da"
-                type="text"
-                pattern={"\\d{7}"}
-                required
-                placeholder=" "
-                value={form?.da ?? ""}
-                readonly={loading}
-            />
-        </label>
+        <label data-error={$errors.email}>
+            Adresse courriel étudiante
+            <input name="email" type="email" value={$form.email} readonly={$submitting} />
 
-        <label data-error={form?.incorrect}>
-            Mot de passe
-            <input
-                name="password"
-                type="password"
-                pattern={".{8,}"}
-                required
-                placeholder=" "
-                on:input={() => form && (form.incorrect = false)}
-                readonly={loading}
-            />
-            {#if form?.incorrect}
-                <span>Mot de passe erroné</span>
+            {#if $errors.email}
+                <span>{$errors.email}</span>
             {/if}
         </label>
 
-        <a href={"/mot-de-passe-oublié" + $page.data.params} class="self-end">
+        <label data-error={$errors.password}>
+            Mot de passe
+            <input name="password" type="password" value={$form.password} readonly={$submitting} />
+
+            {#if $errors.password}
+                <span>{$errors.password}</span>
+            {/if}
+        </label>
+
+        <a href={"/mot-de-passe-oublié" + $page.url.search} class="self-end">
             Mot de passe oublié ?
         </a>
     </div>
 
-    {#if !loading}
+    {#if !$submitting}
         <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
             Se connecter <i class="bx bx-chevron-right text-lg" />
         </button>
@@ -83,7 +66,7 @@
     {/if}
 </form>
 
-{#if !loading}
+{#if !$submitting}
     <div class="my-3 flex items-center gap-6">
         <hr class="w-full" />
         <span> ou </span>
@@ -91,6 +74,6 @@
     </div>
 
     <div class="m-auto flex w-9/12">
-        <a href={"/inscription" + $page.data.params} class="outlined m-auto w-7/12"> S'inscrire </a>
+        <a href={"/inscription" + $page.url.search} class="outlined m-auto w-7/12"> S'inscrire </a>
     </div>
 {/if}
