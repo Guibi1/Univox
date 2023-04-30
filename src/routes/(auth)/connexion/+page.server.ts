@@ -1,17 +1,17 @@
 import * as db from "$lib/server/db";
 import { fail } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
+import { connexionSchema } from "../formSchema";
 import type { Actions } from "./$types";
-import { formSchema } from "./+page.svelte";
 
 export const load = async () => {
-    const form = await superValidate(formSchema);
+    const form = await superValidate(connexionSchema);
     return { form };
 };
 
 export const actions = {
     login: async ({ request, cookies }) => {
-        const form = await superValidate(request, formSchema);
+        const form = await superValidate(request, connexionSchema);
 
         if (!form.valid) {
             return fail(400, { form });
