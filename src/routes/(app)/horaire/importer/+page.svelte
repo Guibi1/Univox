@@ -36,7 +36,7 @@
     class="m-auto flex w-80 flex-col gap-6"
     hidden={$delayed}
     method="post"
-    action="/horaire?/import"
+    action="?/import"
 >
     <label data-error={$errors.omnivoxPassword}>
         Mot de passe Omnivox
