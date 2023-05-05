@@ -4,8 +4,9 @@
 
 import type { Class } from "$lib/Types";
 import * as cheerio from "cheerio";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import sharp from "sharp";
 
 dayjs.extend(customParseFormat);
 
@@ -162,8 +163,10 @@ async function getScheduleCookies(cookie: OmnivoxCookie): Promise<ScheduleCookie
  * @param HTML The 'visualise' page's HTML content
  * @returns The user's schedule
  */
-export function schedulePageToClasses(HTML: string): Class[] {
+export async function schedulePageToClasses(HTML: string): Promise<Class[]> {
     const schedule: Class[] = [];
+    const orderedSchedule: Class[][] = Array.from({ length: 5 }, () => []);
+
     const $ = cheerio.load(HTML);
     const rows = $("table .CelluleHoraire > tbody > tr:not(:first)");
 
@@ -201,7 +204,7 @@ export function schedulePageToClasses(HTML: string): Class[] {
                 }
             }
 
-            schedule.push({
+            const c: Class = {
                 name: match[1],
                 code: match[2],
                 group: Number(match[3]),
@@ -211,11 +214,103 @@ export function schedulePageToClasses(HTML: string): Class[] {
                 virtual: match[7] !== "Présentiel",
                 timeStart: timeStart.day(day),
                 timeEnd: timeEnd.day(day),
-            });
+            };
+
+            orderedSchedule[day - 1].push(c);
+            schedule.push(c);
         });
     }
 
-    return schedule;
+    return await getScheduleForAllSession(orderedSchedule);
+}
+
+type UnknownPeriods = { timeStart: Dayjs; timeEnd: Dayjs }[];
+type Image = { buffer: Buffer; width: number; height: number };
+
+export async function getScheduleForAllSession(orderedSchedule: Class[][]): Promise<Class[]> {
+    // TODO: Get the image from onmivox
+    const url = "C:\\Users\\guibi\\Downloads\\HoraireSemaine2.gif";
+
+    const image = sharp(url);
+    const { width, height } = await image.metadata();
+    const buffer = await image.raw().toBuffer();
+
+    if (!width || !height) {
+        throw "Bad image";
+    }
+
+    const classes: Class[] = [];
+    for (let i = 0; i < 5; i++) {
+        const unknownPeriods = scanDay(i, { buffer, width, height });
+
+        for (const day of orderedSchedule) {
+            if (unknownPeriods.length !== day.length) {
+                continue;
+            }
+
+            if (
+                unknownPeriods.every(
+                    (period, index) =>
+                        period.timeStart.isSame(day[index].timeStart) &&
+                        period.timeEnd.isSame(day[index].timeEnd)
+                )
+            ) {
+                // TODO: Put the good date + month + year
+                classes.push(
+                    ...day.map((c) => ({ ...c, timeStart: c.timeStart, timeEnd: c.timeEnd }))
+                );
+            }
+        }
+    }
+    return classes;
+}
+
+function scanDay(weekdayToScan: number, image: Image): UnknownPeriods {
+    const firstPeriod = 47;
+    const periodHeoight = 60;
+    const firstWidth = 122;
+    const periodWidth = 281;
+
+    function toDayjs(index: number) {
+        return dayjs()
+            .day(weekdayToScan + 1)
+            .startOf("day")
+            .hour(8)
+            .minute(30 * index);
+    }
+
+    function getColorAtPosition(x: number, y: number) {
+        const index = (image.width * y + x) * 3;
+        return [image.buffer[index], image.buffer[index + 1], image.buffer[index + 2]];
+    }
+
+    const foundPeriods: UnknownPeriods = [];
+    const x = firstWidth + periodWidth * weekdayToScan;
+    let lastTime = -1;
+
+    for (let i = 0; i < 21; i++) {
+        const y = firstPeriod + periodHeoight * i - (i === 20 ? 1 : 0);
+
+        if (x < image.width && y < image.height) {
+            const [r, g, b] = getColorAtPosition(x, y);
+
+            if (r === 0 && g === 0 && b === 0) {
+                if (lastTime !== -1) {
+                    const [r, g, b] = getColorAtPosition(x, y - 3);
+
+                    if (r === 255 && g === 255 && b === 255) {
+                        foundPeriods.push({ timeStart: toDayjs(lastTime), timeEnd: toDayjs(i) });
+                    }
+                }
+
+                lastTime = i;
+            }
+        } else {
+            console.error(`Invalid pixel coordinates: (${x}, ${y})`);
+        }
+    }
+
+    return foundPeriods;
 }
 
 /**
