@@ -67,7 +67,7 @@ export const actions = {
         };
 
         await Promise.allSettled(uploads);
-        await db.addBookListing(book);
+        await db.addBookListing(locals.user, book);
 
         throw redirect(302, "/livres/mes-livres");
     },
