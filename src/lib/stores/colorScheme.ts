@@ -1,3 +1,8 @@
+/**
+ * @public UNPROTECTED API ROUTE
+ * @file API endpoint to update the browser's color scheme
+ */
+
 import { browser } from "$app/environment";
 import { writable } from "svelte/store";
 
