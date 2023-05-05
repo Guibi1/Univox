@@ -40,7 +40,7 @@
                         </div>
                         <div class="flex flex-row items-center gap-3 px-5">
                             <a
-                                class="flex h-10 w-24 items-center justify-center rounded bg-blue-primary font-bold hover:bg-green-900"
+                                class="filled flex h-10 w-24 items-center justify-center rounded"
                                 href="/amis?friendId={friend._id}"
                             >
                                 Horaire
@@ -70,7 +70,7 @@
                         </div>
                         <div class="flex flex-row items-center gap-3 px-5">
                             <a
-                                class="flex h-10 w-24 items-center justify-center rounded bg-blue-primary font-bold hover:bg-blue-primary"
+                                class="filled flex h-10 w-24 items-center justify-center rounded"
                                 href="/livres/mes-livres"
                             >
                                 Voir
