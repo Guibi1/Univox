@@ -63,7 +63,7 @@
                 <i
                     slot="button"
                     class={classNames(
-                        "bx text-2xl",
+                        "bx text-2xl text-white",
                         $notifications.length === 0 ? "bx-bell" : "bxs-bell-ring"
                     )}
                 />
