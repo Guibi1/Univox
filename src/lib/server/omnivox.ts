@@ -30,15 +30,15 @@ export async function fetchSchedulePageHTML(
     cookie: OmnivoxCookie,
     year: number,
     semester: Semester
-): Promise<string> {
-    const { sessionID, rvpMod } = await getScheduleCookies(cookie);
+): Promise<PageHTML> {
+    const scheduleCookie = await getScheduleCookies(cookie);
 
     // Get the 'visualise' link
     const res = await fetch(`https://${cookie.baseUrl}-estd.omnivox.ca:443/estd/hrre/Horaire.ovx`, {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            "Cookie": `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; ${cookie.TK}; ${sessionID}; ${rvpMod}`,
+            "Cookie": `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; ${cookie.TK}; ${scheduleCookie.sessionID}; ${scheduleCookie.rvpMod}`,
         },
         body: `AnSession=${year + semester}&Confirm=Consulter+mon+horaire`,
     });
@@ -53,14 +53,14 @@ export async function fetchSchedulePageHTML(
         `https://${cookie.baseUrl}-estd.omnivox.ca:443/estd/hrre/${visualiseURL}&typeHoraire=Session`,
         {
             headers: {
-                Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; ${cookie.TK}; ${sessionID}; ${rvpMod}`,
+                Cookie: `comn=${cookie.COMN}; DTKS=${cookie.DTKS}; ln=FRA; L=FRA; k=${cookie.K}; ${cookie.TK}; ${scheduleCookie.sessionID}; ${scheduleCookie.rvpMod}`,
             },
         }
     );
 
     const buffer = await visualiseRes.arrayBuffer();
     const decoder = new TextDecoder("iso-8859-1");
-    return decoder.decode(buffer);
+    return { html: decoder.decode(buffer), cookie, scheduleCookie, semester, year };
 }
 
 /**
@@ -159,15 +159,16 @@ async function getScheduleCookies(cookie: OmnivoxCookie): Promise<ScheduleCookie
 }
 
 /**
- * This function parses the provided HTML to create an array of Class
- * @param HTML The 'visualise' page's HTML content
- * @returns The user's schedule
+ * This function parses the provided HTML to create an array of Class,
+ * which is then used to parse the user's entire session
+ * @param htmlPage The PageHTML returned by `fetchSchedulePageHTML`
+ * @returns The user's schedule for the entire session
  */
-export async function schedulePageToClasses(HTML: string): Promise<Class[]> {
+export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Class[]> {
     const schedule: Class[] = [];
     const orderedSchedule: Class[][] = Array.from({ length: 5 }, () => []);
 
-    const $ = cheerio.load(HTML);
+    const $ = cheerio.load(htmlPage.html);
     const rows = $("table .CelluleHoraire > tbody > tr:not(:first)");
 
     for (const row of rows) {
@@ -224,10 +225,12 @@ export async function schedulePageToClasses(HTML: string): Promise<Class[]> {
     return await getScheduleForAllSession(orderedSchedule);
 }
 
-type UnknownPeriods = { timeStart: Dayjs; timeEnd: Dayjs }[];
-type Image = { buffer: Buffer; width: number; height: number };
-
-export async function getScheduleForAllSession(orderedSchedule: Class[][]): Promise<Class[]> {
+/**
+ * Fetches the user's schedule week by week from Omnivox
+ * @param orderedSchedule An array containing 5 days of Class fetched from Omnivox
+ * @returns A proper array of class for the entire session
+ */
+async function getScheduleForAllSession(orderedSchedule: Class[][]): Promise<Class[]> {
     // TODO: Get the image from onmivox
     const url = "C:\\Users\\guibi\\Downloads\\HoraireSemaine2.gif";
 
@@ -265,48 +268,71 @@ export async function getScheduleForAllSession(orderedSchedule: Class[][]): Prom
     return classes;
 }
 
-function scanDay(weekdayToScan: number, image: Image): UnknownPeriods {
-    const firstPeriod = 47;
-    const periodHeoight = 60;
-    const firstWidth = 122;
-    const periodWidth = 281;
+/**
+ *
+ * @param currentWeekday
+ * @param image
+ * @returns
+ */
+function scanDay(currentWeekday: number, image: Image) {
+    // Image position found by-hand
+    const firstPeriodY = 47;
+    const periodHeight = 60;
+    const firstDayX = 122;
+    const dayWidth = 281;
+    const numberOfRows = 21;
 
-    function toDayjs(index: number) {
+    /**
+     * Converts the row to a dayjs
+     */
+    function rowToDayjs(rowIndex: number) {
         return dayjs()
-            .day(weekdayToScan + 1)
+            .day(currentWeekday + 1)
             .startOf("day")
             .hour(8)
-            .minute(30 * index);
+            .minute(30 * rowIndex);
     }
 
+    /**
+     * Returns the RGB value of the specified pixel in an array
+     */
     function getColorAtPosition(x: number, y: number) {
         const index = (image.width * y + x) * 3;
         return [image.buffer[index], image.buffer[index + 1], image.buffer[index + 2]];
     }
 
-    const foundPeriods: UnknownPeriods = [];
-    const x = firstWidth + periodWidth * weekdayToScan;
-    let lastTime = -1;
+    const foundPeriods: { timeStart: Dayjs; timeEnd: Dayjs }[] = [];
+    const x = firstDayX + dayWidth * currentWeekday;
+    let lastFoundRow = -1;
 
-    for (let i = 0; i < 21; i++) {
-        const y = firstPeriod + periodHeoight * i - (i === 20 ? 1 : 0);
+    // For each row of the image (all the times)
+    for (let row = 0; row < numberOfRows; row++) {
+        const y = firstPeriodY + periodHeight * row - (row === 20 ? 1 : 0);
 
-        if (x < image.width && y < image.height) {
-            const [r, g, b] = getColorAtPosition(x, y);
-
-            if (r === 0 && g === 0 && b === 0) {
-                if (lastTime !== -1) {
-                    const [r, g, b] = getColorAtPosition(x, y - 3);
-
-                    if (r === 255 && g === 255 && b === 255) {
-                        foundPeriods.push({ timeStart: toDayjs(lastTime), timeEnd: toDayjs(i) });
-                    }
-                }
-
-                lastTime = i;
-            }
-        } else {
+        // If the pixel is outside of our image
+        if (x >= image.width || y >= image.height) {
             console.error(`Invalid pixel coordinates: (${x}, ${y})`);
+            continue;
+        }
+
+        const [r, g, b] = getColorAtPosition(x, y);
+
+        // If the pixel is black (the border of a period)
+        if (r === 0 && g === 0 && b === 0) {
+            // If it isnt the first border we find
+            if (lastFoundRow !== -1) {
+                const [r, g, b] = getColorAtPosition(x, y - 3);
+
+                // If the pixel over the current Y is white (inside a period)
+                if (r === 255 && g === 255 && b === 255) {
+                    foundPeriods.push({
+                        timeStart: rowToDayjs(lastFoundRow),
+                        timeEnd: rowToDayjs(row),
+                    });
+                }
+            }
+
+            lastFoundRow = row;
         }
     }
 
@@ -341,3 +367,13 @@ type ScheduleCookie = {
     sessionID: string;
     rvpMod: string;
 };
+
+type PageHTML = {
+    html: string;
+    cookie: OmnivoxCookie;
+    scheduleCookie: ScheduleCookie;
+    year: number;
+    semester: Semester;
+};
+
+type Image = { buffer: Buffer; width: number; height: number };
