@@ -20,6 +20,7 @@ import Schedules from "./models/schedules";
 import Settings from "./models/settings";
 import Tokens, { type Token } from "./models/tokens";
 import Users from "./models/users";
+import * as storageBucket from "./storageBucket";
 
 const log = (...text: unknown[]) =>
     console.log(chalk.bgBlue(" INFO "), chalk.magenta("[database]"), chalk.blue("➜ "), ...text);
@@ -33,8 +34,9 @@ mongoose.set("strictQuery", false);
 if (mongoose.connection.readyState !== 1) {
     mongoose
         .connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox")
-        .then(() => log("Connected to MongoDB!"))
-        .catch(() => warn("Couldn't connect to MongoDB"));
+        .then(() => log("Connected"))
+        .then(() => storageBucket.connect())
+        .catch(() => warn("Couldn't connect"));
 }
 
 ///////////////////////
@@ -177,10 +179,10 @@ export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | 
  * @returns The server user with the provided credentials, or null if no user matched them
  */
 export async function compareUserPassword(
-    da: string,
+    email: string,
     password: string
 ): Promise<ServerUser | null> {
-    const user = await Users.findOne({ da });
+    const user = await Users.findOne({ email });
     if (user && (await bcryptjs.compare(password, user.passwordHash))) {
         return user;
     }

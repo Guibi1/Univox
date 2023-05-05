@@ -49,6 +49,11 @@
     function getTopOffset(time: Dayjs, timeStart: number) {
         return rowHeight * (time.hour() + time.minute() / 60 - timeStart);
     }
+
+    function isRightOfSchedule(index: number) {
+        const daysToShow = getDaysToShow(startDay);
+        return index > daysToShow.length / 2;
+    }
 </script>
 
 <div class="grid grid-rows-[min-content_min-content_1fr] overflow-hidden rounded-2xl bg-gray3">
@@ -62,7 +67,6 @@
 
             {startDay.year()}
         </p>
-
         <!-- Buttons for navigating to the previous or next week -->
         <div class="flex h-8 items-stretch gap-0.5">
             <button on:click={() => moveWeek(-1)} class="rounded-lg bg-gray2">
@@ -124,14 +128,19 @@
         </div>
 
         <!-- Calendar -->
-        {#each getDaysToShow(startDay) as day}
+        {#each getDaysToShow(startDay) as day, i}
             <div
                 class="relative min-w-0 flex-1 border-l-2 dark:border-gray3"
                 style={`height: ${rowHeight * (24 - timeStart)}rem`}
             >
                 <!-- Boucle pour chaque période de l'emploi du temps -->
                 {#each getPeriods(schedule, day) as period}
-                    <SchedulePeriod {period} {rowHeight} {timeStart} />
+                    <SchedulePeriod
+                        {period}
+                        {rowHeight}
+                        {timeStart}
+                        isRight={isRightOfSchedule(i)}
+                    />
                 {/each}
 
                 <!-- Pointeur rouge sur l'heure et la date actuelles -->
