@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/stores";
-    import { NotificationKind, type User } from "$lib/Types";
+    import { NotificationKind, type Group, type User } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import Option from "$lib/components/Option.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
@@ -36,10 +36,19 @@
         }, []);
     }
 
-    // Generates the search params that redirects to the book's details
+    // Generates the search params that redirects to the user's schedule
     $: getFriendUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
         params.set("friendId", friend._id.toString());
+        params.delete("groupId");
+        return `?${params}`;
+    };
+
+    // Generates the search params that redirects to the user's schedule
+    $: getGroupUrl = (group: Group) => {
+        const params = new URLSearchParams($page.url.searchParams);
+        params.delete("friendId");
+        params.set("groupId", group._id.toString());
         return `?${params}`;
     };
 </script>
@@ -157,11 +166,17 @@
                         {group.name}
 
                         <Dropdown>
+                            <Option text="Horaire commun" href={getGroupUrl(group)} />
                             <Option
-                                text="Horaire commun"
-                                onClick={() => console.log("TODO: afficher l'horaire")}
+                                separate
+                                text="Renommer"
+                                onClick={() => {
+                                    group.name = "TODO !";
+                                    console.log(
+                                        "remplacer le nom du groupe par une input box et remplacer le nom par l'input ?"
+                                    );
+                                }}
                             />
-                            <Option separate text="Renommer" />
                             <Option
                                 separate
                                 text="Quitter le groupe"
