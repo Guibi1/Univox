@@ -5,6 +5,8 @@
     import dayjs from "dayjs";
     import NewPeriodForm from "./NewPeriodForm.svelte";
 
+    export let data;
+
     let selectedDay = dayjs();
 </script>
 
@@ -24,6 +26,6 @@
     <div>
         <h3 class="mb-4 border-b border-black dark:border-white">Ajouter un évènement</h3>
 
-        <NewPeriodForm />
+        <NewPeriodForm {data} />
     </div>
 </div>

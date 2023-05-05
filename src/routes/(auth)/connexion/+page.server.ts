@@ -1,29 +1,34 @@
+import { connexionSchema } from "$lib/formSchema";
 import * as db from "$lib/server/db";
 import { fail } from "@sveltejs/kit";
+import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
+
+export const load = async () => {
+    const form = await superValidate(connexionSchema);
+    return { form };
+};
 
 export const actions = {
     login: async ({ request, cookies }) => {
-        const data = await request.formData();
-        const da = data.get("da")?.toString();
-        const password = data.get("password")?.toString();
+        const form = await superValidate(request, connexionSchema);
 
-        if (!da || !/\d{7}/.test(da) || !password || !/.{8,}/.test(password)) {
-            return fail(400, { da, missing: true });
+        if (!form.valid) {
+            return fail(400, { form });
         }
 
-        const [passwordsMatch] = await Promise.all([
-            await db.compareUserPassword(da, password),
+        const [user] = await Promise.all([
+            await db.compareUserPassword(form.data.email, form.data.password),
             new Promise((r) => setTimeout(r, 600)),
         ]);
 
-        if (!passwordsMatch) {
-            return fail(401, { da, incorrect: true });
+        if (!user) {
+            return setError(form, "password", "Mot de passe erroné");
         }
 
-        const token = await db.createToken(passwordsMatch);
+        const token = await db.createToken(user);
         cookies.set("token", token, { path: "/", httpOnly: true, secure: true, sameSite: true });
 
-        return { success: true };
+        return { form };
     },
 } satisfies Actions;

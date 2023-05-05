@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from "$app/navigation";
+    import { page } from "$app/stores";
     import { NotificationKind, type User } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import Option from "$lib/components/Option.svelte";
@@ -32,6 +33,13 @@
             return [...prev, user];
         }, []);
     }
+
+    // Generates the search params that redirects to the book's details
+    $: getFriendUrl = (friend: User) => {
+        const params = new URLSearchParams($page.url.searchParams);
+        params.set("friendId", friend._id.toString());
+        return `?${params}`;
+    };
 </script>
 
 <svelte:head>
@@ -53,20 +61,21 @@
         </div>
 
         <ul class="flex-grow py-4">
-            {#each friendsFilterQuery($friends, query) as ami}
+            {#each friendsFilterQuery($friends, query) as friend}
                 <li>
                     <div
                         class="flex items-center justify-between rounded-md bg-gray-200 px-4 dark:bg-gray-400"
                     >
-                        <input type="checkbox" bind:group={selectedFriends} value={ami} />
+                        <input type="checkbox" bind:group={selectedFriends} value={friend} />
 
                         <span>
                             <a
-                                href="?id={ami._id}"
+                                href={getFriendUrl(friend)}
                                 class="transition-[color] duration-300 ease-in-out dark:text-white"
-                                >{ami.firstName}
-                                {ami.lastName}</a
                             >
+                                {friend.firstName}
+                                {friend.lastName}
+                            </a>
                         </span>
 
                         <Dropdown>
@@ -78,7 +87,7 @@
                                 separate
                                 text="Retirer l'ami.e"
                                 color="red"
-                                onClick={() => friends.remove(ami._id)}
+                                onClick={() => friends.remove(friend._id)}
                             />
                         </Dropdown>
                     </div>
