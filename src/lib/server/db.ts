@@ -612,7 +612,18 @@ export async function deleteBookListing(
     }
 
     try {
-        await Books.findByIdAndDelete(bookId);
+        const book: mongoose.HydratedDocument<Book> | null = await Books.findByIdAndDelete(bookId);
+        if (!book) {
+            return false;
+        }
+
+        // Delete the images
+        for (const src of book.src) {
+            const filename = src.split("/").at(-1);
+            if (filename) {
+                storageBucket.deleteBookImage(filename);
+            }
+        }
         log("Book deleted");
         return true;
     } catch {
