@@ -45,7 +45,6 @@ function createGroupsStore() {
                 body: JSON.stringify({ groupId: group._id, name }),
             })
         ).json();
-        console.log("🚀 ~ file: groups.ts:40 ~ rename ~ success:", success);
         if (success) refresh();
     }
 

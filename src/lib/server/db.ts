@@ -373,7 +373,6 @@ export async function getGroup(id: Types.ObjectId | string): Promise<Group | nul
  * @returns An array of groups in which the user is
  */
 export async function getGroups(user: ServerUser): Promise<Group[]> {
-    console.log("🚀 ~ file: db.ts:376 ~ getGroups ~ user.groupsId:", user.groupsId);
     const groups: Group[] = [];
     for (const groupId of user.groupsId) {
         const group = await getGroup(groupId);
@@ -483,7 +482,6 @@ export async function updateGroup(
     data: mongoose.AnyKeys<Group>
 ): Promise<boolean> {
     if (!user.groupsId.some((g) => g.equals(group._id))) {
-        console.log(234234);
         return false;
     }
 
