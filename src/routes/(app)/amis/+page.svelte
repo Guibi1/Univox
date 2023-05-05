@@ -3,6 +3,7 @@
     import { page } from "$app/stores";
     import { NotificationKind, type Group, type User, type Schedule } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
+    import GroupElement from "$lib/components/GroupElement.svelte";
     import Option from "$lib/components/Option.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
@@ -39,14 +40,6 @@
         const params = new URLSearchParams($page.url.searchParams);
         params.set("friendId", friend._id.toString());
         params.delete("groupId");
-        return `?${params}`;
-    };
-
-    // Generates the search params that redirects to the user's schedule
-    $: getGroupUrl = (group: Group) => {
-        const params = new URLSearchParams($page.url.searchParams);
-        params.delete("friendId");
-        params.set("groupId", group._id.toString());
         return `?${params}`;
     };
 </script>
@@ -160,26 +153,7 @@
         <ul>
             {#each $groups as group}
                 <li>
-                    <div class="flex items-center justify-between">
-                        {group.name}
-
-                        <Dropdown>
-                            <Option text="Horaire commun" href={getGroupUrl(group)} />
-                            <Option
-                                separate
-                                text="Renommer"
-                                onClick={() => {
-                                    groups.rename(group, "test");
-                                }}
-                            />
-                            <Option
-                                separate
-                                text="Quitter le groupe"
-                                color="red"
-                                onClick={() => groups.quit(group)}
-                            />
-                        </Dropdown>
-                    </div>
+                    <GroupElement {group} />
                 </li>
             {/each}
         </ul>
