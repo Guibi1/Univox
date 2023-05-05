@@ -39,10 +39,7 @@
                             </div>
                         </div>
                         <div class="flex flex-row items-center gap-3 px-5">
-                            <a
-                                class="filled flex h-10 w-24 items-center justify-center rounded"
-                                href="/amis?friendId={friend._id}"
-                            >
+                            <a class="filled h-10 w-24" href="/amis?friendId={friend._id}">
                                 Horaire
                             </a>
                         </div>
@@ -69,12 +66,7 @@
                             </div>
                         </div>
                         <div class="flex flex-row items-center gap-3 px-5">
-                            <a
-                                class="filled flex h-10 w-24 items-center justify-center rounded"
-                                href="/livres/mes-livres"
-                            >
-                                Voir
-                            </a>
+                            <a class="filled h-10 w-24" href="/livres/mes-livres"> Voir </a>
                         </div>
                     </div>
                 {/each}

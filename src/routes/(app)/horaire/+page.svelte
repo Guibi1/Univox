@@ -18,7 +18,7 @@
     <div class="inline-flex max-h-full flex-1 flex-col gap-6">
         <Calendar bind:selectedDay />
 
-        <a href="/horaire/importer" class="filled text-black dark:text-white">Importer d'Omnivox</a>
+        <a href="/horaire/importer" class="filled">Importer d'Omnivox</a>
     </div>
 
     <ScheduleView bind:startDay={selectedDay} schedule={$schedule} />
