@@ -469,6 +469,33 @@ export async function quitGroup(user: User, group: Group): Promise<boolean> {
     }
 }
 
+/**
+ *
+ * @param user The current user
+ * @param group The targeted group to rename
+ * @param data The data to modify
+ * @returns True if the operation succeded, false otherwise
+ *
+ */
+export async function updateGroup(
+    user: ServerUser,
+    group: Group,
+    data: mongoose.AnyKeys<Group>
+): Promise<boolean> {
+    if (!user.groupsId.some((g) => g.equals(group._id))) {
+        console.log(234234);
+        return false;
+    }
+
+    try {
+        await Groups.findByIdAndUpdate(group, { $set: data });
+        return true;
+    } catch {
+        warn("The function 'updateGroup' was called but failed to update the group's data");
+        return false;
+    }
+}
+
 //////////////////////////
 // -*-*- SCHEDULE -*-*- //
 //////////////////////////

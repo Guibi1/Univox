@@ -169,10 +169,7 @@
                                 separate
                                 text="Renommer"
                                 onClick={() => {
-                                    group.name = "TODO !";
-                                    console.log(
-                                        "remplacer le nom du groupe par une input box et remplacer le nom par l'input ?"
-                                    );
+                                    groups.rename(group, "test");
                                 }}
                             />
                             <Option
