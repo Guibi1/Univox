@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/stores";
-    import { NotificationKind, type Group, type User } from "$lib/Types";
+    import { NotificationKind, type Group, type User, type Schedule } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import Option from "$lib/components/Option.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
@@ -12,8 +12,6 @@
     import notifications from "$lib/stores/notifications";
 
     export let data;
-
-    $: console.log($groups);
 
     let query = data.query ?? "";
     let selectedFriends: User[] = [];
@@ -190,8 +188,10 @@
         </ul>
     </div>
 
-    {#if data.schedule}
-        <ScheduleView schedule={scheduleFromJson(data.schedule)} />
+    {#if data.groupSchedule}
+        <ScheduleView schedule={scheduleFromJson(data.groupSchedule)} />
+    {:else if data.friendSchedule}
+        <ScheduleView schedule={scheduleFromJson(data.friendSchedule)} />
     {:else}
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}

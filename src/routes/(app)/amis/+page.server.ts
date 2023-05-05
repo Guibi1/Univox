@@ -13,7 +13,8 @@ export const load = (async ({ locals, url, depends }) => {
     const friendId = url.searchParams.get("friendId") ?? "";
     const groupId = url.searchParams.get("groupId") ?? "";
 
-    let schedule: Schedule | null = null;
+    let groupSchedule: Schedule | null = null;
+    let friendSchedule: Schedule | null = null;
     if (isObjectIdOrHexString(groupId)) {
         const group = await db.getGroup(groupId);
         if (group) {
@@ -28,7 +29,7 @@ export const load = (async ({ locals, url, depends }) => {
                 }
             }
 
-            schedule = objectIdToString(
+            groupSchedule = objectIdToString(
                 getWeekCommonAvailabilities(dayjs(), membersCombinedPeriods)
             );
         }
@@ -38,7 +39,7 @@ export const load = (async ({ locals, url, depends }) => {
     ) {
         const friend = await db.getServerUser(friendId);
         if (friend) {
-            schedule = objectIdToString(await db.getSchedule(friend));
+            friendSchedule = objectIdToString(await db.getSchedule(friend));
         }
     }
 
@@ -50,13 +51,12 @@ export const load = (async ({ locals, url, depends }) => {
         result.push({ user: db.serverUserToUser(user), friendRequestSent });
     }
 
-    console.log("🚀 ~ file: +page.server.ts:36 ~ load ~ schedule:", schedule);
-
     return {
         query,
         friendId,
         groupId,
-        schedule,
+        groupSchedule,
+        friendSchedule,
         searchResults: arrayIdToString(result),
     };
 }) satisfies PageServerLoad;
