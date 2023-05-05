@@ -1,3 +1,7 @@
+/**
+ * @file API endpoints to delete a book
+ */
+
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
 import { isObjectIdOrHexString } from "mongoose";

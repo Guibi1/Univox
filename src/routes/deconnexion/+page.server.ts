@@ -1,3 +1,7 @@
+/**
+ * @file Route to disconnect
+ */
+
 import * as db from "$lib/server/db";
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
