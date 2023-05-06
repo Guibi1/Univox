@@ -30,6 +30,7 @@ export const actions = {
 
             await db.addClassesToSchedule(locals.user, schedule);
         } catch (e) {
+            console.log("🚀 ~ file: +page.server.ts:33 ~ import: ~ e:", e);
             return setError(form, "omnivoxPassword", "Mot de passe erroné");
         }
 

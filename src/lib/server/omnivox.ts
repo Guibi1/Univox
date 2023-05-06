@@ -60,7 +60,7 @@ export async function fetchSchedulePageHTML(
 
     const buffer = await visualiseRes.arrayBuffer();
     const decoder = new TextDecoder("iso-8859-1");
-    return { html: decoder.decode(buffer), cookie, scheduleCookie, semester, year };
+    return { html: decoder.decode(buffer), cookie, scheduleCookie, semester, year, visualiseURL };
 }
 
 /**
@@ -222,49 +222,126 @@ export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Class[]
         });
     }
 
-    return await getScheduleForAllSession(orderedSchedule);
+    return await getScheduleForAllSession(htmlPage, orderedSchedule);
 }
 
 /**
  * Fetches the user's schedule week by week from Omnivox
+ * @param htmlPage The PageHTML returned by `fetchSchedulePageHTML`
  * @param orderedSchedule An array containing 5 days of Class fetched from Omnivox
  * @returns A proper array of class for the entire session
  */
-async function getScheduleForAllSession(orderedSchedule: Class[][]): Promise<Class[]> {
-    // TODO: Get the image from onmivox
-    const url = "C:\\Users\\guibi\\Downloads\\HoraireSemaine2.gif";
-
-    const image = sharp(url);
-    const { width, height } = await image.metadata();
-    const buffer = await image.raw().toBuffer();
-
-    if (!width || !height) {
-        throw "Bad image";
-    }
-
+async function getScheduleForAllSession(
+    htmlPage: PageHTML,
+    orderedSchedule: Class[][]
+): Promise<Class[]> {
     const classes: Class[] = [];
-    for (let i = 0; i < 5; i++) {
-        const unknownPeriods = scanDay(i, { buffer, width, height });
+    let currentMonday = dayjs().startOf("day").day(8);
+    let lastClassesLength = 0;
+    let emptyWeeksInARow = 0;
 
-        for (const day of orderedSchedule) {
-            if (unknownPeriods.length !== day.length) {
-                continue;
+    // Fetch the week image url
+    const iframeRes = await fetch(
+        `https://${htmlPage.cookie.baseUrl}-estd.omnivox.ca:443/estd/hrre/${htmlPage.visualiseURL}&typeHoraire=Semaine`,
+        {
+            headers: {
+                Cookie: `comn=${htmlPage.cookie.COMN}; DTKS=${htmlPage.cookie.DTKS}; ln=FRA; L=FRA; k=${htmlPage.cookie.K}; ${htmlPage.cookie.TK}; ${htmlPage.scheduleCookie.sessionID}; ${htmlPage.scheduleCookie.rvpMod}`,
+            },
+        }
+    );
+    const iframeURL = regexFind(
+        await iframeRes.text(),
+        /src='\/Estd\/Net\/HoraireClara\/Default\.aspx\?(.*?)'/
+    )[1];
+    console.log("🚀 ~ file: omnivox.ts:256 ~ iframeURL:", iframeURL);
+
+    const claraText = await (
+        await fetch(
+            `https://${htmlPage.cookie.baseUrl}-estd.omnivox.ca:443/Estd/Net/HoraireClara/Default.aspx?${iframeURL}`,
+            {
+                headers: {
+                    Cookie: `comn=${htmlPage.cookie.COMN}; DTKS=${htmlPage.cookie.DTKS}; ln=FRA; L=FRA; k=${htmlPage.cookie.K}; ${htmlPage.cookie.TK}; ${htmlPage.scheduleCookie.sessionID}; ${htmlPage.scheduleCookie.rvpMod}`,
+                },
             }
+        )
+    ).text();
+    const formViewState = regexFind(claraText, /id="__VIEWSTATE" value="(.*?)"/)[1];
+    const formEventValidation = regexFind(claraText, /id="__EVENTVALIDATION" value="(.*?)"/)[1];
 
-            if (
-                unknownPeriods.every(
-                    (period, index) =>
-                        period.timeStart.isSame(day[index].timeStart) &&
-                        period.timeEnd.isSame(day[index].timeEnd)
-                )
-            ) {
-                // TODO: Put the good date + month + year
-                classes.push(
-                    ...day.map((c) => ({ ...c, timeStart: c.timeStart, timeEnd: c.timeEnd }))
-                );
+    // While there is no more than three consecutives weeks without any classes
+    while (emptyWeeksInARow < 3) {
+        // Fetch the week image url
+        const weekRes = await fetch(
+            `https://${htmlPage.cookie.baseUrl}-estd.omnivox.ca:443/Estd/Net/HoraireClara/Default.aspx?${iframeURL}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Cookie": `comn=${htmlPage.cookie.COMN}; DTKS=${htmlPage.cookie.DTKS}; ln=FRA; L=FRA; k=${htmlPage.cookie.K}; ${htmlPage.cookie.TK}; ${htmlPage.scheduleCookie.sessionID}; ${htmlPage.scheduleCookie.rvpMod}`,
+                },
+                body: `__VIEWSTATE=${formViewState}&__EVENTVALIDATION=${formEventValidation}&ctl00%24cntFormulaire%24ddlJour=${currentMonday.date()}&ctl00%24cntFormulaire%24ddlMois=${
+                    currentMonday.month() + 1
+                }&ctl00%24cntFormulaire%24ddlAnnee=${currentMonday.year()}`,
+            }
+        );
+
+        const weekImageURL = regexFind(await weekRes.text(), /src="(HoraireSemaine\.ashx.*?)"/)[1];
+
+        // Fetch the week's image
+        const imageRes = await fetch(
+            `https://${htmlPage.cookie.baseUrl}-estd.omnivox.ca:443/Estd/Net/HoraireClara/${weekImageURL}`,
+            {
+                headers: {
+                    Cookie: `comn=${htmlPage.cookie.COMN}; DTKS=${htmlPage.cookie.DTKS}; ln=FRA; L=FRA; k=${htmlPage.cookie.K}; ${htmlPage.cookie.TK}; ${htmlPage.scheduleCookie.sessionID}; ${htmlPage.scheduleCookie.rvpMod}`,
+                },
+            }
+        );
+
+        const image = sharp(await imageRes.arrayBuffer());
+        const { width, height } = await image.metadata();
+        const buffer = await image.raw().toBuffer();
+
+        if (!width || !height) {
+            throw "Bad image";
+        }
+
+        lastClassesLength = classes.length;
+
+        // For each day of the week
+        for (let i = 0; i < 5; i++) {
+            const unknownPeriods = scanDay(i, { buffer, width, height });
+
+            for (const day of orderedSchedule) {
+                if (unknownPeriods.length !== day.length) {
+                    continue;
+                }
+
+                if (
+                    unknownPeriods.every(
+                        (period, index) =>
+                            period.timeStart.isSame(day[index].timeStart) &&
+                            period.timeEnd.isSame(day[index].timeEnd)
+                    )
+                ) {
+                    // TODO: Put the good date + month + year
+                    classes.push(
+                        ...day.map((c) => ({ ...c, timeStart: c.timeStart, timeEnd: c.timeEnd }))
+                    );
+                }
             }
         }
+
+        currentMonday = currentMonday.add(1, "week");
+        console.log("🚀 ~ file: omnivox.ts:332 ~ currentMonday:", currentMonday);
+        console.log("🚀 ~ file: omnivox.ts:335 ~ classes.length:", classes.length);
+        // If no periods this week
+        if (classes.length === lastClassesLength) {
+            emptyWeeksInARow += 1;
+        } else {
+            emptyWeeksInARow = 0;
+        }
     }
+
     return classes;
 }
 
@@ -350,7 +427,10 @@ function regexFind(data: string | null, query: RegExp): RegExpMatchArray {
     if (data == null) throw "MATCH ERROR: STRING WAS NULL";
 
     const match = data.match(query);
-    if (match == null) throw `MATCH ERROR: '${query}' DIDN'T MATCH WITH PROVIDED STRING.`;
+    if (match == null) {
+        console.log(3432432423, data);
+        throw `MATCH ERROR: '${query}' DIDN'T MATCH WITH PROVIDED STRING.`;
+    }
 
     return match;
 }
@@ -374,6 +454,7 @@ type PageHTML = {
     scheduleCookie: ScheduleCookie;
     year: number;
     semester: Semester;
+    visualiseURL: string;
 };
 
 type Image = { buffer: Buffer; width: number; height: number };
