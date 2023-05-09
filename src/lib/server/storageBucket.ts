@@ -3,23 +3,39 @@
  */
 
 import "$lib/server/db";
+import chalk from "chalk";
 import mongoose from "mongoose";
 import { Readable } from "stream";
+
+const log = (...text: unknown[]) =>
+    console.log(
+        chalk.bgBlue(" INFO "),
+        chalk.yellow("[storage bucket]"),
+        chalk.blue("➜ "),
+        ...text
+    );
+const warn = (...text: unknown[]) =>
+    console.warn(
+        chalk.bgRed(" WARNING "),
+        chalk.yellow("[storage bucket]"),
+        chalk.red("➜ "),
+        ...text
+    );
 
 /**
  * Creates a new GridFSBucket if mongoose is connected
  */
-function connect() {
-    if (mongoose.connection.readyState != 1) return;
+export function connect(silent = false) {
+    if (mongoose.connection.readyState != 1 || !!bookBucket) return;
     bookBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
         bucketName: "bookImages",
     });
+    if (!silent) log("Connected");
 }
 
 // Create and connect the GridFSBucket
 let bookBucket: mongoose.mongo.GridFSBucket;
-mongoose.connection.on("connection", connect);
-connect(); // This is useful in Dev mode
+connect(true); // This is useful in Dev mode
 
 /**
  * Describes the file's metadata stored on MongoDB
@@ -101,6 +117,10 @@ export async function downloadBookImage(
             stream.on("end", resolve);
         });
     } catch (e) {
+        warn(
+            "An error occured while downloading:",
+            (e as mongoose.mongo.MongoRuntimeError).message
+        );
         return null;
     }
 

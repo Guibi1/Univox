@@ -20,6 +20,7 @@ import Schedules from "./models/schedules";
 import Settings from "./models/settings";
 import Tokens, { type Token } from "./models/tokens";
 import Users from "./models/users";
+import * as storageBucket from "./storageBucket";
 
 const log = (...text: unknown[]) =>
     console.log(chalk.bgBlue(" INFO "), chalk.magenta("[database]"), chalk.blue("➜ "), ...text);
@@ -33,8 +34,9 @@ mongoose.set("strictQuery", false);
 if (mongoose.connection.readyState !== 1) {
     mongoose
         .connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox")
-        .then(() => log("Connected to MongoDB!"))
-        .catch(() => warn("Couldn't connect to MongoDB"));
+        .then(() => log("Connected"))
+        .then(() => storageBucket.connect())
+        .catch(() => warn("Couldn't connect"));
 }
 
 ///////////////////////
@@ -177,10 +179,10 @@ export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | 
  * @returns The server user with the provided credentials, or null if no user matched them
  */
 export async function compareUserPassword(
-    da: string,
+    email: string,
     password: string
 ): Promise<ServerUser | null> {
-    const user = await Users.findOne({ da });
+    const user = await Users.findOne({ email });
     if (user && (await bcryptjs.compare(password, user.passwordHash))) {
         return user;
     }
@@ -371,7 +373,6 @@ export async function getGroup(id: Types.ObjectId | string): Promise<Group | nul
  * @returns An array of groups in which the user is
  */
 export async function getGroups(user: ServerUser): Promise<Group[]> {
-    console.log("🚀 ~ file: db.ts:376 ~ getGroups ~ user.groupsId:", user.groupsId);
     const groups: Group[] = [];
     for (const groupId of user.groupsId) {
         const group = await getGroup(groupId);
@@ -463,6 +464,32 @@ export async function quitGroup(user: User, group: Group): Promise<boolean> {
         return true;
     } catch {
         warn("The function 'quitGroup' was called but failed to update the user's data");
+        return false;
+    }
+}
+
+/**
+ *
+ * @param user The current user
+ * @param group The targeted group to rename
+ * @param data The data to modify
+ * @returns True if the operation succeded, false otherwise
+ *
+ */
+export async function updateGroup(
+    user: ServerUser,
+    group: Group,
+    data: mongoose.AnyKeys<Group>
+): Promise<boolean> {
+    if (!user.groupsId.some((g) => g.equals(group._id))) {
+        return false;
+    }
+
+    try {
+        await Groups.findByIdAndUpdate(group, { $set: data });
+        return true;
+    } catch {
+        warn("The function 'updateGroup' was called but failed to update the group's data");
         return false;
     }
 }

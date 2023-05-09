@@ -15,8 +15,8 @@ test.describe("Logged in", () => {
         const univox = new UnivoxPage(page);
         await univox.goto("/connexion");
 
-        // Fill "da" on <input> [name="da"]
-        await page.fill('input[name="da"]', process.env.DA);
+        // Fill "email" on <input> [name="email"]
+        await page.fill('input[name="email"]', process.env.EMAIL);
 
         // Fill "password" on <input> [name="password"]
         await page.fill('input[name="password"]', process.env.PASSWORD);

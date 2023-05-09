@@ -1,7 +1,9 @@
 <script lang="ts">
     import { goto, invalidate } from "$app/navigation";
-    import { NotificationKind, type User } from "$lib/Types";
+    import { page } from "$app/stores";
+    import { NotificationKind, type Group, type User, type Schedule } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
+    import GroupElement from "$lib/components/GroupElement.svelte";
     import Option from "$lib/components/Option.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
@@ -11,8 +13,6 @@
     import notifications from "$lib/stores/notifications";
 
     export let data;
-
-    $: console.log($groups);
 
     let query = data.query ?? "";
     let selectedFriends: User[] = [];
@@ -34,6 +34,14 @@
             return [...prev, user];
         }, []);
     }
+
+    // Generates the search params that redirects to the user's schedule
+    $: getFriendUrl = (friend: User) => {
+        const params = new URLSearchParams($page.url.searchParams);
+        params.set("friendId", friend._id.toString());
+        params.delete("groupId");
+        return `?${params}`;
+    };
 </script>
 
 <svelte:head>
@@ -55,18 +63,19 @@
         </div>
 
         <ul class="flex-grow py-4">
-            {#each friendsFilterQuery($friends, query) as ami}
+            {#each friendsFilterQuery($friends, query) as friend}
                 <li>
                     <div class="flex items-center justify-between">
-                        <input type="checkbox" bind:group={selectedFriends} value={ami} />
+                        <input type="checkbox" bind:group={selectedFriends} value={friend} />
 
                         <span>
                             <a
-                                href="?id={ami._id}"
+                                href={getFriendUrl(friend)}
                                 class="transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
-                                >{ami.firstName}
-                                {ami.lastName}</a
                             >
+                                {friend.firstName}
+                                {friend.lastName}
+                            </a>
                         </span>
 
                         <Dropdown>
@@ -78,7 +87,7 @@
                                 separate
                                 text="Retirer l'ami.e"
                                 color="red"
-                                onClick={() => friends.remove(ami._id)}
+                                onClick={() => friends.remove(friend._id)}
                             />
                         </Dropdown>
                     </div>
@@ -144,30 +153,16 @@
         <ul>
             {#each $groups as group}
                 <li>
-                    <div class="flex items-center justify-between">
-                        {group.name}
-
-                        <Dropdown>
-                            <Option
-                                text="Horaire commun"
-                                onClick={() => console.log("TODO: afficher l'horaire")}
-                            />
-                            <Option separate text="Renommer" />
-                            <Option
-                                separate
-                                text="Quitter le groupe"
-                                color="red"
-                                onClick={() => groups.quit(group)}
-                            />
-                        </Dropdown>
-                    </div>
+                    <GroupElement {group} />
                 </li>
             {/each}
         </ul>
     </div>
 
-    {#if data.schedule}
-        <ScheduleView schedule={scheduleFromJson(data.schedule)} />
+    {#if data.groupSchedule}
+        <ScheduleView schedule={scheduleFromJson(data.groupSchedule)} />
+    {:else if data.friendSchedule}
+        <ScheduleView schedule={scheduleFromJson(data.friendSchedule)} />
     {:else}
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}

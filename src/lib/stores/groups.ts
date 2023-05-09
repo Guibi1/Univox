@@ -32,10 +32,20 @@ function createGroupsStore() {
                 body: JSON.stringify({ groupId: group._id }),
             })
         ).json();
-        if (success) {
-            refresh();
-            console.log("waw");
-        }
+        if (success) refresh();
+    }
+
+    async function rename(group: Group, name: string) {
+        const { success } = await (
+            await fetch("/api/groups/name", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ groupId: group._id, name }),
+            })
+        ).json();
+        if (success) refresh();
     }
 
     return {
@@ -43,6 +53,7 @@ function createGroupsStore() {
         set,
         create,
         quit,
+        rename,
         refresh,
     };
 }
