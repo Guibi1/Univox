@@ -39,7 +39,19 @@
     $: getFriendUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
         params.set("friendId", friend._id.toString());
+        params.delete("commonSchedule"); //AJOUT
         params.delete("groupId");
+        return `?${params}`;
+    };
+
+    //AJOUT
+    // Generates the search params that redirects to the common schedule between the user and a friend
+    $: getCommonScheduleUrl = (friend: User) => {
+        const params = new URLSearchParams($page.url.searchParams);
+        params.delete("friendId");
+        params.delete("groupId"); //AJOUT
+        params.set("friendId", friend._id.toString());
+        params.set("commonSchedule", "commonSchedule");
         return `?${params}`;
     };
 </script>
@@ -80,8 +92,9 @@
 
                         <Dropdown>
                             <Option
-                                text="Horaire commun"
+                                text="Horaire libre commun"
                                 onClick={() => console.log("TODO: afficher l'horaire")}
+                                href={getCommonScheduleUrl(friend)}
                             />
                             <Option
                                 separate
@@ -163,6 +176,8 @@
         <ScheduleView schedule={scheduleFromJson(data.groupSchedule)} />
     {:else if data.friendSchedule}
         <ScheduleView schedule={scheduleFromJson(data.friendSchedule)} />
+    {:else if data.friendCommonSchedule}
+        <ScheduleView schedule={scheduleFromJson(data.friendCommonSchedule)} />
     {:else}
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}

@@ -12,9 +12,12 @@ export const load = (async ({ locals, url, depends }) => {
     const query = url.searchParams.get("query") ?? "";
     const friendId = url.searchParams.get("friendId") ?? "";
     const groupId = url.searchParams.get("groupId") ?? "";
+    const isCommonSchedule = url.searchParams.get("commonSchedule") ?? ""; //AJOUT
 
     let groupSchedule: Schedule | null = null;
     let friendSchedule: Schedule | null = null;
+    let friendCommonSchedule: Schedule | null = null; //AJOUT
+
     if (isObjectIdOrHexString(groupId)) {
         const group = await db.getGroup(groupId);
         if (group) {
@@ -37,8 +40,32 @@ export const load = (async ({ locals, url, depends }) => {
         isObjectIdOrHexString(friendId) &&
         locals.user.friendsId.some((id) => id.equals(friendId))
     ) {
+        
         const friend = await db.getServerUser(friendId);
-        if (friend) {
+        //AJOUT
+        if(isCommonSchedule == "commonSchedule")
+        {
+            if(friend)
+            {
+                const usersCombinedPeriods: Period[] = [];
+                const friendScheduleToCompare = scheduleFromJson(await db.getSchedule(friend));
+                const localUserSchedule = scheduleFromJson(await db.getSchedule(locals.user));
+
+                usersCombinedPeriods.push(...friendScheduleToCompare.periods);
+                
+                usersCombinedPeriods.push(...friendScheduleToCompare.classes);
+                usersCombinedPeriods.push(...localUserSchedule.periods);
+                usersCombinedPeriods.push(...localUserSchedule.classes);
+
+                friendCommonSchedule = objectIdToString(
+                    getWeekCommonAvailabilities(dayjs(), usersCombinedPeriods)
+                );
+                console.log(friendCommonSchedule)
+            }
+        }
+        //AJOUT
+
+        else if (friend) {
             friendSchedule = objectIdToString(await db.getSchedule(friend));
         }
     }
@@ -57,6 +84,7 @@ export const load = (async ({ locals, url, depends }) => {
         groupId,
         groupSchedule,
         friendSchedule,
+        friendCommonSchedule,
         searchResults: arrayIdToString(result),
     };
 }) satisfies PageServerLoad;

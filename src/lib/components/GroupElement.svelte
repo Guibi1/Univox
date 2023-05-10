@@ -19,6 +19,7 @@
     $: getGroupUrl = (group: Group) => {
         const params = new URLSearchParams($page.url.searchParams);
         params.delete("friendId");
+        params.delete("commonSchedule"); //AJOUT
         params.set("groupId", group._id.toString());
         return `?${params}`;
     };
