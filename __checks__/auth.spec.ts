@@ -24,10 +24,10 @@ const AuthCheck = () => {
         await univox.goto("/connexion");
 
         // Fill "email" on <input> [name="email"]
-        await page.fill('[name="email"]', process.env.EMAIL);
+        await page.fill('[name="email"]', process.env.EMAIL || "");
 
         // Fill "password" on <input> [name="password"]
-        await page.fill('[name="password"]', process.env.PASSWORD);
+        await page.fill('[name="password"]', process.env.PASSWORD || "");
 
         // Click on <button> "Se connecter"
         await page.click('[type="submit"]');
