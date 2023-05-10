@@ -64,7 +64,7 @@
     <div class="flex flex-col p-4">
         <h2 class="mb-4 border-b border-black dark:border-white">Vos amis</h2>
 
-        <div class="flex flex-row items-center gap-3">
+        <div class="flex flex-row items-center gap-4">
             <SearchBar bind:query {handleSearch} />
 
             <i
@@ -74,16 +74,18 @@
             />
         </div>
 
-        <ul class="flex-grow py-4">
+        <ul class="flex flex-grow flex-col gap-4 py-4">
             {#each friendsFilterQuery($friends, query) as friend}
                 <li>
-                    <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center justify-between rounded-md bg-gray-200 px-4 dark:bg-gray-400"
+                    >
                         <input type="checkbox" bind:group={selectedFriends} value={friend} />
 
                         <span>
                             <a
                                 href={getFriendUrl(friend)}
-                                class="transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
+                                class="transition-[color] duration-300 ease-in-out dark:text-white"
                             >
                                 {friend.firstName}
                                 {friend.lastName}
@@ -128,34 +130,38 @@
             {#if data.searchResults.length === 0}
                 Aucun résultats
             {:else}
-                <div>
-                    {#each data.searchResults as result}
-                        <div class="flex items-center justify-between">
-                            {result.user.firstName}
-                            {result.user.lastName}
-                            <i>
-                                {result.user.da}
-                            </i>
-
-                            {#if result.friendRequestSent}
-                                <button class="filled">Demande envoyée</button>
-                            {:else}
-                                <button
-                                    class="filled"
-                                    on:click={async () => {
-                                        await notifications.create(
-                                            NotificationKind.FriendRequest,
-                                            result.user._id
-                                        );
-                                        invalidate("app:notifications");
-                                    }}
-                                >
-                                    Ajouter en ami
-                                </button>
-                            {/if}
+                {#each data.searchResults as result}
+                    <div
+                        class="flex items-center justify-between gap-4 rounded-lg dark:bg-gray-400"
+                    >
+                        <div class="flex flex-col gap-4">
+                            <span>
+                                {result.user.firstName}
+                                {result.user.lastName}
+                            </span>
+                            <small>
+                                {result.user.email}
+                            </small>
                         </div>
-                    {/each}
-                </div>
+
+                        {#if result.friendRequestSent}
+                            <button class="filled">Demande envoyée</button>
+                        {:else}
+                            <button
+                                class="filled"
+                                on:click={async () => {
+                                    await notifications.create(
+                                        NotificationKind.FriendRequest,
+                                        result.user._id
+                                    );
+                                    invalidate("app:notifications");
+                                }}
+                            >
+                                Ajouter en ami
+                            </button>
+                        {/if}
+                    </div>
+                {/each}
             {/if}
         {/if}
     </div>
@@ -163,9 +169,9 @@
     <div class="p-4">
         <h2 class="mb-4 border-b border-black dark:border-white">Vos groupes</h2>
 
-        <ul>
+        <ul class="flex flex-col gap-4">
             {#each $groups as group}
-                <li>
+                <li class="flex items-center rounded-md bg-gray-200 px-4 dark:bg-gray-400">
                     <GroupElement {group} />
                 </li>
             {/each}

@@ -1,3 +1,7 @@
+/**
+ * @file API endpoints to manage friend groups
+ */
+
 import { arrayIdToString } from "$lib/sanitization";
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
