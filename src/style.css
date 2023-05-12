@@ -66,13 +66,14 @@
 
     button.filled,
     a.filled {
-        @apply flex h-12 items-center justify-center rounded-lg bg-green-700 fill-white px-4 text-white hover:bg-green-800;
+        @apply flex h-12 items-center justify-center rounded-lg bg-blue-darkPrimary fill-black px-4 text-black hover:bg-blue-primary;
+        @apply dark:bg-blue-primary dark:fill-white dark:text-white dark:hover:bg-blue-darkPrimary;
     }
 
     button.outlined,
     a.outlined {
-        @apply flex h-12 items-center justify-center rounded-lg border-2 border-green-700 fill-black px-4 text-center text-black hover:border-green-800;
-        @apply dark:fill-white dark:text-white;
+        @apply flex h-12 items-center justify-center rounded-lg border-2 border-blue-primary fill-black px-4 text-center text-black;
+        @apply dark:border-blue-darkPrimary dark:fill-white dark:text-white;
     }
 
     a {
