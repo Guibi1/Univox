@@ -92,7 +92,7 @@
             <span class="ml-2 text-2xl">Adresse courriel</span>
 
             <!-- Add the button to change email right under the email field -->
-            <button class="outlined col-span-2 gap-2" type="submit" on:click={updateEmail}>
+            <button class="outlined col-span-2 gap-2" type="submit">
                 Changer l'adresse courriel
             </button>
         </form>
