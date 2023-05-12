@@ -1,3 +1,7 @@
+/**
+ * @file API endpoint to add a periods to the schedule and fetch the user's schedule
+ */
+
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
