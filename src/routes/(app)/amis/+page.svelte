@@ -110,19 +110,6 @@
                                 </a>
                             </div>
                         </div>
-
-                        <Dropdown>
-                            <Option
-                                text="Horaire libre commun"
-                                href={getCommonScheduleUrl(friend)}
-                            />
-                            <Option
-                                separate
-                                text="Retirer l'ami.e"
-                                color="red"
-                                onClick={() => friends.remove(friend._id)}
-                            />
-                        </Dropdown>
                     </div>
                 </li>
             {/each}
