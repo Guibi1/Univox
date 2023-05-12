@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { Types } from "mongoose";
 import type { Class, Period, Schedule } from "./Types";
 
@@ -44,14 +44,18 @@ export function objectIdToString<T extends object>(object: T): T {
 
     const keys = Object.keys(object) as Array<keyof T>;
     keys.forEach((key) => {
-        const value = object[key];
+        const value = object[key] as unknown;
 
         if (value instanceof Types.ObjectId) {
             object[key] = (value as Types.ObjectId).toString() as T[keyof T];
         } else if (Array.isArray(value)) {
             object[key] = arrayIdToString(value) as T[keyof T];
         } else if (typeof value === "object" && value !== null) {
-            object[key] = objectIdToString(value as T) as T[keyof T];
+            if ("toDate" in value) {
+                object[key] = (value as Dayjs).toDate() as T[keyof T];
+            } else {
+                object[key] = objectIdToString(value as T) as T[keyof T];
+            }
         }
     });
 
