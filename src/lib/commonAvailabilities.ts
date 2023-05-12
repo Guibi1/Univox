@@ -56,9 +56,9 @@ export function getCommonAvailabilities(date: Dayjs, periods: Period[]): Period[
 }
 /**
  * Calculates the common occupied time for a given day and a list of periods.
- * @param {Dayjs} date - The date to calculate availabilities for.
- * @param {Period[]} periods - The list of periods to calculate availabilities from.
- * @returns {Period[]} An array of periods representing the common availabilities for the given day.
+ * @param {Dayjs} date - The date to calculate occupied time for.
+ * @param {Period[]} periods - The list of periods to calculate occupied time from.
+ * @returns {Period[]} An array of periods representing the occupied time for the given day.
  */
 export function getCommonOccupied(date: Dayjs, periods: Period[]): Period[] {
     // The min/max time to check in our algorithm
@@ -136,10 +136,10 @@ export function getWeekCommonAvailabilities(week: Dayjs, periods: Period[]): Sch
 }
 
 /**
- * Calculates the common availabilities for a given day and a list of periods.
- * @param {Dayjs} week - The week to calculate availabilities for.
- * @param {Period[]} periods - The list of periods to calculate availabilities from.
- * @returns {Period[]} An array of periods representing the common availabilities for the given day.
+ * Calculates the common occupied time for a given day and a list of periods.
+ * @param {Dayjs} week - The week to calculate occupied time for.
+ * @param {Period[]} periods - The list of periods to calculate occupied time from.
+ * @returns {Period[]} An array of periods representing the common occupied time for the given day.
  */
 export function getWeekOccupied(week: Dayjs, periods: Period[]): Period[] {
     const occupiedTime: Period[] = [];
