@@ -21,7 +21,9 @@
 
 <a
     href="/livres/vendre"
-    class="fixed bottom-8 left-8 flex items-center gap-0.5 rounded-full bg-blue-primary p-2 px-4 text-2xl !text-black"
+    class="fixed bottom-8 left-8 flex items-center gap-0.5 rounded-full
+    bg-blue-darkPrimary p-2 px-4 text-2xl text-black hover:bg-blue-primary
+    dark:bg-blue-primary dark:text-white dark:hover:bg-blue-darkPrimary"
 >
     <i class="bx bx-book-add text-3xl" />
 </a>
@@ -30,7 +32,9 @@
 
 <a
     href={data[current].href}
-    class="fixed bottom-8 right-8 flex w-48 items-center gap-0.5 rounded-full bg-blue-primary p-2 px-4 text-2xl !text-black"
+    class="fixed bottom-8 right-8 flex w-48 items-center gap-0.5 rounded-full
+    bg-blue-darkPrimary p-2 px-4 text-2xl text-black hover:bg-blue-primary
+    dark:bg-blue-primary dark:text-white dark:hover:bg-blue-darkPrimary"
 >
     <i class={classNames("bx text-3xl", data[current].iconName)} />
     <span class="flex-1 text-center">
