@@ -1,8 +1,9 @@
 <script lang="ts">
     import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/stores";
-    import { NotificationKind, type User } from "$lib/Types";
+    import { NotificationKind, type Group, type User, type Schedule } from "$lib/Types";
     import Dropdown from "$lib/components/Dropdown.svelte";
+    import GroupElement from "$lib/components/GroupElement.svelte";
     import Option from "$lib/components/Option.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
@@ -34,10 +35,22 @@
         }, []);
     }
 
-    // Generates the search params that redirects to the book's details
+    // Generates the search params that redirects to the user's schedule
     $: getFriendUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
         params.set("friendId", friend._id.toString());
+        params.delete("commonSchedule");
+        params.delete("groupId");
+        return `?${params}`;
+    };
+
+    // Generates the search params that redirects to the common schedule between the user and a friend
+    $: getCommonScheduleUrl = (friend: User) => {
+        const params = new URLSearchParams($page.url.searchParams);
+        params.delete("friendId");
+        params.delete("groupId");
+        params.set("friendId", friend._id.toString());
+        params.set("commonSchedule", "commonSchedule");
         return `?${params}`;
     };
 </script>
@@ -80,8 +93,8 @@
 
                         <Dropdown>
                             <Option
-                                text="Horaire commun"
-                                onClick={() => console.log("TODO: afficher l'horaire")}
+                                text="Horaire libre commun"
+                                href={getCommonScheduleUrl(friend)}
                             />
                             <Option
                                 separate
@@ -100,8 +113,8 @@
                 <button
                     class="filled"
                     on:click={() => {
-                        selectedFriends = [];
                         groups.create(selectedFriends);
+                        selectedFriends = [];
                     }}
                 >
                     Créer un groupe
@@ -156,17 +169,19 @@
 
         <ul class="flex flex-col gap-4">
             {#each $groups as group}
-                <li>
-                    <div class="flex items-center rounded-md bg-gray-200 px-4 dark:bg-gray-400">
-                        {group.name}
-                    </div>
+                <li class="flex items-center rounded-md bg-gray-200 px-4 dark:bg-gray-400">
+                    <GroupElement {group} />
                 </li>
             {/each}
         </ul>
     </div>
 
-    {#if data.schedule}
-        <ScheduleView schedule={scheduleFromJson(data.schedule)} />
+    {#if data.groupSchedule}
+        <ScheduleView schedule={scheduleFromJson(data.groupSchedule)} />
+    {:else if data.friendSchedule}
+        <ScheduleView schedule={scheduleFromJson(data.friendSchedule)} />
+    {:else if data.friendCommonSchedule}
+        <ScheduleView schedule={scheduleFromJson(data.friendCommonSchedule)} />
     {:else}
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}
