@@ -39,10 +39,7 @@
                             </div>
                         </div>
                         <div class="flex flex-row items-center gap-3 px-5">
-                            <a
-                                class="flex h-10 w-24 items-center justify-center rounded bg-blue-primary font-bold hover:bg-green-900"
-                                href="/amis?friendId={friend._id}"
-                            >
+                            <a class="filled h-10 w-24" href="/amis?friendId={friend._id}">
                                 Horaire
                             </a>
                         </div>
@@ -69,12 +66,7 @@
                             </div>
                         </div>
                         <div class="flex flex-row items-center gap-3 px-5">
-                            <a
-                                class="flex h-10 w-24 items-center justify-center rounded bg-blue-primary font-bold hover:bg-blue-primary"
-                                href="/livres/mes-livres"
-                            >
-                                Voir
-                            </a>
+                            <a class="filled h-10 w-24" href="/livres/mes-livres"> Voir </a>
                         </div>
                     </div>
                 {/each}
