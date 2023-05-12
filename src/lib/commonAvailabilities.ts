@@ -1,5 +1,6 @@
 import type { Period } from "$lib/Types";
 import type { Dayjs } from "dayjs";
+import { Types } from "mongoose";
 
 /**
  * Calculates the common availabilities for a given day and a list of periods.
@@ -18,6 +19,7 @@ export default function getCommonAvailabilities(date: Dayjs, periods: Period[]):
     // Add a free time in our result array
     const addAvailability = (timeStart: Dayjs, timeEnd: Dayjs) =>
         freeTime.push({
+            _id: new Types.ObjectId(),
             name: "Libre",
             timeStart,
             timeEnd,
@@ -69,6 +71,7 @@ export function getCommonOccupied(date: Dayjs, periods: Period[]): Period[] {
     // Add a free time in our result array
     const addOccupied = (timeStart: Dayjs, timeEnd: Dayjs) =>
         occupiedTime.push({
+            _id: new Types.ObjectId(),
             name: "Occupé",
             timeStart,
             timeEnd,
