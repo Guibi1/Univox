@@ -33,7 +33,6 @@ export interface Group {
     _id: Types.ObjectId;
     name: string;
     usersId: Types.ObjectId[];
-    horaireCommun: Schedule;
 }
 
 /**
