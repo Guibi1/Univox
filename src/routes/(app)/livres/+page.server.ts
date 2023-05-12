@@ -10,8 +10,13 @@ export const load = async ({ locals, url }) => {
     const results = await db.searchBooks(locals.user, query, codes);
 
     let selectedBook;
+    let selectedBookUser;
     if (isObjectIdOrHexString(bookId)) {
         selectedBook = await db.getBook(bookId);
+
+        if (selectedBook?.sellerId) {
+            selectedBookUser = await db.getUser(selectedBook.sellerId);
+        }
     }
 
     return {
@@ -20,5 +25,6 @@ export const load = async ({ locals, url }) => {
         bookId,
         searchResults: arrayIdToString(results),
         selectedBook: selectedBook ? objectIdToString(selectedBook) : null,
+        selectedBookUser: selectedBookUser ? objectIdToString(selectedBookUser) : null,
     };
 };
