@@ -57,71 +57,60 @@
         {/each}
     </ul>
 
-    <div class="flex flex-row">
-        <div class="grid aspect-square">
-            <EmptyDropdown position="bottom-left">
-                <i
-                    slot="button"
-                    class={classNames(
-                        "bx text-2xl text-white",
-                        $notifications.length === 0 ? "bx-bell" : "bxs-bell-ring"
-                    )}
-                />
+    <div class="grid h-full grid-cols-[4rem_4rem]">
+        <EmptyDropdown position="bottom-left">
+            <i
+                slot="button"
+                class={classNames(
+                    "bx text-2xl text-white",
+                    $notifications.length === 0 ? "bx-bell" : "bxs-bell-ring"
+                )}
+            />
 
-                {#if $notifications.length === 0}
-                    <span class="w-fit p-6">Aucune notification</span>
-                {:else}
-                    {#each $notifications as notification}
-                        {#if notification.kind === "FriendRequest"}
-                            <div class="flex flex-col gap-4 p-4">
-                                <div
-                                    class="grid min-w-[15rem] grid-cols-[4rem_1fr] items-center gap-2"
-                                >
-                                    <Avatar seed={notification.sender.avatar} />
+            {#if $notifications.length === 0}
+                <span class="w-fit p-6">Aucune notification</span>
+            {:else}
+                {#each $notifications as notification}
+                    {#if notification.kind === "FriendRequest"}
+                        <div class="flex flex-col gap-4 p-4">
+                            <div class="grid min-w-[15rem] grid-cols-[4rem_1fr] items-center gap-2">
+                                <Avatar seed={notification.sender.avatar} />
 
-                                    {notification.sender.firstName}
-                                    {notification.sender.lastName} veux vous ajouter en ami.
-                                </div>
-
-                                <div class="grid h-8 grid-cols-2 gap-2">
-                                    <button
-                                        class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
-                                        on:click={async () => {
-                                            await friends.add(notification.sender._id);
-                                            await notifications.remove(notification);
-                                        }}
-                                    >
-                                        <i class="bx bx-check text-2xl" />
-                                    </button>
-
-                                    <button
-                                        class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
-                                        on:click={() => notifications.remove(notification)}
-                                    >
-                                        <i class="bx bx-x text-2xl" />
-                                    </button>
-                                </div>
+                                {notification.sender.firstName}
+                                {notification.sender.lastName} veux vous ajouter en ami.
                             </div>
-                        {/if}
-                    {/each}
-                {/if}
-            </EmptyDropdown>
-        </div>
 
-        <div class="grid aspect-square">
-            <Dropdown position="bottom-left">
-                <div slot="button" class="m-2 rounded-2xl bg-blue-primary">
-                    <Avatar />
-                </div>
+                            <div class="grid h-8 grid-cols-2 gap-2">
+                                <button
+                                    class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
+                                    on:click={async () => {
+                                        await friends.add(notification.sender._id);
+                                        await notifications.remove(notification);
+                                    }}
+                                >
+                                    <i class="bx bx-check text-2xl" />
+                                </button>
 
-                <Option text="Paramètres" href="/parametres" boxIcon="bx-cog" />
-                <Option
-                    text="Se déconnecter"
-                    href="/deconnexion"
-                    color="red"
-                    boxIcon="bx-log-out"
-                />
-            </Dropdown>
-        </div>
+                                <button
+                                    class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
+                                    on:click={() => notifications.remove(notification)}
+                                >
+                                    <i class="bx bx-x text-2xl" />
+                                </button>
+                            </div>
+                        </div>
+                    {/if}
+                {/each}
+            {/if}
+        </EmptyDropdown>
+
+        <Dropdown position="bottom-left">
+            <div slot="button" class="m-2 rounded-2xl bg-blue-primary">
+                <Avatar />
+            </div>
+
+            <Option text="Paramètres" href="/parametres" boxIcon="bx-cog" />
+            <Option text="Se déconnecter" href="/deconnexion" color="red" boxIcon="bx-log-out" />
+        </Dropdown>
     </div>
 </nav>
