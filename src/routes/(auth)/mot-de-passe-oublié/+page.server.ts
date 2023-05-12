@@ -1,35 +1,37 @@
-import { resetPasswordSchema } from "$lib/formSchema";
 import * as db from "$lib/server/db";
 import * as omnivox from "$lib/server/omnivox";
 import { fail, redirect } from "@sveltejs/kit";
-import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
-
-export const load = async () => {
-    const form = await superValidate(resetPasswordSchema);
-    return { form };
-};
 
 export const actions = {
     reset: async ({ request, url }) => {
-        const form = await superValidate(request, resetPasswordSchema);
+        const data = await request.formData();
+        const da = data.get("da")?.toString();
+        const omnivoxPassword = data.get("omnivoxPassword")?.toString();
+        const newPassword = data.get("newPassword")?.toString();
 
-        if (!form.valid) {
-            return fail(400, { form });
+        if (
+            !da ||
+            !/\d{7}/.test(da) ||
+            !omnivoxPassword ||
+            !newPassword ||
+            !/.{8,}/.test(newPassword)
+        ) {
+            return fail(400, { da, missing: true });
         }
 
         try {
-            await omnivox.login(form.data.email, form.data.omnivoxPassword);
+            await omnivox.login(da, omnivoxPassword);
         } catch (e) {
-            return setError(form, "omnivoxPassword", "Mot de passe omnivox incorrect");
+            return fail(401, { da, omnivoxIncorrect: true });
         }
 
-        const user = await db.findUser({ email: form.data.email });
+        const user = await db.findUser({ da });
         if (!user) {
-            return setError(form, "email", "Aucun utilisateur avec cet email");
+            return fail(401, { da, incorrect: true });
         }
 
-        await db.updateUserPassword(user, form.data.password);
+        await db.updateUserPassword(user, newPassword);
 
         throw redirect(302, "/connexion?" + url.searchParams);
     },

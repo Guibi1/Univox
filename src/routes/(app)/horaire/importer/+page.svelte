@@ -1,18 +1,22 @@
 <script lang="ts">
+    import { enhance, type SubmitFunction } from "$app/forms";
+    import schedule from "$lib/stores/schedule";
     import Loader from "$lib/components/Loader.svelte";
-    import schedule from "$lib/stores/schedule.js";
-    import { superForm } from "sveltekit-superforms/client";
+    import type { ActionData } from "../$types";
 
-    export let data;
+    export let form: ActionData;
+    let loading = false;
 
-    const { form, errors, delayed, enhance } = superForm(data.form, {
-        taintedMessage: null,
-        onResult: ({ result }) => {
+    const handleSubmit = (() => {
+        loading = true;
+        return async ({ result, update }) => {
             if (result.type === "redirect") {
                 schedule.refresh();
             }
-        },
-    });
+            loading = false;
+            update();
+        };
+    }) satisfies SubmitFunction;
 </script>
 
 <svelte:head>
@@ -25,30 +29,30 @@
     <h1>Importer mon horaire depuis Omnivox</h1>
 </div>
 
-{#if $delayed}
+{#if loading}
     <div class="flex items-center justify-center">
         <Loader />
     </div>
 {/if}
 
 <form
-    use:enhance
+    use:enhance={handleSubmit}
     class="m-auto flex w-80 flex-col gap-6"
-    hidden={$delayed}
+    hidden={loading}
     method="post"
-    action="?/import"
+    action="/horaire?/import"
 >
-    <label data-error={$errors.omnivoxPassword}>
+    <label data-error={form?.incorrect}>
         Mot de passe Omnivox
         <input
             name="omnivoxPassword"
             type="password"
-            value={$form.omnivoxPassword}
-            readonly={$delayed}
+            required
+            placeholder=" "
+            on:input={() => form && (form.incorrect = false)}
         />
-
-        {#if $errors.omnivoxPassword}
-            <span>{$errors.omnivoxPassword[0]}</span>
+        {#if form?.incorrect}
+            <span>Mot de passe erroné</span>
         {/if}
     </label>
 

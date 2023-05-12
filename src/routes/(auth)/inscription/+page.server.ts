@@ -1,92 +1,111 @@
-import { inscriptionPartialSchema, inscriptionSchema } from "$lib/formSchema";
 import * as db from "$lib/server/db";
 import * as omnivox from "$lib/server/omnivox";
 import { fail } from "@sveltejs/kit";
 import { Types } from "mongoose";
-import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
-
-export const load = async () => {
-    const form = await superValidate(inscriptionSchema);
-    form.data.firstStep = true;
-    return { form };
-};
 
 export const actions = {
     firstStep: async ({ request }) => {
-        const form = await superValidate(request, inscriptionPartialSchema);
+        const data = await request.formData();
+        const da = data.get("da")?.toString();
+        const omnivoxPassword = data.get("omnivoxPassword")?.toString();
 
-        if (!form.valid) {
-            return fail(400, { form });
+        // Validate first step input
+        if (!da || !/\d{7}/.test(da) || !omnivoxPassword) {
+            return fail(400, { da, missing: true });
         }
 
         try {
             // Login via Omnivox to verify the user's identity
-            const cookie = await omnivox.login(form.data.email, form.data.omnivoxPassword);
+            const cookie = await omnivox.login(da, omnivoxPassword);
             const html = await omnivox.fetchSchedulePageHTML(cookie, 2023, omnivox.Semester.Winter);
             const info = omnivox.schedulePageToName(html);
 
             // Make sure the DA doesn't already has an account
-            if (await db.findUser({ email: form.data.email })) {
-                return setError(form, "email", "Un compte avec ce courriel existe déjà");
+            if (await db.findUser({ da })) {
+                return fail(400, { da, daExists: true });
             }
 
             // Everything it good!
-            form.data.firstStep = false;
-            form.data.password = "";
-            form.data.confirmPassword = "";
-            form.data.firstName = info.firstName;
-            form.data.lastName = info.lastName;
-
-            return { form };
+            return { da, omnivoxPassword, ...info, success: true };
         } catch (e) {
-            return setError(form, "omnivoxPassword", "Mot de passe erroné");
+            return fail(401, { da, omnivoxIncorrect: true });
         }
     },
 
     secondStep: async ({ request, cookies }) => {
-        const form = await superValidate(request, inscriptionSchema);
+        const data = await request.formData();
+        const da = data.get("da")?.toString();
+        const omnivoxPassword = data.get("omnivoxPassword")?.toString();
 
-        if (!form.valid) {
-            return fail(400, { form });
+        // Validate first step input
+        if (!da || !/\d{7}/.test(da) || !omnivoxPassword) {
+            return fail(400, { da, missing: true });
+        }
+
+        // Second step data
+        let firstName = data.get("firstName")?.toString();
+        let lastName = data.get("lastName")?.toString();
+        const email = data.get("email")?.toString();
+        const password = data.get("password")?.toString();
+
+        // Validate second step input
+        if (
+            !password ||
+            !/^.{8,}$/.test(password) ||
+            !email ||
+            !/^[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+$/.test(email)
+        ) {
+            return fail(400, {
+                da,
+                omnivoxPassword,
+                firstName,
+                lastName,
+                email,
+                missing: true,
+            });
         }
 
         // Login via Omnivox to verify the user's identity
         try {
-            const cookie = await omnivox.login(form.data.email, form.data.omnivoxPassword);
+            const cookie = await omnivox.login(da, omnivoxPassword);
             const html = await omnivox.fetchSchedulePageHTML(cookie, 2023, omnivox.Semester.Winter);
             const info = omnivox.schedulePageToName(html);
-
-            form.data.firstName = info.firstName;
-            form.data.lastName = info.lastName;
-        } catch {
-            form.data.firstStep = true;
-            return setError(form, "omnivoxPassword", "Mot de passe erroné");
+            firstName = info.firstName;
+            lastName = info.lastName;
+        } catch (e) {
+            return fail(401, { da, omnivoxIncorrect: true });
         }
 
         // Try to create the user
         const user = await db.createUser(
             {
                 _id: new Types.ObjectId(),
-                da: form.data.email.split("@")[0],
-                email: form.data.email,
-                firstName: form.data.firstName,
-                lastName: form.data.lastName,
-                avatar: form.data.firstName + form.data.email,
+                da,
+                email,
+                firstName,
+                lastName,
+                avatar: firstName + da,
             },
-            form.data.password
+            password
         );
 
         // Make sure the DA doesn't already has an account
         if (!user) {
-            form.data.firstStep = true;
-            return setError(form, "email", "Un compte avec ce courriel existe déjà");
+            return fail(400, {
+                da,
+                omnivoxPassword,
+                firstName,
+                lastName,
+                email,
+                emailExists: true,
+            });
         }
 
         // Everything it good!
         const token = await db.createToken(user);
         cookies.set("token", token, { path: "/", httpOnly: true, secure: true, sameSite: true });
 
-        return { form };
+        return { firstName, lastName, success: true };
     },
 } satisfies Actions;

@@ -3,39 +3,23 @@
  */
 
 import "$lib/server/db";
-import chalk from "chalk";
 import mongoose from "mongoose";
 import { Readable } from "stream";
-
-const log = (...text: unknown[]) =>
-    console.log(
-        chalk.bgBlue(" INFO "),
-        chalk.yellow("[storage bucket]"),
-        chalk.blue("➜ "),
-        ...text
-    );
-const warn = (...text: unknown[]) =>
-    console.warn(
-        chalk.bgRed(" WARNING "),
-        chalk.yellow("[storage bucket]"),
-        chalk.red("➜ "),
-        ...text
-    );
 
 /**
  * Creates a new GridFSBucket if mongoose is connected
  */
-export function connect(silent = false) {
-    if (mongoose.connection.readyState != 1 || !!bookBucket) return;
+function connect() {
+    if (mongoose.connection.readyState != 1) return;
     bookBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
         bucketName: "bookImages",
     });
-    if (!silent) log("Connected");
 }
 
 // Create and connect the GridFSBucket
 let bookBucket: mongoose.mongo.GridFSBucket;
-connect(true); // This is useful in Dev mode
+mongoose.connection.on("connection", connect);
+connect(); // This is useful in Dev mode
 
 /**
  * Describes the file's metadata stored on MongoDB
@@ -117,32 +101,8 @@ export async function downloadBookImage(
             stream.on("end", resolve);
         });
     } catch (e) {
-        warn(
-            "An error occured while downloading:",
-            (e as mongoose.mongo.MongoRuntimeError).message
-        );
         return null;
     }
 
     return { data: new Blob(chunks), ...(fileData.metadata as Metadata) };
-}
-
-/**
- * Deletes an image from the book's storage bucket with the specified filename.
- * @param {string} filename The name of the image to download.
- * @returns {Promise<boolean>} True if the operation succeded, false otherwise
- */
-export async function deleteBookImage(filename: string): Promise<boolean> {
-    try {
-        const id = (await bookBucket.find({ filename: filename }).limit(1).next())?._id;
-        if (!id) {
-            return false;
-        }
-
-        await bookBucket.delete(id);
-        return true;
-    } catch (e) {
-        warn("An error occured while deleting:", (e as mongoose.mongo.MongoRuntimeError).message);
-        return false;
-    }
 }

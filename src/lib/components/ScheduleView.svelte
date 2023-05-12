@@ -56,9 +56,7 @@
     }
 </script>
 
-<div
-    class="grid grid-rows-[min-content_min-content_1fr] overflow-hidden rounded-2xl bg-white dark:bg-gray3"
->
+<div class="grid grid-rows-[min-content_min-content_1fr] overflow-hidden rounded-2xl bg-gray3">
     <div class="m-4 flex items-center justify-between">
         <!-- Display the current week with start and end days -->
         <p class="text-2xl">
@@ -71,24 +69,15 @@
         </p>
         <!-- Buttons for navigating to the previous or next week -->
         <div class="flex h-8 items-stretch gap-0.5">
-            <button
-                on:click={() => moveWeek(-1)}
-                class="rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray2 dark:hover:bg-gray3"
-            >
+            <button on:click={() => moveWeek(-1)} class="rounded-lg bg-gray2">
                 <i class="bx bxs-left-arrow w-8 text-sm" />
             </button>
 
-            <button
-                on:click={() => (startDay = dayjs())}
-                class="rounded-lg bg-gray-300 px-4 hover:bg-gray-400 dark:bg-gray2 dark:hover:bg-gray3"
-            >
+            <button on:click={() => (startDay = dayjs())} class="rounded-lg bg-gray2 px-4">
                 Aujourd'hui
             </button>
 
-            <button
-                on:click={() => moveWeek(1)}
-                class="rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray2 dark:hover:bg-gray3"
-            >
+            <button on:click={() => moveWeek(1)} class="rounded-lg bg-gray2">
                 <i class="bx bxs-right-arrow w-8 text-sm" />
             </button>
         </div>
@@ -132,7 +121,7 @@
         <div class="absolute left-12 right-0 h-0">
             {#each Array.from({ length: 24 - timeStart }) as _}
                 <div
-                    class="border-b bg-gray-300 dark:border-gray3 dark:bg-gray2"
+                    class="border-b bg-gray2 dark:border-gray3"
                     style={`height: ${rowHeight}rem`}
                 />
             {/each}

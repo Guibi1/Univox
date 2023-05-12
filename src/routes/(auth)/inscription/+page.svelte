@@ -1,86 +1,120 @@
 <script lang="ts">
+    import { enhance, type SubmitFunction } from "$app/forms";
     import { page } from "$app/stores";
     import Loader from "$lib/components/Loader.svelte";
-    import { superForm } from "sveltekit-superforms/client";
+    import type { ActionData } from "./$types";
 
-    export let data;
+    export let form: ActionData;
+    let firstStep = true;
+    let loading = false;
 
-    const { form, errors, delayed, enhance } = superForm(data.form, { taintedMessage: null });
+    const handleSubmit = (({ data }) => {
+        if (!firstStep) {
+            data.set("da", form?.da ?? "");
+            data.set("firstName", form?.firstName ?? "");
+            data.set("lastName", form?.lastName ?? "");
+            data.set("omnivoxPassword", form?.omnivoxPassword ?? "");
+        }
+        loading = true;
+
+        return async ({ result, update }) => {
+            if (firstStep || result.type !== "success") {
+                loading = false;
+            }
+            if (result.type === "success") {
+                firstStep = false;
+            }
+            update();
+        };
+    }) satisfies SubmitFunction;
 </script>
 
 <svelte:head>
     <title>Univox | Inscription</title>
 </svelte:head>
 
-<h1 class="pb-4 text-center">
-    {$form.firstStep ? "Inscription" : `Bonjour, ${$form.firstName} !`}
-</h1>
+<h1 class="pb-4 text-center">{firstStep ? "Inscription" : `Bonjour, ${form?.firstName} !`}</h1>
 
 <form
-    use:enhance
+    use:enhance={handleSubmit}
     class="m-auto flex w-9/12 flex-col gap-6"
     method="post"
-    action={$form.firstStep ? "?/firstStep" : "?/secondStep"}
+    action={firstStep ? "?/firstStep" : "?/secondStep"}
 >
     <div
         class="relative grid w-[250%] grid-cols-2 gap-[20%] transition-[right]"
-        style="right: {$form.firstStep ? '0' : '150'}%;"
+        style="right: {firstStep ? '0' : '150'}%;"
     >
         <div class="flex flex-col gap-4">
-            <label data-error={$errors.email}>
-                Adresse courriel étudiante
-                <input name="email" type="text" value={$form.email} readonly={$delayed} />
-
-                {#if $errors.email}
-                    <span>{$errors.email[0]}</span>
+            <label data-error={form?.daExists}>
+                No de DA
+                <input
+                    name="da"
+                    type="text"
+                    pattern={"\\d{7}"}
+                    required={firstStep}
+                    placeholder=" "
+                    on:input={() => form?.daExists && (form.daExists = false)}
+                    value={form?.da ?? ""}
+                    readonly={loading}
+                />
+                {#if form?.daExists}
+                    <span>Un compte avec ce DA existe déjà</span>
                 {/if}
             </label>
 
-            <label data-error={$errors.omnivoxPassword}>
+            <label data-error={form?.omnivoxIncorrect}>
                 Mot de passe Omnivox
                 <input
                     name="omnivoxPassword"
                     type="password"
-                    value={$form.omnivoxPassword}
-                    readonly={$delayed}
+                    required={firstStep}
+                    placeholder=" "
+                    on:input={() => form?.omnivoxIncorrect && (form.omnivoxIncorrect = false)}
+                    readonly={loading}
                 />
-
-                {#if $errors.omnivoxPassword}
-                    <span>{$errors.omnivoxPassword[0]}</span>
+                {#if form?.omnivoxIncorrect}
+                    <span>Mot de passe erroné</span>
                 {/if}
             </label>
         </div>
 
-        <div hidden={$form.firstStep} class="flex flex-col gap-4">
+        <div hidden={firstStep} class="flex flex-col gap-4">
             <span>Il manque quelques information pour finaliser votre compte :</span>
 
-            <label data-error={$errors.password}>
-                Mot de passe
-                <input name="password" type="password" value={$form.password} readonly={$delayed} />
-
-                {#if $errors.password}
-                    <span>{$errors.password[0]}</span>
+            <label data-error={form?.emailExists}>
+                Courriel
+                <input
+                    name="email"
+                    type="email"
+                    pattern="[a-zA-Z0-9.+]+@([a-zA-Z0-9]+\.)+[a-zA-Z]+"
+                    required={!firstStep}
+                    placeholder=" "
+                    value={form?.email ?? ""}
+                    on:input={() => form?.emailExists && (form.emailExists = false)}
+                    readonly={loading}
+                />
+                {#if form?.emailExists}
+                    <span>Un compte avec cette adresse courriel existe déjà</span>
                 {/if}
             </label>
 
-            <label data-error={$errors.confirmPassword}>
-                Confirmer le mot de passe
+            <label>
+                Mot de passe
                 <input
-                    name="confirmPassword"
+                    name="password"
                     type="password"
-                    value={$form.confirmPassword}
-                    readonly={$delayed}
+                    pattern={".{8,}"}
+                    required={!firstStep}
+                    placeholder=" "
+                    readonly={loading}
                 />
-
-                {#if $errors.confirmPassword}
-                    <span>{$errors.confirmPassword[0]}</span>
-                {/if}
             </label>
 
             <button
                 class="flex items-center self-start"
                 type="button"
-                on:click={() => ($form.firstStep = true)}
+                on:click={() => (firstStep = true)}
             >
                 <i class="bx bx-chevron-left text-lg" />
                 Retour
@@ -88,13 +122,9 @@
         </div>
     </div>
 
-    <input hidden name="firstStep" type="checkbox" bind:checked={$form.firstStep} readonly />
-    <input hidden name="firstName" type="text" bind:value={$form.firstName} readonly />
-    <input hidden name="lastName" type="text" bind:value={$form.lastName} readonly />
-
-    {#if !$delayed}
+    {#if !loading}
         <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
-            {$form.firstStep ? "Suivant" : "S'inscrire"} <i class="bx bx-chevron-right text-lg" />
+            {firstStep ? "Suivant" : "S'inscrire"} <i class="bx bx-chevron-right text-lg" />
         </button>
     {:else}
         <div class="flex items-center justify-center">
@@ -103,7 +133,7 @@
     {/if}
 </form>
 
-{#if !$delayed}
+{#if !loading}
     <div class="my-3 flex items-center gap-6">
         <hr class="w-full" />
         <span> ou </span>
@@ -111,6 +141,6 @@
     </div>
 
     <div class="m-auto flex w-9/12">
-        <a href={"/connexion" + $page.url.search} class="outlined m-auto w-7/12"> Se connecter </a>
+        <a href={"/connexion" + $page.data.params} class="outlined m-auto w-7/12"> Se connecter </a>
     </div>
 {/if}

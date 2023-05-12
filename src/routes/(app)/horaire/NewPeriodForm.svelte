@@ -1,59 +1,96 @@
 <script lang="ts">
+    import { enhance, type SubmitFunction } from "$app/forms";
     import schedule from "$lib/stores/schedule";
     import dayjs from "dayjs";
-    import { superForm } from "sveltekit-superforms/client";
-    import type { PageData } from "./$types";
+    import type { ActionData } from "./$types";
 
-    export let data: PageData;
+    export let form: ActionData = null;
 
-    const { form, errors, delayed, enhance } = superForm(data.form, {
-        taintedMessage: null,
-        onResult: ({ result }) => {
+    let loading = false;
+
+    const handleSubmit = (() => {
+        loading = true;
+        return async ({ result, update }) => {
             if (result.type === "success") {
-                schedule.refresh();
+                await schedule.refresh();
             }
-        },
-    });
+            loading = false;
+            update({ reset: true });
+        };
+    }) satisfies SubmitFunction;
 </script>
 
-<form use:enhance class="flex flex-col gap-2" method="post" action="/horaire?/addPeriod">
-    <label data-error={$errors.name}>
+<form
+    use:enhance={handleSubmit}
+    class="flex flex-col gap-2"
+    method="post"
+    action="/horaire?/addPeriod"
+>
+    <label data-error={form?.invalidName}>
         Nom de l'évènement
 
-        <input type="text" name="name" value={$form.name} readonly={$delayed} />
+        <input
+            type="text"
+            name="name"
+            value={form?.name ?? ""}
+            required
+            placeholder=" "
+            readonly={loading}
+        />
 
-        {#if $errors.name}
-            <span>{$errors.name[0]}</span>
+        {#if form?.invalidName}
+            <span>Nom invalide</span>
         {/if}
     </label>
 
-    <label data-error={$errors.date}>
+    <label data-error={form?.invalidDate}>
         Date
 
-        <input name="date" type="date" value={$form.date} readonly={$delayed} />
+        <input
+            name="date"
+            type="date"
+            required
+            value={form?.date ?? dayjs().format("YYYY-MM-DD")}
+            on:input={() => form && (form.invalidDate = false)}
+            readonly={loading}
+        />
 
-        {#if $errors.date}
-            <span>{$errors.date[0]}</span>
+        {#if form?.invalidDate}
+            <span>Date invalide</span>
         {/if}
     </label>
 
-    <label data-error={$errors.startTime}>
+    <label data-error={form?.invalidStartTime}>
         Début
 
-        <input name="startTime" type="time" value={$form.startTime} readonly={$delayed} />
+        <input
+            name="startTime"
+            type="time"
+            required
+            value={form?.startTime ?? dayjs().add(1, "hour").format("HH:00")}
+            on:input={() => form && (form.invalidStartTime = false)}
+            readonly={loading}
+        />
 
-        {#if $errors.startTime}
-            <span>{$errors.startTime[0]}</span>
+        {#if form?.invalidStartTime}
+            <span>Temps de début invalide</span>
         {/if}
     </label>
 
-    <label data-error={$errors.endTime}>
+    <label data-error={form?.invalidEndTime}>
         Fin
 
-        <input name="endTime" type="time" value={$form.endTime} readonly={$delayed} />
+        <input
+            name="endTime"
+            type="time"
+            required
+            value={form?.endTime ?? dayjs().add(2, "hour").format("HH:00")}
+            readonly={loading}
+        />
+        <!-- on:input={() => form && (form.invalidEndTime = false)} -->
 
-        {#if $errors.endTime}
-            <span>{$errors.endTime[0]}</span>
+        {#if form?.invalidEndTime}
+            <span>Temps de fin invalide</span>
         {/if}
     </label>
 

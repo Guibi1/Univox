@@ -1,40 +1,78 @@
-import { newPeriodSchema } from "$lib/formSchema";
 import * as db from "$lib/server/db";
-
-import { fail } from "@sveltejs/kit";
+import * as omnivox from "$lib/server/omnivox";
+import { fail, redirect } from "@sveltejs/kit";
 import dayjs from "dayjs";
-import { superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
-
-export async function load() {
-    const form = await superValidate(newPeriodSchema);
-    form.data.date = dayjs().format("YYYY-MM-DD");
-    form.data.startTime = dayjs().add(1, "hour").format("HH:00");
-    form.data.endTime = dayjs().add(3, "hour").format("HH:00");
-    return { form };
-}
 
 export const actions = {
     addPeriod: async ({ request, locals }) => {
-        const form = await superValidate(request, newPeriodSchema);
+        const data = await request.formData();
+        const name = data.get("name")?.toString();
+        const date = data.get("date")?.toString();
+        const startTime = data.get("startTime")?.toString();
+        const endTime = data.get("endTime")?.toString();
 
-        if (!form.valid) {
-            return fail(400, { form });
+        // Input validation
+        const invalidName = !name || !/\w+/.test(name);
+        const invalidDate = !date || !/\d{4}-\d{2}-\d{2}/.test(date);
+        const invalidStartTime = !startTime || !/\d{2}:\d{2}(:\d{2})?/.test(startTime);
+        const invalidEndTime =
+            !endTime ||
+            !/\d{2}:\d{2}(:\d{2})?/.test(endTime) ||
+            !dayjs(startTime, "HH:mm").isBefore(dayjs(endTime, "HH:mm"));
+
+        if (invalidName || invalidDate || invalidStartTime || invalidEndTime) {
+            return fail(400, {
+                name,
+                date,
+                startTime,
+                endTime,
+                invalidName,
+                invalidDate,
+                invalidStartTime,
+                invalidEndTime,
+            });
         }
 
         try {
             await db.addPeriodsToSchedule(locals.user, [
                 {
-                    name: form.data.name,
-                    timeStart: dayjs(form.data.date + form.data.startTime, "YYYY-MM-DDHH:mm"),
-                    timeEnd: dayjs(form.data.date + form.data.endTime, "YYYY-MM-DDHH:mm"),
+                    name,
+                    timeStart: dayjs(date + startTime, "YYYY-MM-DDHH:mm"),
+                    timeEnd: dayjs(date + endTime, "YYYY-MM-DDHH:mm"),
                 },
             ]);
 
             // Everything it good!
-            return { form };
+            return { success: true };
         } catch {
-            return fail(500, { form });
+            return fail(500);
         }
+    },
+    import: async ({ request, locals }) => {
+        if (!locals.user) return fail(401, { incorrect: true });
+
+        const data = await request.formData();
+        const omnivoxPassword = data.get("omnivoxPassword")?.toString();
+
+        if (!omnivoxPassword) {
+            return fail(400, { incorrect: true });
+        }
+
+        try {
+            const cookie = await omnivox.login(locals.user.da, omnivoxPassword);
+            const html = await omnivox.fetchSchedulePageHTML(
+                cookie,
+                dayjs().year(),
+                omnivox.Semester.Winter
+            );
+            const schedule = omnivox.schedulePageToClasses(html);
+
+            await db.addClassesToSchedule(locals.user, schedule);
+        } catch (e) {
+            return fail(401, { incorrect: true });
+        }
+
+        throw redirect(302, "/horaire");
     },
 } satisfies Actions;

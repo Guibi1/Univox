@@ -6,11 +6,11 @@ const AuthCheck = () => {
         const univox = new UnivoxPage(page);
         await univox.goto("/connexion");
 
-        // Fill "email" on <input> [name="email"]
-        await page.fill('[name="email"]', "0000000@bdeb.qc.ca");
+        // Fill "da" on <input> [name="da"]
+        await page.fill('[name="da"]', "0000000");
 
         // Fill "password" on <input> [name="password"]
-        await page.fill('[name="password"]', "badPassword1$");
+        await page.fill('[name="password"]', "00000000");
 
         // Click on <button> "Se connecter"
         await page.click('[type="submit"]');
@@ -23,11 +23,11 @@ const AuthCheck = () => {
         const univox = new UnivoxPage(page);
         await univox.goto("/connexion");
 
-        // Fill "email" on <input> [name="email"]
-        await page.fill('[name="email"]', process.env.EMAIL || "");
+        // Fill "da" on <input> [name="da"]
+        await page.fill('[name="da"]', process.env.DA);
 
         // Fill "password" on <input> [name="password"]
-        await page.fill('[name="password"]', process.env.PASSWORD || "");
+        await page.fill('[name="password"]', process.env.PASSWORD);
 
         // Click on <button> "Se connecter"
         await page.click('[type="submit"]');

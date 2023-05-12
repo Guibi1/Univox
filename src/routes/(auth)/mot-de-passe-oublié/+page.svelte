@@ -1,11 +1,21 @@
 <script lang="ts">
+    import { enhance, type SubmitFunction } from "$app/forms";
     import { page } from "$app/stores";
     import Loader from "$lib/components/Loader.svelte";
-    import { superForm } from "sveltekit-superforms/client";
+    import type { ActionData } from "./$types";
 
-    export let data;
+    export let form: ActionData;
+    let loading = false;
 
-    const { form, errors, submitting, enhance } = superForm(data.form, { taintedMessage: null });
+    const handleSubmit = (() => {
+        loading = true;
+        return async ({ update, result }) => {
+            if (result.type !== "success") {
+                loading = false;
+            }
+            update();
+        };
+    }) satisfies SubmitFunction;
 </script>
 
 <svelte:head>
@@ -14,47 +24,64 @@
 
 <h1 class="pb-4 text-center">Mot de passe oublié</h1>
 
-<form use:enhance class="m-auto flex w-9/12 flex-col gap-6" method="post" action="?/reset">
+<form
+    use:enhance={handleSubmit}
+    class="m-auto flex w-9/12 flex-col gap-6"
+    method="post"
+    action="?/reset"
+>
     <div class="flex flex-col gap-4">
-        <label data-error={$errors.email}>
-            Adresse courriel étudiante
-            <input name="email" type="email" value={$form.email} readonly={$submitting} />
-
-            {#if $errors.email}
-                <span>{$errors.email[0]}</span>
+        <label data-error={form?.incorrect}>
+            No de DA
+            <input
+                name="da"
+                type="text"
+                pattern={"\\d{7}"}
+                required
+                placeholder=" "
+                on:input={() => form && (form.incorrect = false)}
+                value={form?.da ?? ""}
+                readonly={loading}
+            />
+            {#if form?.incorrect}
+                <span>Aucun utilisateur ne correspond au DA entré</span>
             {/if}
         </label>
 
-        <label data-error={$errors.omnivoxPassword}>
+        <label data-error={form?.omnivoxIncorrect}>
             Mot de passe Omnivox
             <input
                 name="omnivoxPassword"
                 type="password"
-                value={$form.omnivoxPassword}
-                readonly={$submitting}
+                required
+                placeholder=" "
+                on:input={() => form && (form.omnivoxIncorrect = false)}
+                readonly={loading}
             />
-
-            {#if $errors.omnivoxPassword}
-                <span>{$errors.omnivoxPassword[0]}</span>
+            {#if form?.omnivoxIncorrect}
+                <span>Mot de passe Omnivox erroné</span>
             {/if}
         </label>
 
-        <label data-error={$errors.password}>
-            Mot de passe
-            <input name="password" type="password" value={$form.password} readonly={$submitting} />
-
-            {#if $errors.password}
-                <span>{$errors.password[0]}</span>
-            {/if}
+        <label>
+            Nouveau mot de passe
+            <input
+                name="newPassword"
+                type="password"
+                pattern={".{8,}"}
+                required
+                placeholder=" "
+                readonly={loading}
+            />
         </label>
 
-        <a href={"/connexion" + $page.url.search} class="flex self-start">
+        <a href={"/connexion" + $page.data.params} class="flex self-start">
             <i class="bx bx-chevron-left text-lg" />
             Retour
         </a>
     </div>
 
-    {#if !$submitting}
+    {#if !loading}
         <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
             Suivant <i class="bx bx-chevron-right" />
         </button>
