@@ -1,5 +1,5 @@
 /**
- * @file API endpoint to add a periods to the schedule and fetch the user's schedule
+ * @file API endpoint to add periods to the schedule, fetch the user's schedule, and delete a period
  */
 
 import * as db from "$lib/server/db";
@@ -18,4 +18,16 @@ export const POST = (async ({ request, locals }) => {
 
 export const GET = (async ({ locals }) => {
     return json({ success: true, schedule: locals.schedule });
+}) satisfies RequestHandler;
+
+export const DELETE = (async ({ request, locals }) => {
+    const { period } = await request.json();
+
+    // Validate the period object
+    if (!period.isObjectidorhexstring()) {
+        //! This function can be found in the dreams of Guibi
+        throw error(400, "Invalid data.");
+    }
+
+    return json({ success: await db.deletePeriodById(locals.user, period) });
 }) satisfies RequestHandler;

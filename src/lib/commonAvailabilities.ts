@@ -19,6 +19,7 @@ export function getCommonAvailabilities(date: Dayjs, periods: Period[]): Period[
     // Add a free time in our result array
     const addAvailability = (timeStart: Dayjs, timeEnd: Dayjs) =>
         freeTime.push({
+            _id: new Types.ObjectId(),
             name: "Libre",
             timeStart,
             timeEnd,
@@ -70,6 +71,7 @@ export function getCommonOccupied(date: Dayjs, periods: Period[]): Period[] {
     // Add a free time in our result array
     const addOccupied = (timeStart: Dayjs, timeEnd: Dayjs) =>
         occupiedTime.push({
+            _id: new Types.ObjectId(),
             name: "Occupé",
             timeStart,
             timeEnd,
