@@ -20,6 +20,7 @@ import Schedules from "./models/schedules";
 import Settings from "./models/settings";
 import Tokens, { type Token } from "./models/tokens";
 import Users from "./models/users";
+import * as storageBucket from "./storageBucket";
 
 const log = (...text: unknown[]) =>
     console.log(chalk.bgBlue(" INFO "), chalk.magenta("[database]"), chalk.blue("➜ "), ...text);
@@ -33,8 +34,9 @@ mongoose.set("strictQuery", false);
 if (mongoose.connection.readyState !== 1) {
     mongoose
         .connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox")
-        .then(() => log("Connected to MongoDB!"))
-        .catch(() => warn("Couldn't connect to MongoDB"));
+        .then(() => log("Connected"))
+        .then(() => storageBucket.connect())
+        .catch(() => warn("Couldn't connect"));
 }
 
 ///////////////////////
@@ -177,10 +179,10 @@ export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | 
  * @returns The server user with the provided credentials, or null if no user matched them
  */
 export async function compareUserPassword(
-    da: string,
+    email: string,
     password: string
 ): Promise<ServerUser | null> {
-    const user = await Users.findOne({ da });
+    const user = await Users.findOne({ email });
     if (user && (await bcryptjs.compare(password, user.passwordHash))) {
         return user;
     }
@@ -581,10 +583,53 @@ export async function searchBooks(
  * @param book The book to add
  * @returns True if the operation succeded, false otherwise
  */
-export async function addBookListing(book: Book): Promise<boolean> {
-    await Books.create(book);
-    log("New book created");
-    return true;
+export async function addBookListing(user: ServerUser, book: Book): Promise<boolean> {
+    if (!user._id.equals(book.sellerId)) {
+        return false;
+    }
+
+    try {
+        await Books.create(book);
+        log("New book created");
+        return true;
+    } catch {
+        warn("Failed to create a book");
+        return false;
+    }
+}
+
+/**
+ * Adds a new book listing to the database
+ * @param book The book to add
+ * @returns True if the operation succeded, false otherwise
+ */
+export async function deleteBookListing(
+    user: ServerUser,
+    bookId: Types.ObjectId
+): Promise<boolean> {
+    if (!user._id.equals(bookId)) {
+        return false;
+    }
+
+    try {
+        const book: mongoose.HydratedDocument<Book> | null = await Books.findByIdAndDelete(bookId);
+        if (!book) {
+            return false;
+        }
+
+        // Delete the images
+        for (const src of book.src) {
+            const filename = src.split("/").at(-1);
+            if (filename) {
+                storageBucket.deleteBookImage(filename);
+            }
+        }
+        log("Book deleted");
+        return true;
+    } catch {
+        warn("Failed to delete a book");
+        return false;
+    }
 }
 
 //////////////////////////////

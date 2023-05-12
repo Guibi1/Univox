@@ -39,10 +39,7 @@
                             </div>
                         </div>
                         <div class="flex flex-row items-center gap-3 px-5">
-                            <a
-                                class="flex h-10 w-24 items-center justify-center rounded bg-blue-primary font-bold hover:bg-green-900"
-                                href="/amis?friendId={friend._id}"
-                            >
+                            <a class="filled h-10 w-24" href="/amis?friendId={friend._id}">
                                 Horaire
                             </a>
                         </div>
@@ -62,19 +59,14 @@
                     <!--Make the books have some space in between them-->
                     <div class="flex flex-row justify-between">
                         <div class="flex flex-row gap-2 px-3">
-                            <img src={book.src[0]} class="h-20 w-20" />
+                            <img src={book.src[0]} class="h-20 w-20" alt="Page couverture" />
                             <div class="flex flex-col">
                                 <div>{book.title}</div>
                                 <div class="text-sm text-gray-500">{book.author}</div>
                             </div>
                         </div>
                         <div class="flex flex-row items-center gap-3 px-5">
-                            <a
-                                class="flex h-10 w-24 items-center justify-center rounded bg-blue-primary font-bold hover:bg-blue-primary"
-                                href="/livres/mes-livres"
-                            >
-                                Voir
-                            </a>
+                            <a class="filled h-10 w-24" href="/livres/mes-livres"> Voir </a>
                         </div>
                     </div>
                 {/each}
