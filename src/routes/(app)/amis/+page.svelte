@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Avatar from "$lib/components/Avatar.svelte";
     import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/stores";
     import { NotificationKind, type Group, type User, type Schedule } from "$lib/Types";
@@ -81,15 +82,34 @@
                     >
                         <input type="checkbox" bind:group={selectedFriends} value={friend} />
 
-                        <span>
-                            <a
-                                href={getFriendUrl(friend)}
-                                class="transition-[color] duration-300 ease-in-out dark:text-white"
-                            >
-                                {friend.firstName}
-                                {friend.lastName}
-                            </a>
-                        </span>
+                        <div class="flex flex-row justify-between">
+                            <div class="flex flex-row gap-2 px-3">
+                                <div class=" h-16 w-16 rounded-full">
+                                    <Avatar seed={friend.avatar} />
+                                </div>
+                                <div class="flex flex-col">
+                                    <div>{friend.lastName + ", " + friend.firstName}</div>
+                                    <div class="text-sm text-gray-500">{friend.email}</div>
+                                </div>
+                                <Dropdown>
+                                    <Option
+                                        text="Horaire libre commun"
+                                        href={getCommonScheduleUrl(friend)}
+                                    />
+                                    <Option
+                                        separate
+                                        text="Retirer l'ami.e"
+                                        color="red"
+                                        onClick={() => friends.remove(friend._id)}
+                                    />
+                                </Dropdown>
+                            </div>
+                            <div class="flex flex-row items-center gap-3 px-5">
+                                <a class="filled h-10 w-24" href={getFriendUrl(friend)}>
+                                    Horaire
+                                </a>
+                            </div>
+                        </div>
 
                         <Dropdown>
                             <Option
