@@ -12,11 +12,11 @@ export const load = (async ({ locals, url, depends }) => {
     const query = url.searchParams.get("query") ?? "";
     const friendId = url.searchParams.get("friendId") ?? "";
     const groupId = url.searchParams.get("groupId") ?? "";
-    const isCommonSchedule = url.searchParams.get("commonSchedule") ?? ""; //AJOUT
+    const isCommonSchedule = url.searchParams.get("commonSchedule") ?? "";
 
     let groupSchedule: Schedule | null = null;
     let friendSchedule: Schedule | null = null;
-    let friendCommonSchedule: Schedule | null = null; //AJOUT
+    let friendCommonSchedule: Schedule | null = null;
 
     if (isObjectIdOrHexString(groupId)) {
         const group = await db.getGroup(groupId);
@@ -26,7 +26,6 @@ export const load = (async ({ locals, url, depends }) => {
                 const user = await db.getServerUser(userId);
                 if (user) {
                     const memberSchedule = scheduleFromJson(await db.getSchedule(user));
-
                     membersCombinedPeriods.push(...memberSchedule.periods);
                     membersCombinedPeriods.push(...memberSchedule.classes);
                 }
@@ -40,19 +39,16 @@ export const load = (async ({ locals, url, depends }) => {
         isObjectIdOrHexString(friendId) &&
         locals.user.friendsId.some((id) => id.equals(friendId))
     ) {
-        
         const friend = await db.getServerUser(friendId);
-        //AJOUT
-        if(isCommonSchedule == "commonSchedule")
-        {
-            if(friend)
-            {
+
+        if (isCommonSchedule == "commonSchedule") {
+            if (friend) {
                 const usersCombinedPeriods: Period[] = [];
-                const friendScheduleToCompare = scheduleFromJson(await db.getSchedule(friend));
-                const localUserSchedule = scheduleFromJson(await db.getSchedule(locals.user));
+                const friendScheduleToCompare = await db.getSchedule(friend);
+                const localUserSchedule = await db.getSchedule(locals.user);
 
                 usersCombinedPeriods.push(...friendScheduleToCompare.periods);
-                
+
                 usersCombinedPeriods.push(...friendScheduleToCompare.classes);
                 usersCombinedPeriods.push(...localUserSchedule.periods);
                 usersCombinedPeriods.push(...localUserSchedule.classes);
@@ -60,12 +56,8 @@ export const load = (async ({ locals, url, depends }) => {
                 friendCommonSchedule = objectIdToString(
                     getWeekCommonAvailabilities(dayjs(), usersCombinedPeriods)
                 );
-                console.log(friendCommonSchedule)
             }
-        }
-        //AJOUT
-
-        else if (friend) {
+        } else if (friend) {
             friendSchedule = objectIdToString(await db.getSchedule(friend));
         }
     }

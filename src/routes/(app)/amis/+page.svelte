@@ -39,17 +39,16 @@
     $: getFriendUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
         params.set("friendId", friend._id.toString());
-        params.delete("commonSchedule"); //AJOUT
+        params.delete("commonSchedule");
         params.delete("groupId");
         return `?${params}`;
     };
 
-    //AJOUT
     // Generates the search params that redirects to the common schedule between the user and a friend
     $: getCommonScheduleUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
         params.delete("friendId");
-        params.delete("groupId"); //AJOUT
+        params.delete("groupId");
         params.set("friendId", friend._id.toString());
         params.set("commonSchedule", "commonSchedule");
         return `?${params}`;
@@ -95,7 +94,6 @@
                         <Dropdown>
                             <Option
                                 text="Horaire libre commun"
-                                onClick={() => console.log("TODO: afficher l'horaire")}
                                 href={getCommonScheduleUrl(friend)}
                             />
                             <Option
