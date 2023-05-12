@@ -44,8 +44,8 @@ export const load = (async ({ locals, url, depends }) => {
         if (isCommonSchedule == "commonSchedule") {
             if (friend) {
                 const usersCombinedPeriods: Period[] = [];
-                const friendScheduleToCompare = await db.getSchedule(friend);
-                const localUserSchedule = await db.getSchedule(locals.user);
+                const friendScheduleToCompare = scheduleFromJson(await db.getSchedule(friend));
+                const localUserSchedule = scheduleFromJson(await db.getSchedule(locals.user));
 
                 usersCombinedPeriods.push(...friendScheduleToCompare.periods);
 
