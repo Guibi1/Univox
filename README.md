@@ -1,5 +1,8 @@
 # Projet étudiant - Application Web de Gestion d'Horaire et d'Échange pour le Collège Bois-De-Boulogne
 
+
+[![Made With Svelte Badge](https://img.shields.io/badge/made%20with-svelte%20kit-orange?style=for-the-badge)](https://kit.svelte.dev/) [![GNU license](https://img.shields.io/badge/License-GNU%20V3-blue?style=for-the-badge)](./LICENSE)
+
 ## Équipe 3
 Auteurs : Laurent Stéphenne, Maxime Rodgers, Henri-Louis Charbonneau, Eliott Bonnefoy et Alexandre Veregut
 
