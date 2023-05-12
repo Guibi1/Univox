@@ -14,7 +14,7 @@
 
     // Exported context for managing dropdown options and separator
     export type DropdownContext = { addOption: (a: DropdownOption) => void; separate: () => void };
-    export type DropdownColor = "normal" | "red" | "blue";
+    export type DropdownColor = "normal" | "red" | "blue" | "green";
 </script>
 
 <script lang="ts">
@@ -44,6 +44,8 @@
                 return "text-red-600 dark:text-red-600";
             case "blue":
                 return "text-blue-400 dark:text-blue-400";
+            case "green":
+                return "text-green-500 dark:text-green-500";
             default:
                 return "text-neutral";
         }
