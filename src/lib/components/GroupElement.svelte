@@ -54,4 +54,8 @@
         <Option separate text="Renommer" onClick={() => (editing = true)} />
         <Option separate text="Quitter le groupe" color="red" onClick={() => groups.quit(group)} />
     </Dropdown>
+
+    <div class="flex flex-row items-center gap-3 px-5">
+        <a class="filled" href={getGroupUrl(group)}> Horaire commun </a>
+    </div>
 </div>
