@@ -66,8 +66,8 @@
 
     button.filled,
     a.filled {
-        @apply flex h-12 items-center justify-center rounded-lg bg-blue-primary fill-white px-4 text-white;
-        @apply dark:bg-blue-primary dark:fill-black dark:text-black;
+        @apply flex h-12 items-center justify-center rounded-lg bg-blue-darkPrimary fill-black px-4 text-black hover:bg-blue-primary;
+        @apply dark:bg-blue-primary dark:fill-white dark:text-white dark:hover:bg-blue-darkPrimary;
     }
 
     button.outlined,

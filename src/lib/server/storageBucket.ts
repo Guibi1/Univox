@@ -126,3 +126,23 @@ export async function downloadBookImage(
 
     return { data: new Blob(chunks), ...(fileData.metadata as Metadata) };
 }
+
+/**
+ * Deletes an image from the book's storage bucket with the specified filename.
+ * @param {string} filename The name of the image to download.
+ * @returns {Promise<boolean>} True if the operation succeded, false otherwise
+ */
+export async function deleteBookImage(filename: string): Promise<boolean> {
+    try {
+        const id = (await bookBucket.find({ filename: filename }).limit(1).next())?._id;
+        if (!id) {
+            return false;
+        }
+
+        await bookBucket.delete(id);
+        return true;
+    } catch (e) {
+        warn("An error occured while deleting:", (e as mongoose.mongo.MongoRuntimeError).message);
+        return false;
+    }
+}

@@ -1,3 +1,7 @@
+/**
+ * @file API endpoints to manage friend groups
+ */
+
 import { arrayIdToString } from "$lib/sanitization";
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
@@ -12,7 +16,7 @@ export const POST = (async ({ request, locals }) => {
     }
 
     for (const id of usersId) {
-        if (!isObjectIdOrHexString(id) || !locals.user.friendsId.includes(id)) {
+        if (!isObjectIdOrHexString(id) || !locals.user.friendsId.some((u) => u._id.equals(id))) {
             throw error(400, "Invalid data.");
         }
     }
@@ -26,7 +30,12 @@ export const DELETE = (async ({ request, locals }) => {
         throw error(400, "Invalid data.");
     }
 
-    return json({ success: await db.quitGroup(locals.user, groupId) });
+    const group = await db.getGroup(groupId);
+    if (!group) {
+        throw error(400, "Invalid data.");
+    }
+
+    return json({ success: await db.quitGroup(locals.user, group) });
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {

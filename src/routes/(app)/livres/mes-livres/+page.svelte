@@ -12,7 +12,7 @@
     <h1 class="text-center">Mes livres</h1>
     <div class="grid grid-cols-2 gap-4">
         {#each data.books as book}
-            <BookDetails {book} />
+            <BookDetails isDeletable={true} {book} />
         {/each}
     </div>
 </div>
