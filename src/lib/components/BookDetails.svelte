@@ -1,9 +1,10 @@
 <script lang="ts">
     import type { Book } from "$lib/Types";
     import Carousel from "$lib/components/Carousel.svelte";
-
+    import type { PageData } from "../../routes/(app)/livres/$types";
     export let book: Book | null = null;
     export let isDeletable: boolean = false;
+    export let data: PageData;
 </script>
 
 <div class="flex flex-col items-center">
@@ -39,7 +40,7 @@
                     ISBN : {book.ISBN}
                 </span>
                 {#if !isDeletable}
-                    <a href="mailto:#" class="filled"> Contacter </a>
+                    <a href="mailto:{data.selectedBookUser?.email}" class="filled"> Contacter </a>
                 {/if}
             </div>
             {#if isDeletable}
