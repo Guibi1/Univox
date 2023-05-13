@@ -4,7 +4,7 @@
     import type { PageData } from "../../routes/(app)/livres/$types";
     export let book: Book | null = null;
     export let isDeletable: boolean = false;
-    export let data: PageData;
+    export let sellerMail: String;
 </script>
 
 <div class="flex flex-col items-center">
@@ -40,7 +40,7 @@
                     ISBN : {book.ISBN}
                 </span>
                 {#if !isDeletable}
-                    <a href="mailto:{data.selectedBookUser?.email}" class="filled"> Contacter </a>
+                    <a href="mailto:{sellerMail}" class="filled"> Contacter </a>
                 {/if}
             </div>
             {#if isDeletable}
