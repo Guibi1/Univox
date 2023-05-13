@@ -21,7 +21,7 @@
         <a href="/horaire/importer" class="filled">Importer d'Omnivox</a>
     </div>
 
-    <ScheduleView bind:startDay={selectedDay} schedule={$schedule} />
+    <ScheduleView bind:startDay={selectedDay} schedule={$schedule} canPeriodsBeDeleted={true} />
 
     <div>
         <h3 class="mb-4 border-b border-black dark:border-white">Ajouter un évènement</h3>

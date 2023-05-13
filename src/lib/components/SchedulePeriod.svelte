@@ -6,6 +6,7 @@
     export let rowHeight: number;
     export let timeStart: number;
     export let isRight = true;
+    export let canBeDeleted: boolean = false;
 
     let tooltipY = 0;
 
@@ -57,6 +58,18 @@
 
                 {#if !period.theory}
                     <i class="bx bxs-flask text-lg" />
+                {/if}
+
+                {#if canBeDeleted}
+                    <!--TODO change the on:click function with the right function-->
+                    <i
+                        class="bx bx-trash cursor-pointer text-xl text-red-500"
+                        on:click={() => {
+                            throw new Error(
+                                "This function is a placeholder and should be replaced."
+                            );
+                        }}
+                    />
                 {/if}
             </div>
         {/if}
