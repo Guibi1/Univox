@@ -4,6 +4,7 @@
 
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
+import { isObjectIdOrHexString } from "mongoose";
 import type { RequestHandler } from "./$types";
 
 export const POST = (async ({ request, locals }) => {
@@ -24,8 +25,11 @@ export const DELETE = (async ({ request, locals }) => {
     const { period } = await request.json();
 
     // Validate the period object
-    if (!period.isObjectidorhexstring()) {
-        //! This function can be found in the dreams of Guibi
+    if (
+        !isObjectIdOrHexString(period._id) ||
+        period.timeStart instanceof Date ||
+        period.timeEnd instanceof Date
+    ) {
         throw error(400, "Invalid data.");
     }
 

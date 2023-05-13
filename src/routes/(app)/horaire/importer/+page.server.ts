@@ -20,6 +20,7 @@ export const actions = {
         }
 
         try {
+            //TODO delete all current classes for the user
             const cookie = await omnivox.login(locals.user.email, form.data.omnivoxPassword);
             const html = await omnivox.fetchSchedulePageHTML(
                 cookie,

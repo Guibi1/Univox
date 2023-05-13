@@ -9,6 +9,7 @@
     export let schedule: Schedule;
     export let startDay = dayjs();
     export let daysToShow = 7;
+    export let canPeriodsBeDeleted: boolean = false;
 
     const rowHeight = 4;
 
@@ -150,6 +151,7 @@
                         {period}
                         {rowHeight}
                         {timeStart}
+                        canBeDeleted={canPeriodsBeDeleted}
                         isRight={isRightOfSchedule(i)}
                     />
                 {/each}
