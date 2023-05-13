@@ -44,5 +44,5 @@
 
     <BookList books={data.searchResults} />
 
-    <BookDetails book={data.selectedBook} {data} />
+    <BookDetails book={data.selectedBook} sellerMail={data.selectedBookUser?.email ?? ""} />
 </main>
