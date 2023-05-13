@@ -27,8 +27,8 @@ export const DELETE = (async ({ request, locals }) => {
     // Validate the period object
     if (
         !isObjectIdOrHexString(period._id) ||
-        period.timeStart instanceof Date ||
-        period.timeEnd instanceof Date
+        !(period.timeStart instanceof Date) ||
+        !(period.timeEnd instanceof Date)
     ) {
         throw error(400, "Invalid data.");
     }
