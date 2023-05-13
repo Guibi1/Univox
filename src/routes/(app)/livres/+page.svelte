@@ -44,5 +44,5 @@
 
     <BookList books={data.searchResults} />
 
-    <BookDetails book={data.selectedBook} />
+    <BookDetails book={data.selectedBook} {data} />
 </main>
