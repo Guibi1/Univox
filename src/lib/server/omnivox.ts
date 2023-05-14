@@ -183,14 +183,9 @@ export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Class[]
             const fontTags = $("b < font", tdTag);
             if (fontTags.length === 0) return;
 
-            const html = fontTags.first().html();
-
-            // TODO: Handle examens communs?
-            if (html?.includes("examens")) return;
-
             const match = regexFind(
-                html,
-                /<b>(.+?)<\/b><br>(.+?) gr.(.+?)<br>Local (.+?)(?:&nbsp;)*(.)<br>(.+?)<br><font.*?><b><i>(.+?)<\/i><\/b><\/font>/
+                fontTags.first().html(),
+                /<b>(.+?)<\/b>(?:<br>(.+?) gr.(.+?))?<br>(?:Local (.+?))?(?:&nbsp;)*([TL])?(?:<br>(.+?))?<br>(?:<font.*?><b><i>(.+?)<\/i><\/b><\/font>)?/
             );
             const timeEnd = timeStart.add(Number($(tdTag).attr("rowspan") ?? 0) / 2, "hours");
 
@@ -209,12 +204,12 @@ export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Class[]
             const c: Class = {
                 _id: new Types.ObjectId(),
                 name: match[1],
-                code: match[2],
-                group: Number(match[3]),
-                local: match[4],
-                theory: match[5] === "T",
-                teacher: match[6],
-                virtual: match[7] !== "Présentiel",
+                code: match[2] || "",
+                group: match[3] ? Number(match[3]) : 0,
+                local: match[4] || "",
+                theory: match[5] !== "L",
+                teacher: match[6] || "",
+                virtual: match[7] ? match[7] !== "Présentiel" : false,
                 timeStart: timeStart.day(day),
                 timeEnd: timeEnd.day(day),
             };
@@ -238,7 +233,7 @@ async function getScheduleForAllSession(
     orderedSchedule: Class[][]
 ): Promise<Class[]> {
     const classes: Class[] = [];
-    let currentMonday = dayjs().startOf("day").day(1);
+    let currentMonday = dayjs().startOf("day").day(-8);
     let lastClassesLength = 0;
     let emptyWeeksInARow = 0;
 
@@ -438,10 +433,14 @@ function scanDay(currentWeekday: number, image: Image) {
  * @throws Throws a string error message if the specified string is null or the regular expression query does not match the string.
  */
 function regexFind(data: string | null, query: RegExp): RegExpMatchArray {
-    if (data == null) throw "MATCH ERROR: STRING WAS NULL";
+    if (data === null) {
+        throw "MATCH ERROR: STRING WAS NULL";
+    }
 
     const match = data.match(query);
-    if (match == null) throw `MATCH ERROR: '${query}' DIDN'T MATCH WITH PROVIDED STRING.`;
+    if (match === null) {
+        throw `MATCH ERROR: '${query}' DIDN'T MATCH WITH PROVIDED STRING.`;
+    }
 
     return match;
 }

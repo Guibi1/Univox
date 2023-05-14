@@ -21,15 +21,24 @@ export const actions = {
 
         try {
             const cookie = await omnivox.login(locals.user.email, form.data.omnivoxPassword);
-            const html = await omnivox.fetchSchedulePageHTML(
-                cookie,
-                dayjs().year(),
-                omnivox.Semester.Winter
-            );
-            const schedule = await omnivox.schedulePageToClasses(html);
 
-            await db.deleteAllClassesInSchedule(locals.user);
-            await db.addClassesToSchedule(locals.user, schedule);
+            try {
+                const html = await omnivox.fetchSchedulePageHTML(
+                    cookie,
+                    dayjs().year(),
+                    omnivox.Semester.Winter
+                );
+                const schedule = await omnivox.schedulePageToClasses(html);
+
+                await db.deleteAllClassesInSchedule(locals.user);
+                await db.addClassesToSchedule(locals.user, schedule);
+            } catch {
+                return setError(
+                    form,
+                    "omnivoxPassword",
+                    "Impossible d'importer votre horaire pour l'instant"
+                );
+            }
         } catch {
             return setError(form, "omnivoxPassword", "Mot de passe erroné");
         }
