@@ -236,7 +236,7 @@ async function getScheduleForAllSession(
     orderedSchedule: Class[][]
 ): Promise<Class[]> {
     const classes: Class[] = [];
-    let currentMonday = dayjs().startOf("day").day(8);
+    let currentMonday = dayjs().startOf("day").day(1);
     let lastClassesLength = 0;
     let emptyWeeksInARow = 0;
 
@@ -249,15 +249,14 @@ async function getScheduleForAllSession(
             },
         }
     );
-    const iframeURL = regexFind(
+    const iframeSearchParams = regexFind(
         await iframeRes.text(),
         /src='\/Estd\/Net\/HoraireClara\/Default\.aspx\?(.*?)'/
     )[1];
-    console.log("🚀 ~ file: omnivox.ts:256 ~ iframeURL:", iframeURL);
 
     const claraText = await (
         await fetch(
-            `https://${htmlPage.cookie.baseUrl}-estd.omnivox.ca:443/Estd/Net/HoraireClara/Default.aspx?${iframeURL}`,
+            `https://${htmlPage.cookie.baseUrl}-estd.omnivox.ca:443/Estd/Net/HoraireClara/Default.aspx?${iframeSearchParams}`,
             {
                 headers: {
                     Cookie: `comn=${htmlPage.cookie.COMN}; DTKS=${htmlPage.cookie.DTKS}; ln=FRA; L=FRA; k=${htmlPage.cookie.K}; ${htmlPage.cookie.TK}; ${htmlPage.scheduleCookie.sessionID}; ${htmlPage.scheduleCookie.rvpMod}`,
@@ -271,21 +270,30 @@ async function getScheduleForAllSession(
     // While there is no more than three consecutives weeks without any classes
     while (emptyWeeksInARow < 3) {
         // Fetch the week image url
-        const weekRes = await fetch(
-            `https://${htmlPage.cookie.baseUrl}-estd.omnivox.ca:443/Estd/Net/HoraireClara/Default.aspx?${iframeURL}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "Cookie": `comn=${htmlPage.cookie.COMN}; DTKS=${htmlPage.cookie.DTKS}; ln=FRA; L=FRA; k=${htmlPage.cookie.K}; ${htmlPage.cookie.TK}; ${htmlPage.scheduleCookie.sessionID}; ${htmlPage.scheduleCookie.rvpMod}`,
-                },
-                body: `__VIEWSTATE=${formViewState}&__EVENTVALIDATION=${formEventValidation}&ctl00%24cntFormulaire%24ddlJour=${currentMonday.date()}&ctl00%24cntFormulaire%24ddlMois=${
-                    currentMonday.month() + 1
-                }&ctl00%24cntFormulaire%24ddlAnnee=${currentMonday.year()}`,
-            }
-        );
+        const weekText = await (
+            await fetch(
+                `https://${htmlPage.cookie.baseUrl}-estd.omnivox.ca:443/Estd/Net/HoraireClara/Default.aspx?${iframeSearchParams}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Cookie": `comn=${htmlPage.cookie.COMN}; DTKS=${htmlPage.cookie.DTKS}; ln=FRA; L=FRA; k=${htmlPage.cookie.K}; ${htmlPage.cookie.TK}; ${htmlPage.scheduleCookie.sessionID}; ${htmlPage.scheduleCookie.rvpMod}`,
+                    },
+                    body: `__EVENTTARGET=ctl00%24cntFormulaire%24btnChangeDate&__EVENTARGUMENT=&__VIEWSTATE=${encodeURIComponent(
+                        formViewState
+                    )}&__EVENTVALIDATION=${encodeURIComponent(
+                        formEventValidation
+                    )}&ctl00%24cntFormulaire%24ddlJour=${currentMonday.date()}&ctl00%24cntFormulaire%24ddlMois=${
+                        currentMonday.month() + 1
+                    }&ctl00%24cntFormulaire%24ddlAnnee=${currentMonday.year()}`,
+                }
+            )
+        ).text();
 
-        const weekImageURL = regexFind(await weekRes.text(), /src="(HoraireSemaine\.ashx.*?)"/)[1];
+        const weekImageURL = regexFind(weekText, /src="(HoraireSemaine\.ashx.*?)"/)[1];
+        // TODO: Remove this
+        const title = regexFind(weekText, /<title>(.*?)<\/title>/)[1];
+        console.log("🚀 ~ file: omnivox.ts:291 ~ title:", title);
 
         // Fetch the week's image
         const imageRes = await fetch(
@@ -332,7 +340,6 @@ async function getScheduleForAllSession(
         }
 
         currentMonday = currentMonday.add(1, "week");
-        console.log("🚀 ~ file: omnivox.ts:332 ~ currentMonday:", currentMonday);
         console.log("🚀 ~ file: omnivox.ts:335 ~ classes.length:", classes.length);
         // If no periods this week
         if (classes.length === lastClassesLength) {
