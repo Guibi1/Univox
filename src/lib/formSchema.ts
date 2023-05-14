@@ -1,5 +1,8 @@
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { z } from "zod";
+
+dayjs.extend(customParseFormat);
 
 const email = z
     .string()
