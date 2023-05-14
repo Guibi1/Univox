@@ -52,13 +52,12 @@
             </div>
 
             {#if isDeletable}
-                <span on:click={removeBook}>
-                    <button
-                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-900"
-                    >
-                        <i class="bx bx-trash" />
-                    </button>
-                </span>
+                <button
+                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-900"
+                    on:click={removeBook}
+                >
+                    <i class="bx bx-trash" />
+                </button>
             {/if}
         </div>
     {:else}
