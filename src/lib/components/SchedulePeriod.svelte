@@ -53,7 +53,7 @@
             <div class="flex flex-row items-center justify-around">
                 {#if period.virtual}
                     <i class="bx bx-desktop text-lg" />
-                {:else}
+                {:else if period.local}
                     <span class="text-sm">{period.local}</span>
                 {/if}
 
@@ -95,7 +95,7 @@
                     {#if period.virtual}
                         <i class="bx bx-desktop text-2xl" />
                         Virtuel
-                    {:else}
+                    {:else if period.local}
                         <i class="bx bx-chalkboard text-2xl" />
                         Local {period.local}
                     {/if}
@@ -105,8 +105,10 @@
                         Laboratoire
                     {/if}
 
-                    <i class="bx bx-male text-2xl" />
-                    {period.teacher}
+                    {#if period.teacher}
+                        <i class="bx bx-male text-2xl" />
+                        {period.teacher}
+                    {/if}
                 {/if}
             </div>
         </div>
