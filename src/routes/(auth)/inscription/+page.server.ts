@@ -23,7 +23,11 @@ export const actions = {
         try {
             // Login via Omnivox to verify the user's identity
             const cookie = await omnivox.login(form.data.email, form.data.omnivoxPassword);
-            const html = await omnivox.fetchSchedulePageHTML(cookie, 2023, omnivox.Semester.Winter);
+            const { html } = await omnivox.fetchSchedulePageHTML(
+                cookie,
+                2023,
+                omnivox.Semester.Winter
+            );
             const info = omnivox.schedulePageToName(html);
 
             // Make sure the DA doesn't already has an account
@@ -54,7 +58,11 @@ export const actions = {
         // Login via Omnivox to verify the user's identity
         try {
             const cookie = await omnivox.login(form.data.email, form.data.omnivoxPassword);
-            const html = await omnivox.fetchSchedulePageHTML(cookie, 2023, omnivox.Semester.Winter);
+            const { html } = await omnivox.fetchSchedulePageHTML(
+                cookie,
+                2023,
+                omnivox.Semester.Winter
+            );
             const info = omnivox.schedulePageToName(html);
 
             form.data.firstName = info.firstName;

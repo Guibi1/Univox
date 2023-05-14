@@ -26,10 +26,10 @@ export const actions = {
                 dayjs().year(),
                 omnivox.Semester.Winter
             );
-            const schedule = omnivox.schedulePageToClasses(html);
+            const schedule = await omnivox.schedulePageToClasses(html);
 
             await db.addClassesToSchedule(locals.user, schedule);
-        } catch (e) {
+        } catch {
             return setError(form, "omnivoxPassword", "Mot de passe erroné");
         }
 
