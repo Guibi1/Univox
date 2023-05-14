@@ -29,8 +29,7 @@ export const actions = {
             const schedule = await omnivox.schedulePageToClasses(html);
 
             await db.addClassesToSchedule(locals.user, schedule);
-        } catch (e) {
-            console.log("🚀 ~ file: +page.server.ts:33 ~ import: ~ e:", e);
+        } catch {
             return setError(form, "omnivoxPassword", "Mot de passe erroné");
         }
 
