@@ -1,5 +1,5 @@
 import type { Period, Schedule, User } from "$lib/Types";
-import { getWeekCommonOccupations } from "$lib/commonAvailabilities";
+import { getWeekCommonOccupations } from "$lib/commonOccupations";
 import { arrayIdToString, objectIdToString, scheduleFromJson } from "$lib/sanitization";
 import * as db from "$lib/server/db";
 import dayjs from "dayjs";
