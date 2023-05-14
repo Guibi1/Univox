@@ -27,10 +27,24 @@ function createScheduleStore() {
         if (success) refresh();
     }
 
+    async function remove(period: Period) {
+        const { success } = await (
+            await fetch("/api/schedule", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ period }),
+            })
+        ).json();
+        if (success) refresh();
+    }
+
     return {
         subscribe,
         set,
         add,
+        remove,
         refresh,
     };
 }

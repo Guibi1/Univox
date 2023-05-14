@@ -6,12 +6,7 @@
     // TODO
     export let selectionLength = 1;
 
-    let displayMonth = selectedDay;
-
-    function handleClick(date: Dayjs) {
-        selectedDay = date;
-        displayMonth = date;
-    }
+    $: displayMonth = selectedDay;
 
     function getAllWeeks(currentDate: Dayjs) {
         return Array.from({ length: 6 }, (_, i) => currentDate.date(i * 7));
@@ -45,7 +40,7 @@
                 {#each getDaysOfWeek(week) as day}
                     <td class="grid">
                         <button
-                            on:click={() => handleClick(day)}
+                            on:click={() => (selectedDay = day)}
                             class={classNames(
                                 "flex h-8 w-8 items-center justify-center rounded-full hover:bg-black",
                                 {

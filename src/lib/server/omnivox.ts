@@ -6,6 +6,7 @@ import type { Class } from "$lib/Types";
 import * as cheerio from "cheerio";
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { Types } from "mongoose";
 import sharp from "sharp";
 
 dayjs.extend(customParseFormat);
@@ -206,6 +207,7 @@ export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Class[]
             }
 
             const c: Class = {
+                _id: new Types.ObjectId(),
                 name: match[1],
                 code: match[2],
                 group: Number(match[3]),

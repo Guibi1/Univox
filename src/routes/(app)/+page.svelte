@@ -16,7 +16,7 @@
 <!--The schedule takes all of the left part of the screen it is in a grid with two colomns with also the friend list in that-->
 
 <div class="grid h-screen grid-cols-2 gap-2 overflow-y-hidden">
-    <ScheduleView schedule={$schedule} />
+    <ScheduleView schedule={$schedule} periodsCanBeDeleted />
 
     <div class="grid h-full grid-rows-2 divide-y overflow-y-hidden border-gray-600">
         <!--The friends list is in a box with a border and it is scrollable-->
