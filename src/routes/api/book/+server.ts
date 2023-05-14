@@ -12,6 +12,5 @@ export const DELETE = (async ({ request, locals }) => {
     if (!isObjectIdOrHexString(bookId)) {
         throw error(400, "Invalid data.");
     }
-
     return json({ success: await db.deleteBookListing(locals.user, bookId) });
 }) satisfies RequestHandler;
