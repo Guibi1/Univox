@@ -441,10 +441,7 @@ function regexFind(data: string | null, query: RegExp): RegExpMatchArray {
     if (data == null) throw "MATCH ERROR: STRING WAS NULL";
 
     const match = data.match(query);
-    if (match == null) {
-        console.log(3432432423, data);
-        throw `MATCH ERROR: '${query}' DIDN'T MATCH WITH PROVIDED STRING.`;
-    }
+    if (match == null) throw `MATCH ERROR: '${query}' DIDN'T MATCH WITH PROVIDED STRING.`;
 
     return match;
 }
