@@ -562,11 +562,7 @@ export async function addClassesToSchedule(user: ServerUser, classes: Class[]): 
 export async function deleteAllClassesInSchedule(user: ServerUser): Promise<boolean> {
     try {
         await Schedules.findByIdAndUpdate(user.scheduleId, {
-            $pull: {
-                classes: {
-                    $exists: true,
-                },
-            },
+            $set: { classes: [] },
         });
         return true;
     } catch {
