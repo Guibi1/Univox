@@ -11,12 +11,12 @@
 
     let tooltipY = 0;
 
-    export function getTopOffset(timeStart: number) {
-        return rowHeight * (period.timeStart.hour() + period.timeStart.minute() / 60 - timeStart);
+    export function getTopOffset(p: Period, timeStart: number) {
+        return rowHeight * (p.timeStart.hour() + p.timeStart.minute() / 60 - timeStart);
     }
 
-    function getHeight() {
-        return rowHeight * (period.timeEnd.diff(period.timeStart, "minute") / 60) - 0.15;
+    function getHeight(p: Period) {
+        return rowHeight * (p.timeEnd.diff(p.timeStart, "minute") / 60) - 0.15;
     }
 
     function handleMousemove(event: MouseEvent) {
@@ -26,22 +26,22 @@
 
 <div
     class="group relative m-0 h-0 w-full min-w-0"
-    style={`top: ${getTopOffset(timeStart)}rem;`}
+    style={`top: ${getTopOffset(period, timeStart)}rem;`}
     on:mousemove={handleMousemove}
 >
     <div
         class={classNames(
             "mx-0.5 flex flex-col justify-between text-ellipsis rounded-lg bg-blue-primary px-2 text-center",
-            getHeight() >= rowHeight * 1.9 ? "py-4" : "py-2"
+            getHeight(period) >= rowHeight * 1.9 ? "py-4" : "py-2"
         )}
-        style={`height: ${getHeight()}rem;`}
+        style={`height: ${getHeight(period)}rem;`}
     >
         <div class="flex flex-col gap-2">
-            <span class={classNames("text-sm", { truncate: getHeight() < rowHeight * 2.5 })}>
+            <span class={classNames("text-sm", { truncate: getHeight(period) < rowHeight * 2.5 })}>
                 {period.name}
             </span>
 
-            {#if getHeight() >= rowHeight * 1.5}
+            {#if getHeight(period) >= rowHeight * 1.5}
                 <span class="text-xs">
                     {period.timeStart.format("HH:mm")} - {period.timeEnd.format("HH:mm")}
                 </span>
