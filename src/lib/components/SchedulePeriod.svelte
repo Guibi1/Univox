@@ -1,11 +1,13 @@
 <script lang="ts">
     import type { Class, Period } from "$lib/Types";
+    import schedule from "$lib/stores/schedule";
     import classNames from "classnames";
 
     export let period: Period | Class;
     export let rowHeight: number;
     export let timeStart: number;
     export let isRight = true;
+    export let canBeDeleted: boolean = false;
 
     let tooltipY = 0;
 
@@ -59,6 +61,10 @@
                     <i class="bx bxs-flask text-lg" />
                 {/if}
             </div>
+        {:else if canBeDeleted}
+            <button on:click={() => schedule.remove(period)}>
+                <i class="bx bx-trash cursor-pointer text-xl text-red-500" />
+            </button>
         {/if}
 
         <!-- Affiche les informations supplémentaires lorsqu'on survole le div -->

@@ -63,6 +63,7 @@ export interface Schedule {
  * Represents a time period in a schedule
  */
 export interface Period {
+    _id: Types.ObjectId;
     name: string;
     timeStart: Dayjs;
     timeEnd: Dayjs;

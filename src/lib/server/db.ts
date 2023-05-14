@@ -554,6 +554,45 @@ export async function addClassesToSchedule(user: ServerUser, classes: Class[]): 
     }
 }
 
+/**
+ * Deletes all classes in the user's schedule
+ * @param user The targeted user
+ * @returns True if the operation succeeded, false otherwise
+ */
+export async function deleteAllClassesInSchedule(user: ServerUser): Promise<boolean> {
+    try {
+        await Schedules.findByIdAndUpdate(user.scheduleId, {
+            $set: { classes: [] },
+        });
+        return true;
+    } catch {
+        warn(
+            "The function 'deleteAllClassesInSchedule' was called but failed to update the user's data"
+        );
+        return false;
+    }
+}
+
+/**
+ * Deletes a period in the user's schedule by its id
+ * @param user The targeted user
+ * @param period The period object to delete
+ * @returns True if the operation succeeded, false otherwise
+ */
+export async function deletePeriodFromSchedule(user: ServerUser, period: Period): Promise<boolean> {
+    try {
+        await Schedules.findByIdAndUpdate(user.scheduleId, {
+            $pull: {
+                periods: period,
+            },
+        });
+        return true;
+    } catch {
+        warn("The function 'deletePeriodById' was called but failed to update the user's data");
+        return false;
+    }
+}
+
 //////////////////////
 // -*-*- BOOK -*-*- //
 //////////////////////
