@@ -1,18 +1,65 @@
 <script lang="ts">
+    import { invalidate } from "$app/navigation";
     import type { Book } from "$lib/Types";
     import Carousel from "$lib/components/Carousel.svelte";
 
     export let book: Book | null = null;
+    export let isDeletable: boolean = false;
+    export let sellerMail: string = "";
+
+    async function removeBook() {
+        const { success } = await (
+            await fetch("/api/book", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ bookId: book?._id }),
+            })
+        ).json();
+
+        if (success) {
+            invalidate("books");
+        }
+    }
 </script>
 
-<div class="flex flex-col justify-center">
+<div class="flex flex-col items-center">
     {#if book}
         <Carousel images={book.src} readOnly />
 
-        <div>
-            <h3>
-                {book.title}
-            </h3>
+        <div class="grid grid-cols-[4fr_0px] gap-2">
+            <div class="flex flex-col items-center">
+                <span>
+                    <span class="text-xl font-bold">{book.title}</span>
+                    <span class="font-bold italic">de {book.author}</span>
+                </span>
+
+                <span>
+                    Pour le cours
+                    <span class="underline">{book.code}</span>
+                </span>
+
+                <span>{book.state}</span>
+
+                <span>En vente pour {book.price} $</span>
+
+                <span>ISBN : {book.ISBN}</span>
+
+                {#if !isDeletable}
+                    <a href="mailto:{sellerMail}" class="filled"> Contacter </a>
+                {/if}
+            </div>
+
+            {#if isDeletable}
+                <span on:click={removeBook}>
+                    <button
+                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-900"
+                    >
+                        <i class="bx bx-trash" />
+                    </button>
+                </span>
+            {/if}
         </div>
     {:else}
         <span>Pas de livre sélectionné</span>
