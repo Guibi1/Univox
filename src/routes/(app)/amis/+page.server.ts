@@ -1,5 +1,5 @@
 import type { Period, Schedule, User } from "$lib/Types";
-import { getWeekCommonAvailabilities } from "$lib/commonAvailabilities";
+import { getWeekCommonOccupations } from "$lib/commonAvailabilities";
 import { arrayIdToString, objectIdToString, scheduleFromJson } from "$lib/sanitization";
 import * as db from "$lib/server/db";
 import dayjs from "dayjs";
@@ -34,7 +34,7 @@ export const load = (async ({ locals, url, depends }) => {
             }
 
             groupSchedule = objectIdToString(
-                getWeekCommonAvailabilities(dayjs(), membersCombinedPeriods)
+                getWeekCommonOccupations(dayjs(), membersCombinedPeriods)
             );
         }
     } else if (
@@ -49,7 +49,7 @@ export const load = (async ({ locals, url, depends }) => {
                 const localUserSchedule = scheduleFromJson(await db.getSchedule(locals.user));
 
                 friendCommonSchedule = objectIdToString(
-                    getWeekCommonAvailabilities(dayjs(), [
+                    getWeekCommonOccupations(dayjs(), [
                         ...friendScheduleToCompare.periods,
                         ...friendScheduleToCompare.classes,
                         ...localUserSchedule.periods,
