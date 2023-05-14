@@ -291,9 +291,6 @@ async function getScheduleForAllSession(
         ).text();
 
         const weekImageURL = regexFind(weekText, /src="(HoraireSemaine\.ashx.*?)"/)[1];
-        // TODO: Remove this
-        const title = regexFind(weekText, /<title>(.*?)<\/title>/)[1];
-        console.log("🚀 ~ file: omnivox.ts:291 ~ title:", title);
 
         // Fetch the week's image
         const imageRes = await fetch(
@@ -327,20 +324,28 @@ async function getScheduleForAllSession(
                 if (
                     unknownPeriods.every(
                         (period, index) =>
-                            period.timeStart.isSame(day[index].timeStart) &&
-                            period.timeEnd.isSame(day[index].timeEnd)
+                            period.timeStart.date(1).isSame(day[index].timeStart.date(1)) &&
+                            period.timeEnd.date(1).isSame(day[index].timeEnd.date(1))
                     )
                 ) {
-                    // TODO: Put the good date + month + year
                     classes.push(
-                        ...day.map((c) => ({ ...c, timeStart: c.timeStart, timeEnd: c.timeEnd }))
+                        ...day.map((c) => ({
+                            ...c,
+                            timeStart: currentMonday
+                                .day(i + 1)
+                                .hour(c.timeStart.hour())
+                                .minute(c.timeStart.minute()),
+                            timeEnd: currentMonday
+                                .day(i + 1)
+                                .hour(c.timeEnd.hour())
+                                .minute(c.timeEnd.minute()),
+                        }))
                     );
                 }
             }
         }
 
         currentMonday = currentMonday.add(1, "week");
-        console.log("🚀 ~ file: omnivox.ts:335 ~ classes.length:", classes.length);
         // If no periods this week
         if (classes.length === lastClassesLength) {
             emptyWeeksInARow += 1;
