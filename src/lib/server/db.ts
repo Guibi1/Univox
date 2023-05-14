@@ -649,7 +649,7 @@ export async function deleteBookListing(
     bookId: Types.ObjectId
 ): Promise<boolean> {
     const book = await getBook(bookId);
-    if (book == null || bookId == null || !book.sellerId.equals(user._id)) {
+    if (book == null || !book.sellerId.equals(user._id)) {
         return false;
     }
 
