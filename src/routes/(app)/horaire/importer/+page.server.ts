@@ -20,7 +20,6 @@ export const actions = {
         }
 
         try {
-            //TODO delete all current classes for the user
             const cookie = await omnivox.login(locals.user.email, form.data.omnivoxPassword);
             const html = await omnivox.fetchSchedulePageHTML(
                 cookie,
@@ -29,6 +28,7 @@ export const actions = {
             );
             const schedule = omnivox.schedulePageToClasses(html);
 
+            await db.deleteAllClassesInSchedule(locals.user);
             await db.addClassesToSchedule(locals.user, schedule);
         } catch (e) {
             return setError(form, "omnivoxPassword", "Mot de passe erroné");

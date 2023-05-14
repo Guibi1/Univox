@@ -583,13 +583,11 @@ export async function deleteAllClassesInSchedule(user: ServerUser): Promise<bool
  * @param period The period object to delete
  * @returns True if the operation succeeded, false otherwise
  */
-export async function deletePeriodById(user: ServerUser, period: Period): Promise<boolean> {
+export async function deletePeriodFromSchedule(user: ServerUser, period: Period): Promise<boolean> {
     try {
         await Schedules.findByIdAndUpdate(user.scheduleId, {
             $pull: {
-                periods: {
-                    $eq: period,
-                },
+                periods: period,
             },
         });
         return true;

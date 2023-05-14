@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Class, Period } from "$lib/Types";
+    import schedule from "$lib/stores/schedule";
     import classNames from "classnames";
 
     export let period: Period | Class;
@@ -59,19 +60,11 @@
                 {#if !period.theory}
                     <i class="bx bxs-flask text-lg" />
                 {/if}
-
-                {#if canBeDeleted}
-                    <!--TODO change the on:click function with the right function-->
-                    <i
-                        class="bx bx-trash cursor-pointer text-xl text-red-500"
-                        on:click={() => {
-                            throw new Error(
-                                "This function is a placeholder and should be replaced."
-                            );
-                        }}
-                    />
-                {/if}
             </div>
+        {:else if canBeDeleted}
+            <button on:click={() => schedule.remove(period)}>
+                <i class="bx bx-trash cursor-pointer text-xl text-red-500" />
+            </button>
         {/if}
 
         <!-- Affiche les informations supplémentaires lorsqu'on survole le div -->
