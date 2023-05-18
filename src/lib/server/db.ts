@@ -623,6 +623,15 @@ export async function getBooks(user: ServerUser): Promise<Book[]> {
 }
 
 /**
+ * Fetches the user's books
+ * @param user The targeted user
+ * @returns An array of all the user's books
+ */
+export async function getBookCodes(user: ServerUser): Promise<string[]> {
+    return await Books.find({ sellerId: { $ne: user._id } }).distinct("code");
+}
+
+/**
  * Searches the database to find books that match the query
  * @param user The current user
  * @param query The search query
