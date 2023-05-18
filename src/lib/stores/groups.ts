@@ -48,6 +48,24 @@ function createGroupsStore() {
         if (success) refresh();
     }
 
+    async function invitetoGroup(group: Group, users: User[]) {
+        const { success } = await (
+            await fetch("/api/groups/invite", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ groupId: group._id, usersId: users.map((u) => u._id) }),
+            })
+        ).json();
+        if (success) {
+            refresh();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     return {
         subscribe,
         set,
@@ -55,6 +73,7 @@ function createGroupsStore() {
         quit,
         rename,
         refresh,
+        invitetoGroup,
     };
 }
 
