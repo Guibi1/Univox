@@ -7,9 +7,9 @@ import { Types } from "mongoose";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
 
-export async function load() {
+export async function load({ locals }) {
     const form = await superValidate(newBookSchema);
-    return { form };
+    return { form, codes: await db.getClassCodes(locals.user) };
 }
 
 export const actions = {
@@ -17,7 +17,7 @@ export const actions = {
         const formData = await request.formData();
         const form = await superValidate(formData, newBookSchema);
 
-        if (!form.valid) {
+        if (!form.valid || !(await db.getClassCodes(locals.user)).includes(form.data.classCode)) {
             return fail(400, { form });
         }
 

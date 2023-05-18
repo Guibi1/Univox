@@ -593,6 +593,15 @@ export async function deletePeriodFromSchedule(user: ServerUser, period: Period)
     }
 }
 
+/**
+ * Fetches all the book codes in the user's schedule
+ * @param user The targeted user
+ * @returns An array of all the book codes
+ */
+export async function getClassCodes(user: ServerUser): Promise<string[]> {
+   return await Schedules.findById(user.scheduleId).distinct("classes.code");
+}
+
 //////////////////////
 // -*-*- BOOK -*-*- //
 //////////////////////
@@ -623,9 +632,9 @@ export async function getBooks(user: ServerUser): Promise<Book[]> {
 }
 
 /**
- * Fetches the user's books
+ * Fetches all the book codes in the database
  * @param user The targeted user
- * @returns An array of all the user's books
+ * @returns An array of all the book codes
  */
 export async function getBookCodes(user: ServerUser): Promise<string[]> {
     return await Books.find({ sellerId: { $ne: user._id } }).distinct("code");
