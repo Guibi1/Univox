@@ -57,17 +57,11 @@ export const newPeriodSchema = z
     .object({
         name: z.string().min(1, "Requis"),
         date: z.string().regex(/\d\d\d\d-\d\d-\d\d/),
-        startTime: z
-            .string()
-            .regex(/\d\d:\d\d/)
-            .transform((s) => dayjs(s, "HH:mm")),
-        endTime: z
-            .string()
-            .regex(/\d\d:\d\d/)
-            .transform((s) => dayjs(s, "HH:mm")),
+        startTime: z.string().regex(/\d\d:\d\d/),
+        endTime: z.string().regex(/\d\d:\d\d/),
     })
     .superRefine(({ startTime, endTime }, { addIssue }) => {
-        if (!startTime.isBefore(endTime, "minutes")) {
+        if (!dayjs(startTime, "HH:mm").isBefore(dayjs(endTime, "HH:mm"), "minutes")) {
             addIssue({
                 path: ["endTime"],
                 message: "La fin de l'évenement doit être après le début",
