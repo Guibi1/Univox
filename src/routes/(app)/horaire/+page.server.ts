@@ -1,17 +1,23 @@
 import { newPeriodSchema } from "$lib/formSchema";
 import * as db from "$lib/server/db";
-
 import { fail } from "@sveltejs/kit";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { Types } from "mongoose";
 import { superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+dayjs.tz.setDefault("America/Montreal");
+
 export async function load() {
     const form = await superValidate(newPeriodSchema);
     form.data.date = dayjs().format("YYYY-MM-DD");
-    form.data.startTime = dayjs().add(1, "hour").format("HH:00");
-    form.data.endTime = dayjs().add(3, "hour").format("HH:00");
+    form.data.startTime = dayjs().add(1, "hour");
+    form.data.endTime = dayjs().add(3, "hour");
     return { form };
 }
 
