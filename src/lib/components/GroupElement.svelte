@@ -26,7 +26,8 @@
 </script>
 
 <div class="flex items-center justify-between">
-    {#if !editing}
+    <div class="flex flex-row items-center">
+        {#if !editing}
         {group.name}
     {:else}
         <div class="flex">
@@ -41,7 +42,7 @@
                 class="rounded-lg text-lg"
             />
             <button
-                class="flex h-10 items-center justify-center rounded bg-blue-primary font-bold hover:bg-green-900"
+                class="flex h-10 items-center self-center rounded bg-blue-primary font-bold hover:bg-green-900"
                 on:click={() => rename(group, newName)}
             >
                 Renommer
@@ -54,8 +55,10 @@
         <Option separate text="Renommer" onClick={() => (editing = true)} />
         <Option separate text="Quitter le groupe" color="red" onClick={() => groups.quit(group)} />
     </Dropdown>
+    </div>
+    
 
-    <div class="flex flex-row items-center gap-3 px-5">
+    <div class="flex items-center">
         <a class="filled" href={getGroupUrl(group)}> Horaire commun </a>
     </div>
 </div>

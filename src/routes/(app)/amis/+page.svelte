@@ -60,9 +60,9 @@
     <title>Univox | Amis</title>
 </svelte:head>
 
-<div class="grid flex-grow grid-cols-[1fr_1fr_2fr] divide-x overflow-hidden">
+<div class="grid flex-grow grid-cols-[3fr_3fr_4fr] divide-x-4 divide-black overflow-hidden">
     <div class="flex flex-col p-4">
-        <h2 class="mb-4 border-b border-black dark:border-white">Vos amis</h2>
+        <h2 class="mb-4 border-b dark:border-white">Vos amis</h2>
 
         <div class="flex flex-row items-center gap-4">
             <SearchBar bind:query {handleSearch} />
@@ -80,10 +80,9 @@
                     <div
                         class="flex items-center justify-between rounded-md bg-gray-200 px-4 dark:bg-gray-400"
                     >
+                    <div class="flex items-center">
                         <input type="checkbox" bind:group={selectedFriends} value={friend} />
-
-                        <div class="flex flex-row justify-between">
-                            <div class="flex flex-row gap-2 px-3">
+                        <div class="flex flex-row gap-2 px-3">
                                 <div class=" h-16 w-16 rounded-full">
                                     <Avatar seed={friend.avatar} />
                                 </div>
@@ -104,6 +103,9 @@
                                     />
                                 </Dropdown>
                             </div>
+                    </div>
+                        <div class="flex flex-row justify-between">
+                            
                             <div class="flex flex-row items-center gap-3 px-5">
                                 <a class="filled h-10 w-24" href={getFriendUrl(friend)}>
                                     Horaire
@@ -176,7 +178,7 @@
 
         <ul class="flex flex-col gap-4">
             {#each $groups as group}
-                <li class="flex items-center rounded-md bg-gray-200 px-4 dark:bg-gray-400">
+                <li class="items-center rounded-md bg-gray-200 px-4 dark:bg-gray-400">
                     <GroupElement {group} />
                 </li>
             {/each}
