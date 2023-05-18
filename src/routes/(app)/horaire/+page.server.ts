@@ -16,8 +16,8 @@ dayjs.tz.setDefault("America/Montreal");
 export async function load() {
     const form = await superValidate(newPeriodSchema);
     form.data.date = dayjs().format("YYYY-MM-DD");
-    form.data.startTime = dayjs().add(1, "hour");
-    form.data.endTime = dayjs().add(3, "hour");
+    form.data.startTime = dayjs().add(1, "hour").format("HH:00");
+    form.data.endTime = dayjs().add(3, "hour").format("HH:00");
     return { form };
 }
 
