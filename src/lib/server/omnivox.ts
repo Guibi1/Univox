@@ -6,10 +6,16 @@ import type { Class } from "$lib/Types";
 import * as cheerio from "cheerio";
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { Types } from "mongoose";
 import sharp from "sharp";
 
 dayjs.extend(customParseFormat);
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+dayjs.tz.setDefault("America/Montreal");
 
 /**
  * Represents the differents Semesters
@@ -174,7 +180,8 @@ export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Class[]
 
     for (const row of rows) {
         const timeStart = dayjs(
-            regexFind($("td:first > font", row).html(), /(\d{2}:\d{2})(?:<br>)*\d{2}:\d{2}/)[1],
+            regexFind($("td:first > font", row).html(), /(\d{2}:\d{2})(?:<br>)*\d{2}:\d{2}/)[1] +
+                "",
             "HH:mm"
         );
         const listTdTag = $("td:not(:first)", row);

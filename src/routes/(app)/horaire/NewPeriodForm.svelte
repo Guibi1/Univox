@@ -40,7 +40,12 @@
     <label data-error={$errors.startTime}>
         Début
 
-        <input name="startTime" type="time" value={$form.startTime} readonly={$delayed} />
+        <input
+            name="startTime"
+            type="time"
+            value={$form.startTime.format("HH:00")}
+            readonly={$delayed}
+        />
 
         {#if $errors.startTime}
             <span>{$errors.startTime[0]}</span>
@@ -50,7 +55,12 @@
     <label data-error={$errors.endTime}>
         Fin
 
-        <input name="endTime" type="time" value={$form.endTime} readonly={$delayed} />
+        <input
+            name="endTime"
+            type="time"
+            value={$form.endTime.format("HH:00")}
+            readonly={$delayed}
+        />
 
         {#if $errors.endTime}
             <span>{$errors.endTime[0]}</span>
