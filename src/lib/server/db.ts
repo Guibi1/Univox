@@ -426,13 +426,16 @@ export async function createGroup(user: ServerUser, friendsId: Types.ObjectId[])
 export async function addToGroup(
     user: ServerUser,
     group: Group,
-    friendId: Types.ObjectId
+    friendsId: Types.ObjectId[]
 ): Promise<boolean> {
     if (!group.usersId.includes(user._id)) return false;
-    if (!group.usersId.includes(friendId)) return false;
 
     try {
-        await Groups.findByIdAndUpdate(group, { $push: { usersId: friendId } });
+        for (const friendId of friendsId) {
+            if (group.usersId.includes(friendId)) continue;
+            await Groups.findByIdAndUpdate(group, { $push: { usersId: friendId } });
+            console.log(group.usersId);
+        }
         return true;
     } catch {
         warn("The function 'addToGroup' was called but failed to update the user's data");

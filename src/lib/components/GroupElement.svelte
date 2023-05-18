@@ -4,6 +4,9 @@
     import groups from "$lib/stores/groups";
     import Dropdown from "./Dropdown.svelte";
     import Option from "./Option.svelte";
+    import type { User } from "$lib/Types";
+    import { selectedFriends } from "$lib/stores/selectedFriends";
+    import user from "$lib/stores/user";
 
     export let group: Group;
 
@@ -53,6 +56,17 @@
         <Option text="Horaire commun" href={getGroupUrl(group)} />
         <Option separate text="Renommer" onClick={() => (editing = true)} />
         <Option separate text="Quitter le groupe" color="red" onClick={() => groups.quit(group)} />
+        <Option
+            separate
+            text="Inviter amis séléctionés"
+            color="green"
+            onClick={async () => {
+                const success = await groups.invitetoGroup(group, $selectedFriends);
+                if (!success) {
+                    // showError = true;
+                }
+            }}
+        />
     </Dropdown>
 
     <div class="flex flex-row items-center gap-3 px-5">

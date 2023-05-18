@@ -12,11 +12,12 @@
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import notifications from "$lib/stores/notifications";
+    import { selectedFriends } from "$lib/stores/selectedFriends";
 
     export let data;
 
     let query = data.query ?? "";
-    let selectedFriends: User[] = [];
+    let showError = false;
 
     function handleSearch() {
         const params = new URLSearchParams({ query, friendId: data.friendId ?? "" });
@@ -80,7 +81,7 @@
                     <div
                         class="flex items-center justify-between rounded-md bg-gray-200 px-4 dark:bg-gray-400"
                     >
-                        <input type="checkbox" bind:group={selectedFriends} value={friend} />
+                        <input type="checkbox" bind:group={$selectedFriends} value={friend} />
 
                         <div class="flex flex-row justify-between">
                             <div class="flex flex-row gap-2 px-3">
@@ -115,13 +116,13 @@
             {/each}
         </ul>
 
-        {#if selectedFriends.length >= 2}
+        {#if $selectedFriends.length >= 2}
             <div class="flex justify-center p-4">
                 <button
                     class="filled"
                     on:click={() => {
-                        groups.create(selectedFriends);
-                        selectedFriends = [];
+                        groups.create($selectedFriends);
+                        $selectedFriends = [];
                     }}
                 >
                     Créer un groupe
