@@ -29,47 +29,54 @@
 </script>
 
 <div class="flex items-center justify-between">
-    {#if !editing}
-        {group.name}
-    {:else}
-        <div class="flex">
-            <input
-                type="text"
-                bind:value={newName}
-                on:keypress={(e) => {
-                    if (e.key == "Enter") {
-                        rename(group, newName);
+    <div class="flex flex-row items-center">
+        {#if !editing}
+            {group.name}
+        {:else}
+            <div class="flex">
+                <input
+                    type="text"
+                    bind:value={newName}
+                    on:keypress={(e) => {
+                        if (e.key == "Enter") {
+                            rename(group, newName);
+                        }
+                    }}
+                    class="rounded-lg text-lg"
+                />
+                <button
+                    class="flex h-10 items-center self-center rounded bg-blue-primary font-bold hover:bg-green-900"
+                    on:click={() => rename(group, newName)}
+                >
+                    Renommer
+                </button>
+            </div>
+        {/if}
+
+        <Dropdown>
+            <Option text="Horaire commun" href={getGroupUrl(group)} />
+            <Option separate text="Renommer" onClick={() => (editing = true)} />
+            <Option
+                separate
+                text="Quitter le groupe"
+                color="red"
+                onClick={() => groups.quit(group)}
+            />
+            <Option
+                separate
+                text="Inviter amis séléctionés"
+                color="green"
+                onClick={async () => {
+                    const success = await groups.invitetoGroup(group, $selectedFriends);
+                    if (!success) {
+                        // showError = true;
                     }
                 }}
-                class="rounded-lg text-lg"
             />
-            <button
-                class="flex h-10 items-center justify-center rounded bg-blue-primary font-bold hover:bg-green-900"
-                on:click={() => rename(group, newName)}
-            >
-                Renommer
-            </button>
-        </div>
-    {/if}
+        </Dropdown>
+    </div>
 
-    <Dropdown>
-        <Option text="Horaire commun" href={getGroupUrl(group)} />
-        <Option separate text="Renommer" onClick={() => (editing = true)} />
-        <Option separate text="Quitter le groupe" color="red" onClick={() => groups.quit(group)} />
-        <Option
-            separate
-            text="Inviter amis séléctionés"
-            color="green"
-            onClick={async () => {
-                const success = await groups.invitetoGroup(group, $selectedFriends);
-                if (!success) {
-                    // showError = true;
-                }
-            }}
-        />
-    </Dropdown>
-
-    <div class="flex flex-row items-center gap-3 px-5">
+    <div class="flex items-center">
         <a class="filled" href={getGroupUrl(group)}> Horaire commun </a>
     </div>
 </div>

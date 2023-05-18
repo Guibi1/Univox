@@ -61,9 +61,9 @@
     <title>Univox | Amis</title>
 </svelte:head>
 
-<div class="grid flex-grow grid-cols-[1fr_1fr_2fr] divide-x overflow-hidden">
+<div class="grid flex-grow grid-cols-[3fr_3fr_4fr] divide-x-4 divide-black overflow-hidden">
     <div class="flex flex-col p-4">
-        <h2 class="mb-4 border-b border-black dark:border-white">Vos amis</h2>
+        <h2 class="mb-4 border-b dark:border-white">Vos amis</h2>
 
         <div class="flex flex-row items-center gap-4">
             <SearchBar bind:query {handleSearch} />
@@ -78,9 +78,7 @@
         <ul class="flex flex-grow flex-col gap-4 py-4">
             {#each friendsFilterQuery($friends, query) as friend}
                 <li>
-                    <div
-                        class="flex items-center justify-between rounded-md bg-gray-200 px-4 dark:bg-gray-400"
-                    >
+                    <div class="flex items-center justify-between rounded-md px-4">
                         <input type="checkbox" bind:group={$selectedFriends} value={friend} />
 
                         <div class="flex flex-row justify-between">
@@ -105,6 +103,8 @@
                                     />
                                 </Dropdown>
                             </div>
+                        </div>
+                        <div class="flex flex-row justify-between">
                             <div class="flex flex-row items-center gap-3 px-5">
                                 <a class="filled h-10 w-24" href={getFriendUrl(friend)}>
                                     Horaire
@@ -137,9 +137,7 @@
                 Aucun résultats
             {:else}
                 {#each data.searchResults as result}
-                    <div
-                        class="flex items-center justify-between gap-4 rounded-lg dark:bg-gray-400"
-                    >
+                    <div class="flex items-center justify-between gap-4 rounded-lg">
                         <div class="flex flex-col gap-4">
                             <span>
                                 {result.user.firstName}
@@ -177,7 +175,7 @@
 
         <ul class="flex flex-col gap-4">
             {#each $groups as group}
-                <li class="flex items-center rounded-md bg-gray-200 px-4 dark:bg-gray-400">
+                <li class="items-center rounded-md px-4">
                     <GroupElement {group} />
                 </li>
             {/each}
