@@ -4,10 +4,10 @@ import { isObjectIdOrHexString } from "mongoose";
 
 export const load = async ({ locals, url }) => {
     const query = url.searchParams.get("query") ?? "";
-    const codes = url.searchParams.getAll("codes");
+    const selectedCodes = url.searchParams.getAll("codes");
     const bookId = url.searchParams.get("bookId") ?? "";
 
-    const results = await db.searchBooks(locals.user, query, codes);
+    const results = await db.searchBooks(locals.user, query, selectedCodes);
 
     let selectedBook;
     let selectedBookUser;
@@ -20,8 +20,9 @@ export const load = async ({ locals, url }) => {
     }
 
     return {
+        bookCodes: await db.getBookCodes(locals.user),
         query,
-        codes,
+        selectedCodes,
         bookId,
         searchResults: arrayIdToString(results),
         selectedBook: selectedBook ? objectIdToString(selectedBook) : null,

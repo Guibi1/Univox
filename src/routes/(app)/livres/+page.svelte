@@ -8,11 +8,11 @@
     export let data;
 
     let query = data.query;
-    let codes = data.codes;
+    let selectedCodes = data.selectedCodes;
 
     function handleSearch() {
         const params = new URLSearchParams({ query, bookId: data.bookId });
-        for (let code of codes) {
+        for (let code of selectedCodes) {
             params.append("codes", code);
         }
         goto(`?${params}`);
@@ -39,8 +39,8 @@
     </div>
 </div>
 
-<main class="grid grid-cols-[min-content_2fr_1fr] items-start gap-8 p-8">
-    <BookFilter bind:codes onChange={handleSearch} />
+<main class="grid grid-cols-[1fr_4fr_2fr] items-start gap-8 p-8">
+    <BookFilter bind:selectedCodes onChange={handleSearch} codes={data.bookCodes} />
 
     <BookList books={data.searchResults} />
 
