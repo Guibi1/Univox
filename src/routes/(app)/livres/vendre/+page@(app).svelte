@@ -50,7 +50,7 @@
         <div class="label" data-error={$errors.state}>
             L'état du livre
 
-            <Select name="state">
+            <Select name="state" value={$form.state}>
                 <Option text="Neuf" />
                 <Option text="Usagé - Comme neuf" />
                 <Option text="Usagé - Bon état" />
@@ -82,15 +82,19 @@
             {/if}
         </label>
 
-        <label data-error={$errors.classCode}>
+        <div class="label" data-error={$errors.classCode}>
             Cours
 
-            <input name="classCode" type="text" value={$form.classCode} />
+            <Select name="classCode" value={$form.classCode}>
+                {#each data.codes as code}
+                    <Option text={code} />
+                {/each}
+            </Select>
 
             {#if $errors.classCode}
                 <span>{$errors.classCode[0]}</span>
             {/if}
-        </label>
+        </div>
     </div>
 
     <div class="flex flex-col items-stretch gap-5">
