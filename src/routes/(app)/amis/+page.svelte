@@ -78,7 +78,7 @@
             {#each friendsFilterQuery($friends, query) as friend}
                 <li>
                     <div
-                        class="flex items-center justify-between rounded-md bg-gray-200 px-4 dark:bg-gray-400"
+                        class="flex items-center justify-between rounded-md px-4"
                     >
                     <div class="flex items-center">
                         <input type="checkbox" bind:group={selectedFriends} value={friend} />
@@ -139,7 +139,7 @@
             {:else}
                 {#each data.searchResults as result}
                     <div
-                        class="flex items-center justify-between gap-4 rounded-lg dark:bg-gray-400"
+                        class="flex items-center justify-between gap-4 rounded-lg"
                     >
                         <div class="flex flex-col gap-4">
                             <span>
@@ -178,7 +178,7 @@
 
         <ul class="flex flex-col gap-4">
             {#each $groups as group}
-                <li class="items-center rounded-md bg-gray-200 px-4 dark:bg-gray-400">
+                <li class="items-center rounded-md px-4">
                     <GroupElement {group} />
                 </li>
             {/each}
