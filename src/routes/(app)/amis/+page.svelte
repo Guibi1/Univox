@@ -61,7 +61,7 @@
 </svelte:head>
 
 
-<div class="grid flex-grow grid-cols-[4fr_3fr] divide-x-4 divide-black overflow-hidden">
+<div class="grid flex-grow grid-cols-[4fr_3fr] divide-x-4 divide-black overflow-x-scroll">
     <div class="flex flex-col space-y-3">
         <div class="flex flex-row items-center gap-4">
             <SearchBar bind:query {handleSearch} />
