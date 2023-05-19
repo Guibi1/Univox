@@ -48,6 +48,34 @@ function createGroupsStore() {
         if (success) refresh();
     }
 
+    async function inviteToGroup(group: Group, users: User[]) {
+        const { success } = await (
+            await fetch("/api/groups/invite", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ groupId: group._id, usersId: users.map((u) => u._id) }),
+            })
+        ).json();
+        if (success) refresh();
+    }
+
+    async function getMembers(group: Group) {
+        const { success, members } = await (
+            await fetch("/api/groups/members", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ groupId: group._id }),
+            })
+        ).json();
+        if (success) refresh();
+
+        return members;
+    }
+
     return {
         subscribe,
         set,
@@ -55,6 +83,8 @@ function createGroupsStore() {
         quit,
         rename,
         refresh,
+        inviteToGroup,
+        getMembers,
     };
 }
 
