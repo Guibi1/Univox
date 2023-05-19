@@ -5,8 +5,11 @@
     import colorScheme from "$lib/stores/colorScheme";
     import firstDayOfTheWeek from "$lib/stores/firstDayOfTheWeek";
     import user from "$lib/stores/user";
+    import { superForm } from "sveltekit-superforms/client";
 
     export let data;
+
+    const { form, errors, submitting, enhance } = superForm(data.form);
 
     const refresh = () => user.setAvatar(Math.random() + $user.firstName + $user.da);
 </script>
@@ -50,25 +53,51 @@
     <div class="laptop:pl-6">
         <h1 class="my-4 gap-4 border-b-2 pb-2">Paramètres</h1>
 
-        <div class="grid grid-cols-2 items-center gap-x-2 gap-y-4">
+        <form use:enhance method="post" class="grid grid-cols-2 items-center gap-x-2 gap-y-4">
             <Select bind:value={$firstDayOfTheWeek}>
                 <Option text="Lundi" />
                 <Option text="Samedi" />
                 <Option text="Dimanche" />
             </Select>
-            <span class="ml-2 text-2xl">Premier jour de la semaine</span>
+            <span class="ml-2 text-xl">Premier jour de la semaine</span>
 
             <Select bind:value={$colorScheme}>
                 <Option text="Foncé" value="dark" />
                 <Option text="Clair" value="light" />
             </Select>
-            <span class="ml-2 text-2xl">Thème du site</span>
+            <span class="ml-2 text-xl">Thème du site</span>
 
-            <input type="email" name="email" value={$user.email} readonly />
-            <span class="ml-2 text-2xl">Adresse courriel</span>
-        </div>
+            <div class="flex flex-col">
+                <input
+                    name="password"
+                    type="password"
+                    value={$form.password}
+                    readonly={$submitting}
+                />
+
+                {#if $errors.password}
+                    <span>{$errors.password[0]}</span>
+                {/if}
+            </div>
+            <label for="password" class="ml-2 text-xl">Nouveau mot de passe</label>
+
+            <div class="flex flex-col">
+                <input
+                    name="confirmPassword"
+                    type="password"
+                    value={$form.confirmPassword}
+                    readonly={$submitting}
+                />
+
+                {#if $errors.confirmPassword}
+                    <span>{$errors.confirmPassword[0]}</span>
+                {/if}
+            </div>
+            <label for="confirmPassword" class="ml-2 text-xl">
+                Confirmer le nouveau mot de passe
+            </label>
+
+            <button class="outlined col-span-2 self-center">Sauvgarder et quitter</button>
+        </form>
     </div>
 </div>
-
-<!--Pour donner un sens de sécurité aux utilisateurs-->
-<a href="/" class="outlined self-center">Sauvgarder et quitter</a>
