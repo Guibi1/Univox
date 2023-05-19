@@ -189,12 +189,8 @@
         </div>
     </div>
 
-    {#if data.groupSchedule}
-        <ScheduleView schedule={scheduleFromJson(data.groupSchedule)} />
-    {:else if data.friendSchedule}
-        <ScheduleView schedule={scheduleFromJson(data.friendSchedule)} />
-    {:else if data.friendCommonSchedule}
-        <ScheduleView schedule={scheduleFromJson(data.friendCommonSchedule)} />
+    {#if data.schedule}
+        <ScheduleView schedule={scheduleFromJson(data.schedule)} />
     {:else}
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}

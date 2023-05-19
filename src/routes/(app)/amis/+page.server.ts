@@ -12,11 +12,9 @@ export const load = (async ({ locals, url, depends }) => {
     const query = url.searchParams.get("query") ?? "";
     const friendId = url.searchParams.get("friendId") ?? "";
     const groupId = url.searchParams.get("groupId") ?? "";
-    const isCommonSchedule = url.searchParams.get("commonSchedule") ?? "";
+    const isCommonSchedule = url.searchParams.get("commonSchedule") !== null;
 
-    let groupSchedule: Schedule | null = null;
-    let friendSchedule: Schedule | null = null;
-    let friendCommonSchedule: Schedule | null = null;
+    let schedule: Schedule | null = null;
 
     if (isObjectIdOrHexString(groupId)) {
         const group = await db.getGroup(groupId);
@@ -33,9 +31,7 @@ export const load = (async ({ locals, url, depends }) => {
                 }
             }
 
-            groupSchedule = objectIdToString(
-                getWeekCommonOccupations(dayjs(), membersCombinedPeriods)
-            );
+            schedule = getWeekCommonOccupations(dayjs(), membersCombinedPeriods);
         }
     } else if (
         isObjectIdOrHexString(friendId) &&
@@ -43,22 +39,20 @@ export const load = (async ({ locals, url, depends }) => {
     ) {
         const friend = await db.getServerUser(friendId);
 
-        if (isCommonSchedule == "commonSchedule") {
-            if (friend) {
+        if (friend) {
+            if (isCommonSchedule) {
                 const friendScheduleToCompare = scheduleFromJson(await db.getSchedule(friend));
                 const localUserSchedule = scheduleFromJson(await db.getSchedule(locals.user));
 
-                friendCommonSchedule = objectIdToString(
-                    getWeekCommonOccupations(dayjs(), [
-                        ...friendScheduleToCompare.periods,
-                        ...friendScheduleToCompare.classes,
-                        ...localUserSchedule.periods,
-                        ...localUserSchedule.classes,
-                    ])
-                );
+                schedule = getWeekCommonOccupations(dayjs(), [
+                    ...friendScheduleToCompare.periods,
+                    ...friendScheduleToCompare.classes,
+                    ...localUserSchedule.periods,
+                    ...localUserSchedule.classes,
+                ]);
+            } else {
+                schedule = await db.getSchedule(friend);
             }
-        } else if (friend) {
-            friendSchedule = objectIdToString(await db.getSchedule(friend));
         }
     }
 
@@ -74,9 +68,7 @@ export const load = (async ({ locals, url, depends }) => {
         query,
         friendId,
         groupId,
-        groupSchedule,
-        friendSchedule,
-        friendCommonSchedule,
+        schedule: objectIdToString(schedule),
         searchResults: arrayIdToString(result),
     };
 }) satisfies PageServerLoad;
