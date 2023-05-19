@@ -392,7 +392,7 @@ export async function getGroups(user: ServerUser): Promise<Group[]> {
  * @returns True if the operation succeded, false otherwise
  */
 export async function createGroup(user: ServerUser, friendsId: Types.ObjectId[]): Promise<boolean> {
-    if (friendsId.includes(user._id)) return false;
+    if (friendsId.some((id) => user._id.equals(id))) return false;
     if (friendsId.length !== new Set(friendsId).size) return false;
 
     try {
@@ -428,13 +428,12 @@ export async function addToGroup(
     group: Group,
     friendsId: Types.ObjectId[]
 ): Promise<boolean> {
-    if (!group.usersId.includes(user._id)) return false;
+    if (!group.usersId.some((id) => user._id.equals(id))) return false;
 
     try {
         for (const friendId of friendsId) {
-            if (group.usersId.includes(friendId)) continue;
+            if (group.usersId.some((id) => friendId._id.equals(id))) continue;
             await Groups.findByIdAndUpdate(group, { $push: { usersId: friendId } });
-            console.log(group.usersId);
         }
         return true;
     } catch {
