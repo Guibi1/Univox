@@ -50,9 +50,19 @@ export const newPasswordSchema = z
 
 export const inscriptionSchema = inscriptionPartialSchema
     .extend({
+        password,
+        confirmPassword: z.string(),
         firstStep: z.boolean().default(false),
     })
-    .and(newPasswordSchema);
+    .superRefine(({ confirmPassword, password }, { addIssue }) => {
+        if (confirmPassword !== password) {
+            addIssue({
+                path: ["confirmPassword"],
+                message: "Les mots de passe correspondent pas",
+                code: "custom",
+            });
+        }
+    });
 
 export const resetPasswordSchema = z.object({ email, omnivoxPassword, password });
 
