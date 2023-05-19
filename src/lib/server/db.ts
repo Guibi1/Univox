@@ -392,7 +392,7 @@ export async function getGroups(user: ServerUser): Promise<Group[]> {
  * @returns True if the operation succeded, false otherwise
  */
 export async function createGroup(user: ServerUser, friendsId: Types.ObjectId[]): Promise<boolean> {
-    if (friendsId.includes(user._id)) return false;
+    if (friendsId.some((id) => user._id.equals(id))) return false;
     if (friendsId.length !== new Set(friendsId).size) return false;
 
     try {
@@ -426,13 +426,15 @@ export async function createGroup(user: ServerUser, friendsId: Types.ObjectId[])
 export async function addToGroup(
     user: ServerUser,
     group: Group,
-    friendId: Types.ObjectId
+    friendsId: Types.ObjectId[]
 ): Promise<boolean> {
-    if (!group.usersId.includes(user._id)) return false;
-    if (!group.usersId.includes(friendId)) return false;
+    if (!group.usersId.some((id) => user._id.equals(id))) return false;
 
     try {
-        await Groups.findByIdAndUpdate(group, { $push: { usersId: friendId } });
+        for (const friendId of friendsId) {
+            if (group.usersId.some((id) => friendId._id.equals(id))) continue;
+            await Groups.findByIdAndUpdate(group, { $push: { usersId: friendId } });
+        }
         return true;
     } catch {
         warn("The function 'addToGroup' was called but failed to update the user's data");

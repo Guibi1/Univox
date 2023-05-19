@@ -14,7 +14,7 @@
 
     // Exported context for managing dropdown options and separator
     export type DropdownContext = { addOption: (a: DropdownOption) => void; separate: () => void };
-    export type DropdownColor = "normal" | "red" | "blue";
+    export type DropdownColor = "normal" | "red" | "blue" | "green";
 </script>
 
 <script lang="ts">
@@ -44,6 +44,8 @@
                 return "text-red-600 dark:text-red-600";
             case "blue":
                 return "text-blue-400 dark:text-blue-400";
+            case "green":
+                return "text-green-500 dark:text-green-500";
             default:
                 return "text-neutral";
         }
@@ -68,7 +70,7 @@
                 {#if action.href}
                     <a
                         data-sveltekit-preload-data={action.href === "/deconnexion" ? "off" : null}
-                        class={`whitespace-nowrap px-4 py-2 text-left text-lg hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
                             action
                         )}`}
                         href={action.href}

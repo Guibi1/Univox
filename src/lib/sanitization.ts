@@ -35,29 +35,29 @@ export function arrayIdToString<T extends object>(arr: T[]): T[] {
  * @param object The object to iterate through
  * @returns The object without any ObjectId
  */
-export function objectIdToString<T extends object>(object: T): T {
+export function objectIdToString<T>(object: T): T {
     if (object instanceof Types.ObjectId) {
         return object.toString() as unknown as T;
-    } else if (typeof object !== "object" || object === null) {
+    } else if (object === null) {
         return object;
-    }
+    } else if (typeof object === "object") {
+        const keys = Object.keys(object) as Array<keyof T>;
+        keys.forEach((key) => {
+            const value = object[key] as unknown;
 
-    const keys = Object.keys(object) as Array<keyof T>;
-    keys.forEach((key) => {
-        const value = object[key] as unknown;
-
-        if (value instanceof Types.ObjectId) {
-            object[key] = (value as Types.ObjectId).toString() as T[keyof T];
-        } else if (Array.isArray(value)) {
-            object[key] = arrayIdToString(value) as T[keyof T];
-        } else if (typeof value === "object" && value !== null) {
-            if ("toDate" in value) {
-                object[key] = (value as Dayjs).toDate() as T[keyof T];
-            } else {
-                object[key] = objectIdToString(value as T) as T[keyof T];
+            if (value instanceof Types.ObjectId) {
+                object[key] = (value as Types.ObjectId).toString() as (T & object)[keyof T];
+            } else if (Array.isArray(value)) {
+                object[key] = arrayIdToString(value) as (T & object)[keyof T];
+            } else if (typeof value === "object" && value !== null) {
+                if ("toDate" in value) {
+                    object[key] = (value as Dayjs).toDate() as (T & object)[keyof T];
+                } else {
+                    object[key] = objectIdToString(value as T) as (T & object)[keyof T];
+                }
             }
-        }
-    });
+        });
+    }
 
     return object;
 }
