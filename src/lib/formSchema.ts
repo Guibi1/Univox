@@ -33,11 +33,10 @@ export const inscriptionPartialSchema = z.object({
     firstStep: z.boolean().default(true),
 });
 
-export const inscriptionSchema = inscriptionPartialSchema
-    .extend({
+export const newPasswordSchema = z
+    .object({
         password,
         confirmPassword: z.string(),
-        firstStep: z.boolean().default(false),
     })
     .superRefine(({ confirmPassword, password }, { addIssue }) => {
         if (confirmPassword !== password) {
@@ -48,6 +47,12 @@ export const inscriptionSchema = inscriptionPartialSchema
             });
         }
     });
+
+export const inscriptionSchema = inscriptionPartialSchema
+    .extend({
+        firstStep: z.boolean().default(false),
+    })
+    .and(newPasswordSchema);
 
 export const resetPasswordSchema = z.object({ email, omnivoxPassword, password });
 
