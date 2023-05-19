@@ -22,7 +22,8 @@ export const load = (async ({ locals, url, depends }) => {
             const membersCombinedPeriods: Period[] = [];
             for (const userId of group.usersId) {
                 const user = await db.getServerUser(userId);
-                if (user) {
+                const userObject = await db.getUser(userId);
+                if (user && userObject) {
                     const memberSchedule = scheduleFromJson(await db.getSchedule(user));
                     membersCombinedPeriods.push(
                         ...memberSchedule.periods,

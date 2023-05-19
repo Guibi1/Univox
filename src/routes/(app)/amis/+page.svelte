@@ -12,6 +12,8 @@
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import notifications from "$lib/stores/notifications";
+    import getMembers from "$lib/stores/groups";
+    import { onMount } from "svelte";
 
     export let data;
 
