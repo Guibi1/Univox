@@ -58,12 +58,22 @@ function createGroupsStore() {
                 body: JSON.stringify({ groupId: group._id, usersId: users.map((u) => u._id) }),
             })
         ).json();
-        if (success) {
-            refresh();
-            return true;
-        } else {
-            return false;
-        }
+        if (success) refresh();
+    }
+
+    async function getMembers(group: Group) {
+        const { success, members } = await (
+            await fetch("/api/groups/members", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ groupId: group._id }),
+            })
+        ).json();
+        if (success) refresh();
+
+        return members;
     }
 
     return {
@@ -74,6 +84,7 @@ function createGroupsStore() {
         rename,
         refresh,
         inviteToGroup,
+        getMembers,
     };
 }
 

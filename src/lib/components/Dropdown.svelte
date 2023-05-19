@@ -70,7 +70,7 @@
                 {#if action.href}
                     <a
                         data-sveltekit-preload-data={action.href === "/deconnexion" ? "off" : null}
-                        class={`whitespace-nowrap px-4 py-2 text-left text-lg hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
+                        class={`whitespace-nowrap px-4 py-2 text-left hover:bg-neutral-300 dark:hover:bg-neutral-600 ${getColor(
                             action
                         )}`}
                         href={action.href}

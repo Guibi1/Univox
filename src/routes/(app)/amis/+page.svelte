@@ -1,8 +1,8 @@
 <script lang="ts">
-    import Avatar from "$lib/components/Avatar.svelte";
     import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/stores";
-    import { NotificationKind, type Group, type User, type Schedule } from "$lib/Types";
+    import { NotificationKind, type User } from "$lib/Types";
+    import Avatar from "$lib/components/Avatar.svelte";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import GroupElement from "$lib/components/GroupElement.svelte";
     import Option from "$lib/components/Option.svelte";
@@ -12,8 +12,6 @@
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import notifications from "$lib/stores/notifications";
-    import getMembers from "$lib/stores/groups";
-    import { onMount } from "svelte";
 
     export let data;
 
@@ -182,7 +180,7 @@
 
                 <ul class="flex flex-col gap-4">
                     {#each $groups as group}
-                        <li class="items-center rounded-md px-4">
+                        <li class="flex items-center justify-between rounded-md px-4">
                             <GroupElement {group} {selectedFriends} />
                         </li>
                     {/each}

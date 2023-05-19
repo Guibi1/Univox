@@ -7,26 +7,23 @@ import { error, json } from "@sveltejs/kit";
 import { isObjectIdOrHexString } from "mongoose";
 import type { RequestHandler } from "./$types";
 
-export const GET = (async ({ request }) => {
+export const POST = (async ({ locals, request }) => {
     const { groupId } = await request.json();
     if (!isObjectIdOrHexString(groupId)) {
         throw error(400, "Invalid data.");
     }
 
     const group = await db.getGroup(groupId);
-    if (!group) {
+    if (!group || group.usersId.every((id) => !locals.user._id.equals(id))) {
         throw error(400, "Invalid data.");
     }
 
     const members: User[] = [];
-
-    for (let index = 0; index < group.usersId.length; index++) {
-        const user = await db.findUser(group.usersId[index]);
-
-        if (user) {
-            members.push(user);
-        }
+    for (const id of group.usersId) {
+        if (locals.user._id.equals(id)) continue;
+        const user = await db.findUser(id);
+        if (user) members.push(user);
     }
 
-    return json({ members });
+    return json({ success: true, members });
 }) satisfies RequestHandler;
