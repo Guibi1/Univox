@@ -601,7 +601,7 @@ export async function deletePeriodFromSchedule(user: ServerUser, period: Period)
  * @returns An array of all the book codes
  */
 export async function getClassCodes(user: ServerUser): Promise<string[]> {
-   return await Schedules.findById(user.scheduleId).distinct("classes.code");
+    return await Schedules.findById(user.scheduleId).distinct("classes.code");
 }
 
 //////////////////////
@@ -768,7 +768,18 @@ export async function sendNotification(
     const receiver = await getServerUser(receiverId);
     if (!receiver) return false;
 
-    if (kind == NotificationKind.FriendRequest && (await friendRequestExists(user, receiver))) {
+    // If the notification is already sent
+    if (await getNotificationIfItExists(user, kind, receiver)) {
+        return false;
+    }
+
+    // If the other user already sent a friend request
+    const otherUserRequest = await getNotificationIfItExists(receiver, kind, user);
+    if (kind == NotificationKind.FriendRequest && otherUserRequest) {
+        if (await addFriend(user, receiver._id)) {
+            await deleteNotification(user, otherUserRequest._id);
+            return true;
+        }
         return false;
     }
 
@@ -807,12 +818,22 @@ export async function deleteNotification(
     }
 }
 
-export async function friendRequestExists(
+/**
+ * Find a corresponding notification if it exists
+ * @param user The current user
+ * @param kind The kind of notification
+ * @param receiverId The user that will receive the notification
+ * @returns The notification if it has been found
+ */
+export async function getNotificationIfItExists(
     sender: ServerUser,
+    kind: NotificationKind,
     receiver: ServerUser
-): Promise<boolean> {
-    return (await getNotifications(receiver)).some(
-        (n) => n.kind == NotificationKind.FriendRequest && n.sender._id.equals(sender._id)
+): Promise<Notification | null> {
+    return (
+        (await getNotifications(receiver)).find(
+            (n) => n.kind == kind && n.sender._id.equals(sender._id)
+        ) ?? null
     );
 }
 

@@ -1,4 +1,4 @@
-import type { Period, Schedule, User } from "$lib/Types";
+import { NotificationKind, type Period, type Schedule, type User } from "$lib/Types";
 import { getWeekCommonOccupations } from "$lib/commonOccupations";
 import { arrayIdToString, objectIdToString, scheduleFromJson } from "$lib/sanitization";
 import * as db from "$lib/server/db";
@@ -61,7 +61,11 @@ export const load = (async ({ locals, url, depends }) => {
 
     const users = await db.searchUsers(locals.user, query);
     for (const user of users) {
-        const friendRequestSent = await db.friendRequestExists(locals.user, user);
+        const friendRequestSent = !!(await db.getNotificationIfItExists(
+            locals.user,
+            NotificationKind.FriendRequest,
+            user
+        ));
         result.push({ user: db.serverUserToUser(user), friendRequestSent });
     }
 
