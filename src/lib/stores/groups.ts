@@ -48,7 +48,7 @@ function createGroupsStore() {
         if (success) refresh();
     }
 
-    async function invitetoGroup(group: Group, users: User[]) {
+    async function inviteToGroup(group: Group, users: User[]) {
         const { success } = await (
             await fetch("/api/groups/invite", {
                 method: "POST",
@@ -73,7 +73,7 @@ function createGroupsStore() {
         quit,
         rename,
         refresh,
-        invitetoGroup,
+        inviteToGroup,
     };
 }
 

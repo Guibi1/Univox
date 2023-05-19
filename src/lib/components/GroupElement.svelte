@@ -1,14 +1,12 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import type { Group } from "$lib/Types";
+    import type { Group, User } from "$lib/Types";
     import groups from "$lib/stores/groups";
     import Dropdown from "./Dropdown.svelte";
     import Option from "./Option.svelte";
-    import type { User } from "$lib/Types";
-    import { selectedFriends } from "$lib/stores/selectedFriends";
-    import user from "$lib/stores/user";
 
     export let group: Group;
+    export let selectedFriends: User[];
 
     let newName = group.name;
     let editing = false;
@@ -55,23 +53,18 @@
 
         <Dropdown>
             <Option text="Horaire commun" href={getGroupUrl(group)} />
-            <Option separate text="Renommer" onClick={() => (editing = true)} />
+            <Option text="Renommer" onClick={() => (editing = true)} />
+            <Option
+                separate
+                text="Inviter les amis sélectionnés"
+                color="green"
+                onClick={() => groups.inviteToGroup(group, selectedFriends)}
+            />
             <Option
                 separate
                 text="Quitter le groupe"
                 color="red"
                 onClick={() => groups.quit(group)}
-            />
-            <Option
-                separate
-                text="Inviter amis séléctionés"
-                color="green"
-                onClick={async () => {
-                    const success = await groups.invitetoGroup(group, $selectedFriends);
-                    if (!success) {
-                        // showError = true;
-                    }
-                }}
             />
         </Dropdown>
     </div>
