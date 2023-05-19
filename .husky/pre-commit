@@ -1,4 +1,13 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx pretty-quick --staged
+command_exists () {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Workaround for pnpm
+if command_exists pnpm; then
+    pnpm dlx pretty-quick --staged
+else
+    npx pretty-quick --staged
+fi
