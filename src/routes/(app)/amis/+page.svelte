@@ -60,17 +60,18 @@
     <title>Univox | Amis</title>
 </svelte:head>
 
+<div class="mx-auto my-4 flex w-[40rem] flex-row items-center justify-center gap-4">
+    <SearchBar bind:query {handleSearch} />
+
+    <i
+        class="bx bx-search-alt h-10 w-10 cursor-pointer text-4xl"
+        on:click={handleSearch}
+        on:keypress={handleSearch}
+    />
+</div>
+
 <div class="grid flex-grow grid-cols-[4fr_3fr] divide-x-4 divide-black overflow-x-scroll">
     <div class="flex flex-col space-y-3">
-        <div class="flex flex-row items-center gap-4">
-            <SearchBar bind:query {handleSearch} />
-
-            <i
-                class="bx bx-search-alt h-10 w-10 cursor-pointer text-4xl"
-                on:click={handleSearch}
-                on:keypress={handleSearch}
-            />
-        </div>
         <div class="grid flex-grow grid-cols-[1fr_1fr] divide-x-4 divide-black">
             <div class="flex flex-col p-4">
                 <h2 class="mb-4 self-center">Vos amis</h2>
