@@ -5,15 +5,22 @@ import type { User } from "$lib/Types";
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
 import { isObjectIdOrHexString } from "mongoose";
+import { apiValidate } from "sveltekit-api-fetch";
+import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
+const _postSchema = z.object({
+    groupId: z.string().refine((s) => isObjectIdOrHexString(s)),
+});
+
 export const POST = (async ({ locals, request }) => {
-    const { groupId } = await request.json();
-    if (!isObjectIdOrHexString(groupId)) {
+    const { parse } = await apiValidate(request, _postSchema);
+
+    if (!parse.success) {
         throw error(400, "Invalid data.");
     }
 
-    const group = await db.getGroup(groupId);
+    const group = await db.getGroup(parse.data.groupId);
     if (!group || group.usersId.every((id) => !locals.user._id.equals(id))) {
         throw error(400, "Invalid data.");
     }

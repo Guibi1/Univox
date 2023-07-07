@@ -18,7 +18,7 @@ function createFirstDayOfTheWeekStore() {
         if (bc) bc.postMessage(day);
         await fetch("/api/settings/firstDayOfTheWeek", {
             method: "PUT",
-            body: day,
+            body: JSON.stringify({ firstDayOfTheWeek: day }),
         });
     }
 

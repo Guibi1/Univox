@@ -9,47 +9,47 @@ type AllowedUrls = {
         GET: null;
     };
     "/api/user/avatar": {
-        POST: null;
+        POST: { avatar: string };
     };
     "/api/settings/firstDayOfTheWeek": {
-        PUT: null;
+        PUT: { firstDayOfTheWeek: string };
     };
     "/api/settings/colorScheme": {
-        PUT: null;
+        PUT: { colorScheme: string };
     };
     "/api/schedule": {
-        POST: null;
-        DELETE: null;
+        POST: { periods: { name: string; _id: string; timeStart: string; timeEnd: string }[] };
+        DELETE: { period: { name: string; _id: string; timeStart: string; timeEnd: string } };
         GET: null;
     };
     "/api/notifications": {
-        POST: null;
-        DELETE: null;
+        POST: { kind: string; receiverId: string };
+        DELETE: { notificationId: string };
         GET: null;
     };
     "/api/images/book/[filename]": {
         GET: null;
     };
     "/api/groups": {
-        POST: null;
-        DELETE: null;
+        POST: { usersId: string[] };
+        DELETE: { groupId: string };
         GET: null;
     };
     "/api/groups/name": {
-        POST: null;
+        POST: { groupId: string; name: string };
     };
     "/api/groups/members": {
-        POST: null;
+        POST: { groupId: string };
     };
     "/api/groups/invite": {
-        POST: null;
+        POST: { groupId: string; usersId: string[] };
     };
     "/api/friends": {
-        POST: null;
-        DELETE: null;
+        POST: { friendId: string };
+        DELETE: { friendId: string };
         GET: null;
     };
     "/api/book": {
-        DELETE: null;
+        DELETE: { bookId: string };
     };
 };

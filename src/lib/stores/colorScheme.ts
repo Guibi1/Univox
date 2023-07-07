@@ -35,7 +35,7 @@ function createColorSchemeStore() {
         if (bc) bc.postMessage(color);
         await fetch("/api/settings/colorScheme", {
             method: "PUT",
-            body: color,
+            body: JSON.stringify({ colorScheme: color }),
         });
     }
 

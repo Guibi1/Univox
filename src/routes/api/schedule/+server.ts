@@ -6,46 +6,69 @@ import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import { Types, isObjectIdOrHexString } from "mongoose";
+import { apiValidate } from "sveltekit-api-fetch";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
-export const POST = (async ({ request, locals }) => {
-    const { periods } = await request.json();
+const _postSchema = z.object({
+    periods: z
+        .array(
+            z.object({
+                name: z.string().min(1),
+                _id: z
+                    .string()
+                    .refine((s) => isObjectIdOrHexString(s))
+                    .transform((s) => new Types.ObjectId(s)),
+                timeStart: z
+                    .string()
+                    .datetime()
+                    .transform((d) => dayjs(d)),
+                timeEnd: z
+                    .string()
+                    .datetime()
+                    .transform((d) => dayjs(d)),
+            })
+        )
+        .min(1),
+});
 
-    if (!Array.isArray(periods) || periods.length === 0) {
+export const POST = (async ({ request, locals }) => {
+    const { parse } = await apiValidate(request, _postSchema);
+
+    if (!parse.success) {
         throw error(400, "Invalid data.");
     }
 
-    return json({ success: await db.addPeriodsToSchedule(locals.user, periods) });
+    return json({ success: await db.addPeriodsToSchedule(locals.user, parse.data.periods) });
 }) satisfies RequestHandler;
 
-export const DELETE = (async ({ request, locals }) => {
-    const { period } = await request.json();
+const _deleteSchema = z.object({
+    period: z.object({
+        name: z.string().min(1),
+        _id: z
+            .string()
+            .refine((s) => isObjectIdOrHexString(s))
+            .transform((s) => new Types.ObjectId(s)),
+        timeStart: z
+            .string()
+            .datetime()
+            .transform((d) => dayjs(d)),
+        timeEnd: z
+            .string()
+            .datetime()
+            .transform((d) => dayjs(d)),
+    }),
+});
 
-    const result = z
-        .object({
-            name: z.string().min(1),
-            _id: z
-                .string()
-                .refine((s) => isObjectIdOrHexString(s))
-                .transform((s) => new Types.ObjectId(s)),
-            timeStart: z
-                .string()
-                .datetime()
-                .transform((d) => dayjs(d)),
-            timeEnd: z
-                .string()
-                .datetime()
-                .transform((d) => dayjs(d)),
-        })
-        .safeParse(period);
+export const DELETE = (async ({ request, locals }) => {
+    const { parse } = await apiValidate(request, _deleteSchema);
 
     // Validate the period object
-    if (!result.success) {
+    if (!parse.success) {
         throw error(400, "Invalid data.");
     }
 
-    return json({ success: await db.deletePeriodFromSchedule(locals.user, result.data) });
+    return json({ success: await db.deletePeriodFromSchedule(locals.user, parse.data.period) });
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {

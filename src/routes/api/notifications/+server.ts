@@ -6,7 +6,14 @@ import { NotificationKind } from "$lib/Types";
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
 import { isObjectIdOrHexString } from "mongoose";
+import { apiValidate } from "sveltekit-api-fetch";
+import { z } from "zod";
 import type { RequestHandler } from "./$types";
+
+const _postSchema = z.object({
+    kind: z.string().refine((s) => s in NotificationKind),
+    receiverId: z.string().refine((s) => isObjectIdOrHexString(s)),
+});
 
 /**
  * Sends a notification to a user
@@ -14,35 +21,35 @@ import type { RequestHandler } from "./$types";
  * @param {Types.ObjectId} receiverId The user that will receive the notification
  */
 export const POST = (async ({ request, locals }) => {
-    const { kind, receiverId } = await request.json();
+    const { parse } = await apiValidate(request, _postSchema);
 
     // Input validation
-    if (
-        typeof kind !== "string" ||
-        !(kind in NotificationKind) ||
-        !isObjectIdOrHexString(receiverId)
-    ) {
+    if (!parse.success) {
         throw error(400, "Invalid data.");
     }
 
     return json({
-        success: await db.sendNotification(locals.user, kind as NotificationKind, receiverId),
+        success: await db.sendNotification(locals.user, parse.data.kind, parse.data.receiverId),
     });
 }) satisfies RequestHandler;
+
+const _deleteSchema = z.object({
+    notificationId: z.string().refine((s) => isObjectIdOrHexString(s)),
+});
 
 /**
  * Removes a notification from the user's account
  * @param {Types.ObjectId} notificationId The ID of the notification to remove
  */
 export const DELETE = (async ({ request, locals }) => {
-    const { notificationId } = await request.json();
+    const { parse } = await apiValidate(request, _deleteSchema);
 
     // Input validation
-    if (!isObjectIdOrHexString(notificationId)) {
+    if (!parse.success) {
         throw error(400, "Invalid data.");
     }
 
-    return json({ success: await db.deleteNotification(locals.user, notificationId) });
+    return json({ success: await db.deleteNotification(locals.user, parse.data.notificationId) });
 }) satisfies RequestHandler;
 
 /**

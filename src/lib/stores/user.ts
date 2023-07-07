@@ -27,7 +27,7 @@ function createUserStore() {
     }
 
     async function setAvatar(seed: string) {
-        fetch("/api/user/avatar", { method: "POST", body: seed });
+        fetch("/api/user/avatar", { method: "POST", body: JSON.stringify({ avatar: seed }) });
         update((user) => ({ ...user, avatar: seed }));
     }
 
