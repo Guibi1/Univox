@@ -1,37 +1,27 @@
 import type { User } from "$lib/Types";
 import type { Types } from "mongoose";
 import { writable } from "svelte/store";
+import { api } from "sveltekit-api-fetch";
 
 function createFriendsStore() {
     const { subscribe, set } = writable<User[]>();
 
     async function refresh() {
-        const { success, friends } = await (await fetch("/api/friends")).json();
+        const { success, friends } = await (await api.GET("/api/friends")).json();
+
         if (success) set(friends);
     }
 
     async function add(id: Types.ObjectId) {
         const { success } = await (
-            await fetch("/api/friends", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ friendId: id }),
-            })
+            await api.POST("/api/friends", { friendId: id.toHexString() })
         ).json();
         if (success) refresh();
     }
 
     async function remove(id: Types.ObjectId) {
         const { success } = await (
-            await fetch("/api/friends", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ friendId: id }),
-            })
+            await api.DELETE("/api/friends", { friendId: id.toHexString() })
         ).json();
         if (success) refresh();
     }

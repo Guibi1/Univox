@@ -5,6 +5,7 @@
 
 import { browser } from "$app/environment";
 import { writable } from "svelte/store";
+import { api } from "sveltekit-api-fetch";
 
 export type ColorScheme = "light" | "dark";
 
@@ -33,10 +34,7 @@ function createColorSchemeStore() {
     async function set(color: ColorScheme) {
         apply(color);
         if (bc) bc.postMessage(color);
-        await fetch("/api/settings/colorScheme", {
-            method: "PUT",
-            body: JSON.stringify({ colorScheme: color }),
-        });
+        await api.PUT("/api/settings/colorScheme", { colorScheme: color });
     }
 
     return {

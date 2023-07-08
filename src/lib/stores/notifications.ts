@@ -5,6 +5,7 @@
 import type { Notification, NotificationKind } from "$lib/Types";
 import type { Types } from "mongoose";
 import { writable } from "svelte/store";
+import { api } from "sveltekit-api-fetch";
 
 function createNotificationsStore() {
     const { subscribe, set } = writable<Notification[]>();
@@ -13,7 +14,7 @@ function createNotificationsStore() {
      * Updates the store with the latest information from the server
      */
     async function refresh() {
-        const { success, notifications } = await (await fetch("/api/notifications")).json();
+        const { success, notifications } = await (await api.GET("/api/notifications")).json();
         if (success) set(notifications);
     }
 
@@ -24,13 +25,7 @@ function createNotificationsStore() {
      */
     async function create(kind: NotificationKind, receiverId: Types.ObjectId) {
         const { success } = await (
-            await fetch("/api/notifications", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ kind, receiverId }),
-            })
+            await api.POST("/api/notifications", { kind, receiverId: receiverId.toHexString() })
         ).json();
         if (success) refresh();
     }
@@ -41,12 +36,8 @@ function createNotificationsStore() {
      */
     async function remove(notification: Notification) {
         const { success } = await (
-            await fetch("/api/notifications", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ notificationId: notification._id }),
+            await api.DELETE("/api/notifications", {
+                notificationId: notification._id.toHexString(),
             })
         ).json();
         if (success) refresh();

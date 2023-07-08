@@ -1,6 +1,7 @@
 import { browser } from "$app/environment";
 import dayjs from "dayjs";
 import { derived, writable } from "svelte/store";
+import { api } from "sveltekit-api-fetch";
 
 export type FirstDayOfTheWeek = "Samedi" | "Dimanche" | "Lundi";
 
@@ -16,10 +17,7 @@ function createFirstDayOfTheWeekStore() {
     async function set(day: FirstDayOfTheWeek) {
         setStore(day);
         if (bc) bc.postMessage(day);
-        await fetch("/api/settings/firstDayOfTheWeek", {
-            method: "PUT",
-            body: JSON.stringify({ firstDayOfTheWeek: day }),
-        });
+        await api.PUT("/api/settings/firstDayOfTheWeek", { firstDayOfTheWeek: day });
     }
 
     return {

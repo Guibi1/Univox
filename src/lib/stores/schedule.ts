@@ -1,6 +1,7 @@
 import type { Period, Schedule } from "$lib/Types";
 import { scheduleFromJson } from "$lib/sanitization";
 import { writable } from "svelte/store";
+import { api } from "sveltekit-api-fetch";
 
 function createScheduleStore() {
     const { subscribe, set: setStore } = writable<Schedule>();
@@ -10,18 +11,21 @@ function createScheduleStore() {
     }
 
     async function refresh() {
-        const { success, schedule } = await (await fetch("/api/schedule")).json();
+        const { success, schedule } = await (await api.GET("/api/schedule")).json();
         if (success) set(schedule);
     }
 
     async function add(period: Period) {
         const { success } = await (
-            await fetch("/api/schedule", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ periods: [period] }),
+            await api.POST("/api/schedule", {
+                periods: [
+                    {
+                        ...period,
+                        _id: period._id.toHexString(),
+                        timeStart: period.timeStart.toJSON(),
+                        timeEnd: period.timeEnd.toJSON(),
+                    },
+                ],
             })
         ).json();
         if (success) refresh();
@@ -29,12 +33,13 @@ function createScheduleStore() {
 
     async function remove(period: Period) {
         const { success } = await (
-            await fetch("/api/schedule", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
+            await api.DELETE("/api/schedule", {
+                period: {
+                    ...period,
+                    _id: period._id.toHexString(),
+                    timeStart: period.timeStart.toJSON(),
+                    timeEnd: period.timeEnd.toJSON(),
                 },
-                body: JSON.stringify({ period }),
             })
         ).json();
         if (success) refresh();

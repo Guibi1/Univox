@@ -2,7 +2,7 @@
  * @file API endpoint to save the user's settings
  */
 
-import { error } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 import { apiValidate } from "sveltekit-api-fetch";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
@@ -14,15 +14,9 @@ const _putSchema = z.object({ colorScheme: z.string().regex(/light|dark/) });
  * @param {string} colorScheme The new color scheme
  */
 export const PUT = (async ({ request, cookies }) => {
-    const { parse } = await apiValidate(request, _putSchema);
+    const { data } = await apiValidate(request, _putSchema);
 
-    // Input validation
-    if (!parse.success) {
-        throw error(400, "Invalid color scheme. Expected type 'light' | 'dark'.");
-    }
+    cookies.set("colorScheme", data.colorScheme, { path: "/" });
 
-    // Save the setting
-    cookies.set("colorScheme", parse.data.colorScheme, { path: "/" });
-
-    return new Response();
+    return json({ success: true });
 }) satisfies RequestHandler;

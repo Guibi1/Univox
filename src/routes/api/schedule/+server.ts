@@ -3,7 +3,7 @@
  */
 
 import * as db from "$lib/server/db";
-import { error, json } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import { Types, isObjectIdOrHexString } from "mongoose";
 import { apiValidate } from "sveltekit-api-fetch";
@@ -33,13 +33,9 @@ const _postSchema = z.object({
 });
 
 export const POST = (async ({ request, locals }) => {
-    const { parse } = await apiValidate(request, _postSchema);
+    const { data } = await apiValidate(request, _postSchema);
 
-    if (!parse.success) {
-        throw error(400, "Invalid data.");
-    }
-
-    return json({ success: await db.addPeriodsToSchedule(locals.user, parse.data.periods) });
+    return json({ success: await db.addPeriodsToSchedule(locals.user, data.periods) });
 }) satisfies RequestHandler;
 
 const _deleteSchema = z.object({
@@ -61,14 +57,9 @@ const _deleteSchema = z.object({
 });
 
 export const DELETE = (async ({ request, locals }) => {
-    const { parse } = await apiValidate(request, _deleteSchema);
+    const { data } = await apiValidate(request, _deleteSchema);
 
-    // Validate the period object
-    if (!parse.success) {
-        throw error(400, "Invalid data.");
-    }
-
-    return json({ success: await db.deletePeriodFromSchedule(locals.user, parse.data.period) });
+    return json({ success: await db.deletePeriodFromSchedule(locals.user, data.period) });
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {

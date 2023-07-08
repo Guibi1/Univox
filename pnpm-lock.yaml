@@ -83,8 +83,8 @@ devDependencies:
     specifier: ^3.4.5
     version: 3.4.5(postcss@8.4.25)(sass@1.63.6)(svelte@4.0.5)
   sveltekit-api-fetch:
-    specifier: ^2.0.0
-    version: 2.0.0(@sveltejs/kit@1.22.1)(svelte@4.0.5)(zod@3.21.4)
+    specifier: ^3.0.0
+    version: 3.0.0(@sveltejs/kit@1.22.1)(svelte@4.0.5)(vite@4.4.2)(zod@3.21.4)
   sveltekit-superforms:
     specifier: ^1.2.0
     version: 1.2.0(@sveltejs/kit@1.22.1)(svelte@4.0.5)(zod@3.21.4)
@@ -2155,16 +2155,16 @@ packages:
       is-glob: 4.0.3
     dev: true
 
-  /glob@10.3.1:
-    resolution: {integrity: sha512-9BKYcEeIs7QwlCYs+Y3GBvqAMISufUS0i2ELd11zpZjxI5V9iyRj0HgzB5/cLf2NY4vcYBTYzJ7GIui7j/4DOw==}
+  /glob@10.3.2:
+    resolution: {integrity: sha512-vsuLzB3c/uyDLLEdBZtT8vGnN0z57rwOxHV2oYZib/7HWmBspUaja/McYIobBjC4qaUTuNpUyFO2IdqM4DZIJA==}
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
     dependencies:
       foreground-child: 3.1.1
       jackspeak: 2.2.1
       minimatch: 9.0.3
-      minipass: 6.0.2
-      path-scurry: 1.10.0
+      minipass: 5.0.0
+      path-scurry: 1.10.1
     dev: true
 
   /glob@7.1.6:
@@ -2521,11 +2521,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /minipass@6.0.2:
-    resolution: {integrity: sha512-MzWSV5nYVT7mVyWCwn2o7JH13w2TBRmmSqSRCKzTw+lmft9X4z+3wjvs06Tzijo5z4W/kahUCDpRXTF+ZrmF/w==}
-    engines: {node: '>=16 || 14 >=14.17'}
-    dev: true
-
   /minizlib@2.1.2:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==}
     engines: {node: '>= 8'}
@@ -2802,12 +2797,12 @@ packages:
     resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
     dev: true
 
-  /path-scurry@1.10.0:
-    resolution: {integrity: sha512-tZFEaRQbMLjwrsmidsGJ6wDMv0iazJWk6SfIKnY4Xru8auXgmJkOBa5DUbYFcFD2Rzk2+KDlIiF0GVXNCbgC7g==}
+  /path-scurry@1.10.1:
+    resolution: {integrity: sha512-MkhCqzzBEpPvxxQ71Md0b1Kk51W01lrYvlMzSUaIzNsODdd7mqhiimSZlr+VegAz5Z6Vzt9Xg2ttE//XBhH3EQ==}
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
       lru-cache: 10.0.0
-      minipass: 6.0.2
+      minipass: 5.0.0
     dev: true
 
   /path-type@4.0.0:
@@ -3489,17 +3484,19 @@ packages:
       periscopic: 3.1.0
     dev: true
 
-  /sveltekit-api-fetch@2.0.0(@sveltejs/kit@1.22.1)(svelte@4.0.5)(zod@3.21.4):
-    resolution: {integrity: sha512-ch+Pv6mK8Rz3tg3NLPYs7/jJwVdWu0i7gAIeGcDfBWmBAxr/EL94qcZHzTpWGE03ttu6CUwR29LGPB4JQLuUSA==}
+  /sveltekit-api-fetch@3.0.0(@sveltejs/kit@1.22.1)(svelte@4.0.5)(vite@4.4.2)(zod@3.21.4):
+    resolution: {integrity: sha512-NcD/pBr6gDH6SjUhqK20AQbCp0hmqgmdKF2vC05IUl4gzKA8DWRsVFoI7QUoNjlJvCROYq9kLjaanUynMDlawA==}
     peerDependencies:
       '@sveltejs/kit': ^1.22.0
       svelte: ^3.55.0 || ^4.0.0-next.0 || ^4.0.0
-      zod: 3.x
+      vite: ^4.3.9
+      zod: ^3.20.0
     dependencies:
       '@sveltejs/kit': 1.22.1(svelte@4.0.5)(vite@4.4.2)
-      glob: 10.3.1
+      glob: 10.3.2
       svelte: 4.0.5
       typescript: 5.1.6
+      vite: 4.4.2(@types/node@20.4.0)(sass@1.63.6)
       zod: 3.21.4
     dev: true
 

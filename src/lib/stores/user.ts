@@ -2,6 +2,7 @@ import { browser } from "$app/environment";
 import { invalidate } from "$app/navigation";
 import type { User } from "$lib/Types";
 import { writable } from "svelte/store";
+import { api } from "sveltekit-api-fetch";
 
 function createUserStore() {
     const { subscribe, set: setStore, update } = writable<User>();
@@ -22,12 +23,12 @@ function createUserStore() {
     };
 
     async function refresh() {
-        const { success, user } = await (await fetch("/api/user")).json();
+        const { success, user } = await (await api.GET("/api/user")).json();
         if (success) set(user);
     }
 
     async function setAvatar(seed: string) {
-        fetch("/api/user/avatar", { method: "POST", body: JSON.stringify({ avatar: seed }) });
+        api.POST("/api/user/avatar", { avatar: seed });
         update((user) => ({ ...user, avatar: seed }));
     }
 

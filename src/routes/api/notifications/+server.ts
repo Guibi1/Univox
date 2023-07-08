@@ -4,7 +4,7 @@
 
 import { NotificationKind } from "$lib/Types";
 import * as db from "$lib/server/db";
-import { error, json } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 import { isObjectIdOrHexString } from "mongoose";
 import { apiValidate } from "sveltekit-api-fetch";
 import { z } from "zod";
@@ -21,15 +21,14 @@ const _postSchema = z.object({
  * @param {Types.ObjectId} receiverId The user that will receive the notification
  */
 export const POST = (async ({ request, locals }) => {
-    const { parse } = await apiValidate(request, _postSchema);
-
-    // Input validation
-    if (!parse.success) {
-        throw error(400, "Invalid data.");
-    }
+    const { data } = await apiValidate(request, _postSchema);
 
     return json({
-        success: await db.sendNotification(locals.user, parse.data.kind, parse.data.receiverId),
+        success: await db.sendNotification(
+            locals.user,
+            data.kind as NotificationKind,
+            data.receiverId
+        ),
     });
 }) satisfies RequestHandler;
 
@@ -42,14 +41,9 @@ const _deleteSchema = z.object({
  * @param {Types.ObjectId} notificationId The ID of the notification to remove
  */
 export const DELETE = (async ({ request, locals }) => {
-    const { parse } = await apiValidate(request, _deleteSchema);
+    const { data } = await apiValidate(request, _deleteSchema);
 
-    // Input validation
-    if (!parse.success) {
-        throw error(400, "Invalid data.");
-    }
-
-    return json({ success: await db.deleteNotification(locals.user, parse.data.notificationId) });
+    return json({ success: await db.deleteNotification(locals.user, data.notificationId) });
 }) satisfies RequestHandler;
 
 /**

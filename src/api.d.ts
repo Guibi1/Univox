@@ -4,52 +4,34 @@
  * Learn more here: https://github.com/Guibi1/sveltekit-api-fetch
  */
 
-type AllowedUrls = {
-    "/api/user": {
-        GET: null;
+type ProjectAPI = {
+    GET: {
+        "/api/user": never;
+        "/api/schedule": never;
+        "/api/notifications": never;
+        "/api/images/book/[filename]": never;
+        "/api/groups": never;
+        "/api/friends": never;
     };
-    "/api/user/avatar": {
-        POST: { avatar: string };
+    POST: {
+        "/api/user/avatar": { avatar: string };
+        "/api/schedule": { periods: { name: string; _id: string; timeStart: string; timeEnd: string }[] };
+        "/api/notifications": { kind: string; receiverId: string };
+        "/api/groups": { usersId: string[] };
+        "/api/groups/name": { groupId: string; name: string };
+        "/api/groups/members": { groupId: string };
+        "/api/groups/invite": { groupId: string; usersId: string[] };
+        "/api/friends": { friendId: string };
     };
-    "/api/settings/firstDayOfTheWeek": {
-        PUT: { firstDayOfTheWeek: string };
+    PUT: {
+        "/api/settings/firstDayOfTheWeek": { firstDayOfTheWeek: string };
+        "/api/settings/colorScheme": { colorScheme: string };
     };
-    "/api/settings/colorScheme": {
-        PUT: { colorScheme: string };
-    };
-    "/api/schedule": {
-        POST: { periods: { name: string; _id: string; timeStart: string; timeEnd: string }[] };
-        DELETE: { period: { name: string; _id: string; timeStart: string; timeEnd: string } };
-        GET: null;
-    };
-    "/api/notifications": {
-        POST: { kind: string; receiverId: string };
-        DELETE: { notificationId: string };
-        GET: null;
-    };
-    "/api/images/book/[filename]": {
-        GET: null;
-    };
-    "/api/groups": {
-        POST: { usersId: string[] };
-        DELETE: { groupId: string };
-        GET: null;
-    };
-    "/api/groups/name": {
-        POST: { groupId: string; name: string };
-    };
-    "/api/groups/members": {
-        POST: { groupId: string };
-    };
-    "/api/groups/invite": {
-        POST: { groupId: string; usersId: string[] };
-    };
-    "/api/friends": {
-        POST: { friendId: string };
-        DELETE: { friendId: string };
-        GET: null;
-    };
-    "/api/book": {
-        DELETE: { bookId: string };
+    DELETE: {
+        "/api/schedule": { period: { name: string; _id: string; timeStart: string; timeEnd: string } };
+        "/api/notifications": { notificationId: string };
+        "/api/groups": { groupId: string };
+        "/api/friends": { friendId: string };
+        "/api/book": { bookId: string };
     };
 };

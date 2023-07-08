@@ -2,20 +2,17 @@
     import { invalidate } from "$app/navigation";
     import type { Book } from "$lib/Types";
     import Carousel from "$lib/components/Carousel.svelte";
+    import { api } from "sveltekit-api-fetch";
 
     export let book: Book | null = null;
     export let isDeletable: boolean = false;
     export let sellerMail: string = "";
 
     async function removeBook() {
+        if (!book) return;
+
         const { success } = await (
-            await fetch("/api/book", {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ bookId: book?._id }),
-            })
+            await api.DELETE("/api/book", { bookId: book._id.toHexString() })
         ).json();
 
         if (success) {

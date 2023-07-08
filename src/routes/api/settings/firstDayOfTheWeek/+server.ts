@@ -3,13 +3,19 @@
  */
 
 import * as db from "$lib/server/db";
-import { error } from "@sveltejs/kit";
+import type { FirstDayOfTheWeek } from "$lib/stores/firstDayOfTheWeek";
+import { error, json } from "@sveltejs/kit";
 import { apiValidate } from "sveltekit-api-fetch";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
 const _putSchema = z.object({
-    firstDayOfTheWeek: z.string().regex(/Samedi|Dimanche|Lundi/),
+    firstDayOfTheWeek: z
+        .string()
+        .regex(
+            /Samedi|Dimanche|Lundi/,
+            "Invalid start week date. Expected type 'Samedi' | 'Dimanche' | 'Lundi'."
+        ),
 });
 
 /**
@@ -17,19 +23,18 @@ const _putSchema = z.object({
  * @param {string} firstDayOfTheWeek The new first day of the week
  */
 export const PUT = (async ({ locals, request, cookies }) => {
-    const { parse } = await apiValidate(request, _putSchema);
-
-    // Input validation
-    if (!parse.success) {
-        throw error(400, "Invalid start week date. Expected type 'Samedi' | 'Dimanche' | 'Lundi'.");
-    }
+    const { data } = await apiValidate(request, _putSchema);
 
     // Save the setting
-    if (!(await db.setSettings(locals.user, { firstDayOfTheWeek: parse.data.firstDayOfTheWeek }))) {
+    if (
+        !(await db.setSettings(locals.user, {
+            firstDayOfTheWeek: data.firstDayOfTheWeek as FirstDayOfTheWeek,
+        }))
+    ) {
         throw error(500, "Couldn't save the user's settings.");
     }
 
-    cookies.set("firstDayOfTheWeek", parse.data.firstDayOfTheWeek, { path: "/" });
+    cookies.set("firstDayOfTheWeek", data.firstDayOfTheWeek, { path: "/" });
 
-    return new Response();
+    return json({ success: true });
 }) satisfies RequestHandler;

@@ -14,13 +14,9 @@ const _postSchema = z.object({
 });
 
 export const POST = (async ({ locals, request }) => {
-    const { parse } = await apiValidate(request, _postSchema);
+    const { data } = await apiValidate(request, _postSchema);
 
-    if (!parse.success) {
-        throw error(400, "Invalid data.");
-    }
-
-    const group = await db.getGroup(parse.data.groupId);
+    const group = await db.getGroup(data.groupId);
     if (!group || group.usersId.every((id) => !locals.user._id.equals(id))) {
         throw error(400, "Invalid data.");
     }
