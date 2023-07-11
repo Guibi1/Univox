@@ -18,18 +18,7 @@
     {$form.firstStep ? "Inscription" : `Bonjour, ${$form.firstName} !`}
 </h1>
 
-{$message}
-
-<form
-    use:enhance
-    class="m-auto flex w-9/12 flex-col gap-6"
-    method="post"
-    action={$form.firstStep
-        ? $form.mfaId
-            ? "?/omnivox2fa"
-            : "?/omnivoxLogin"
-        : "?/accountCreation"}
->
+<form use:enhance class="m-auto flex w-9/12 flex-col gap-6" method="post" action="?/signup">
     <div
         class="relative grid w-[250%] grid-cols-2 gap-[20%] transition-[right]"
         style="right: {$form.firstStep ? '0' : '150'}%;"
@@ -60,8 +49,15 @@
 
             {#if $form.mfaId}
                 <label data-error={$errors.code}>
-                    Code de sécurité
-                    <input name="code" type="number" value={$form.code} readonly={$delayed} />
+                    Code de sécurité ({$message === "T" ? "application" : "email"})
+                    <input
+                        name="code"
+                        type="number"
+                        min="0"
+                        max="999999"
+                        value={$form.code}
+                        readonly={$delayed}
+                    />
 
                     {#if $errors.code}
                         <span>{$errors.code[0]}</span>
