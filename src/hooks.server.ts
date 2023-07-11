@@ -1,18 +1,22 @@
 import * as db from "$lib/server/db";
+import { auth } from "$lib/server/lucia";
 import { fail, redirect, type Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 
 const userLocalsHandle = (async ({ event, resolve }) => {
-    const user = await db.getUserFromToken(event.cookies.get("token"));
-    if (user) {
+    event.locals.auth = auth.handleRequest(event);
+    const { user } = await event.locals.auth.validateUser();
+
+    const uuu = false;
+    if (uuu) {
         if (event.route.id?.startsWith("/(auth)")) {
             throw redirect(302, event.url.searchParams.get("ref") ?? `/`);
         } else {
-            event.locals.user = user;
-            event.locals.schedule = await db.getSchedule(user);
-            event.locals.friends = await db.getFriends(user);
-            event.locals.groups = await db.getGroups(user);
-            event.locals.notifications = await db.getNotifications(user);
+            event.locals.user = uuu;
+            event.locals.schedule = await db.getSchedule(uuu);
+            event.locals.friends = await db.getFriends(uuu);
+            event.locals.groups = await db.getGroups(uuu);
+            event.locals.notifications = await db.getNotifications(uuu);
         }
     } else if (event.route.id?.startsWith("/(app)")) {
         throw redirect(302, `/connexion?ref=${event.url.pathname}`);

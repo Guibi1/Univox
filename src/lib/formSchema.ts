@@ -21,18 +21,6 @@ const omnivoxPassword = z.string().min(1, "Entrez votre mot de passe");
 
 // Schemas
 
-export const connexionSchema = z.object({ email, password });
-
-export const inscriptionPartialSchema = z.object({
-    email,
-    omnivoxPassword,
-    password: z.string(),
-    confirmPassword: z.string(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    firstStep: z.boolean().default(true),
-});
-
 export const newPasswordSchema = z
     .object({
         password,
@@ -47,6 +35,22 @@ export const newPasswordSchema = z
             });
         }
     });
+
+export const connexionSchema = z.object({ email, password });
+
+export const inscriptionPartialSchema = z.object({
+    email,
+    omnivoxPassword,
+    password: z.string(),
+    confirmPassword: z.string(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    mfaId: z.string().default(""),
+    code: z.string().regex(/\d{6}/).optional(),
+
+    firstStep: z.boolean().default(true),
+    session: z.string(),
+});
 
 export const inscriptionSchema = inscriptionPartialSchema
     .extend({

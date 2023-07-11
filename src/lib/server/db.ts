@@ -1,4 +1,4 @@
-import { MONGODB_URI } from "$env/static/private";
+import { DATABASE_HOST, DATABASE_PASSWORD, DATABASE_USERNAME } from "$env/static/private";
 import {
     NotificationKind,
     type Book,
@@ -10,15 +10,16 @@ import {
     type ServerUser,
     type User,
 } from "$lib/Types";
+import { connect } from "@planetscale/database";
 import bcryptjs from "bcryptjs";
 import chalk from "chalk";
+import { drizzle } from "drizzle-orm/planetscale-serverless";
 import mongoose, { Types, type FilterQuery } from "mongoose";
 import Books from "./models/books";
 import Groups from "./models/groups";
 import Notifications from "./models/notifications";
 import Schedules from "./models/schedules";
 import Settings from "./models/settings";
-import Tokens, { type Token } from "./models/tokens";
 import Users from "./models/users";
 import * as storageBucket from "./storageBucket";
 
@@ -33,73 +34,19 @@ const warn = (...text: unknown[]) =>
 mongoose.set("strictQuery", false);
 if (mongoose.connection.readyState !== 1) {
     mongoose
-        .connect(MONGODB_URI ?? "mongodb://127.0.0.1:27017/univox")
+        .connect("mongodb://127.0.0.1:27017/univox")
         .then(() => log("Connected"))
         .then(() => storageBucket.connect())
         .catch(() => warn("Couldn't connect"));
 }
 
-///////////////////////
-// -*-*- TOKEN -*-*- //
-///////////////////////
+export const planetScaleConnection = connect({
+    host: DATABASE_HOST,
+    username: DATABASE_USERNAME,
+    password: DATABASE_PASSWORD,
+});
 
-/**
- * Creates a token that authentifies the user
- * @param user The logged in user
- * @returns The new session token
- */
-export async function createToken(user: ServerUser) {
-    const token: string = await bcryptjs.hash(user.da + Date(), 5);
-    await Tokens.create({ token, userId: user._id });
-    log("New user token created");
-    return token;
-}
-
-/**
- * Removes an existing token
- * @param token The token to delete
- */
-export async function deleteToken(token: string) {
-    await Tokens.findOneAndRemove({ token });
-    log("User token deleted");
-}
-
-/**
- * Finds the user that logged in with the provided token
- * @param token The user's token
- * @returns The corresponding server user
- */
-export async function getUserFromToken(token: string | undefined): Promise<ServerUser | null> {
-    const userId = await getUserIdFromToken(token);
-    if (userId) {
-        return await getServerUser(userId);
-    }
-    return null;
-}
-
-/**
- * Finds the ID of the user that logged in with the provided token
- * @param token The user's token
- * @returns The corresponding user ID
- */
-export async function getUserIdFromToken(
-    token: string | undefined
-): Promise<Types.ObjectId | null> {
-    if (!token) return null;
-
-    const doc: mongoose.HydratedDocument<Token> | null = await Tokens.findOne({
-        token,
-    });
-    if (!doc) {
-        return null;
-    }
-
-    // Update the last accessed date
-    doc.lastAccessedDate = new Date();
-    doc.save();
-
-    return doc.userId;
-}
+const db = drizzle(planetScaleConnection);
 
 //////////////////////
 // -*-*- USER -*-*- //

@@ -1,5 +1,5 @@
 import { resetPasswordSchema } from "$lib/formSchema";
-import * as db from "$lib/server/db";
+import { auth } from "$lib/server/lucia";
 import * as omnivox from "$lib/server/omnivox";
 import { fail, redirect } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
@@ -24,12 +24,11 @@ export const actions = {
             return setError(form, "omnivoxPassword", "Mot de passe omnivox incorrect");
         }
 
-        const user = await db.findUser({ email: form.data.email });
-        if (!user) {
-            return setError(form, "email", "Aucun utilisateur avec cet email");
+        try {
+            auth.updateKeyPassword("email", form.data.email, form.data.password);
+        } catch {
+            return setError(form, "email", "Aucun compte associé à cet email");
         }
-
-        await db.updateUserPassword(user, form.data.password);
 
         throw redirect(302, "/connexion?" + url.searchParams);
     },

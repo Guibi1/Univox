@@ -1,18 +1,13 @@
-/**
- * @file Route to disconnect
- */
-
-import * as db from "$lib/server/db";
+import { auth } from "$lib/server/lucia";
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ cookies }) => {
-    const token = cookies.get("token");
-
-    if (token) {
-        await db.deleteToken(token);
+export const load = (async ({ locals }) => {
+    const { session } = await locals.auth.validateUser();
+    if (session) {
+        await auth.invalidateSession(session.sessionId);
+        locals.auth.setSession(null);
     }
-    cookies.delete("token", { path: "/" });
 
     throw redirect(307, "/connexion");
 }) satisfies PageServerLoad;

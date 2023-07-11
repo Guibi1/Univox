@@ -1,5 +1,5 @@
 import { connexionSchema } from "$lib/formSchema";
-import * as db from "$lib/server/db";
+import { auth } from "$lib/server/lucia";
 import { fail } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
@@ -10,24 +10,23 @@ export const load = async () => {
 };
 
 export const actions = {
-    login: async ({ request, cookies }) => {
+    login: async ({ locals, request }) => {
         const form = await superValidate(request, connexionSchema);
 
         if (!form.valid) {
             return fail(400, { form });
         }
 
-        const [user] = await Promise.all([
-            await db.compareUserPassword(form.data.email, form.data.password),
-            new Promise((r) => setTimeout(r, 600)),
-        ]);
-
-        if (!user) {
+        try {
+            const [key] = await Promise.all([
+                await auth.useKey("email", form.data.email, form.data.password),
+                new Promise((r) => setTimeout(r, 600)),
+            ]);
+            const session = await auth.createSession(key.userId);
+            locals.auth.setSession(session);
+        } catch {
             return setError(form, "password", "Mot de passe erroné");
         }
-
-        const token = await db.createToken(user);
-        cookies.set("token", token, { path: "/", httpOnly: true, secure: true, sameSite: true });
 
         return { form };
     },

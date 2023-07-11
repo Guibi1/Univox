@@ -5,7 +5,9 @@
 
     export let data;
 
-    const { form, errors, delayed, enhance } = superForm(data.form, { taintedMessage: null });
+    const { form, errors, delayed, message, enhance } = superForm(data.form, {
+        taintedMessage: null,
+    });
 </script>
 
 <svelte:head>
@@ -16,11 +18,17 @@
     {$form.firstStep ? "Inscription" : `Bonjour, ${$form.firstName} !`}
 </h1>
 
+{$message}
+
 <form
     use:enhance
     class="m-auto flex w-9/12 flex-col gap-6"
     method="post"
-    action={$form.firstStep ? "?/firstStep" : "?/secondStep"}
+    action={$form.firstStep
+        ? $form.mfaId
+            ? "?/omnivox2fa"
+            : "?/omnivoxLogin"
+        : "?/accountCreation"}
 >
     <div
         class="relative grid w-[250%] grid-cols-2 gap-[20%] transition-[right]"
@@ -49,6 +57,17 @@
                     <span>{$errors.omnivoxPassword[0]}</span>
                 {/if}
             </label>
+
+            {#if $form.mfaId}
+                <label data-error={$errors.code}>
+                    Code de sécurité
+                    <input name="code" type="number" value={$form.code} readonly={$delayed} />
+
+                    {#if $errors.code}
+                        <span>{$errors.code[0]}</span>
+                    {/if}
+                </label>
+            {/if}
         </div>
 
         <div hidden={$form.firstStep} class="flex flex-col gap-4">
@@ -89,6 +108,8 @@
     </div>
 
     <input hidden name="firstStep" type="checkbox" bind:checked={$form.firstStep} readonly />
+    <input hidden name="session" type="text" bind:value={$form.session} readonly />
+    <input hidden name="mfaId" type="text" bind:value={$form.mfaId} readonly />
     <input hidden name="firstName" type="text" bind:value={$form.firstName} readonly />
     <input hidden name="lastName" type="text" bind:value={$form.lastName} readonly />
 
