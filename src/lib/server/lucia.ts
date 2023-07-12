@@ -8,16 +8,7 @@ export const auth = lucia({
     adapter: planetscale(planetScaleConnection),
     env: dev ? "DEV" : "PROD",
     middleware: sveltekit(),
-    transformDatabaseUser: (userData) => {
-        return {
-            id: userData.id,
-            da: userData.da,
-            email: userData.email,
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            avatar: userData.avatar,
-        };
-    },
+    transformDatabaseUser: (userData) => ({ ...userData }),
 });
 
 export type Auth = typeof auth;

@@ -1,5 +1,6 @@
-import type { Notification, Schedule, ServerUser, User } from "$lib/Types";
+import type { Notification, Schedule, ServerUser, User as OldUser } from "$lib/Types";
 import type { Auth as LuciaAuth } from "$lib/server/lucia";
+import type { User } from "$lib/server/schemas/users";
 import type { AuthRequest } from "lucia-auth";
 
 declare global {
@@ -8,7 +9,7 @@ declare global {
             auth: AuthRequest;
             user: ServerUser;
             schedule: Schedule;
-            friends: User[];
+            friends: OldUser[];
             groups: Group[];
             notifications: Notification[];
         }
@@ -22,13 +23,7 @@ declare global {
 declare global {
     namespace Lucia {
         type Auth = LuciaAuth;
-        type UserAttributes = {
-            da: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-            avatar: string;
-        };
+        type UserAttributes = Omit<User, "id">;
     }
 }
 
