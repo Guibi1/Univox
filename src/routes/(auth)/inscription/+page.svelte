@@ -5,7 +5,7 @@
 
     export let data;
 
-    const { form, errors, delayed, message, enhance } = superForm(data.form, {
+    const { form, errors, submitting, message, enhance } = superForm(data.form, {
         taintedMessage: null,
     });
 </script>
@@ -26,7 +26,7 @@
         <div class="flex flex-col gap-4">
             <label data-error={$errors.email}>
                 Adresse courriel étudiante
-                <input name="email" type="text" value={$form.email} readonly={$delayed} />
+                <input name="email" type="text" value={$form.email} readonly={$submitting} />
 
                 {#if $errors.email}
                     <span>{$errors.email[0]}</span>
@@ -39,7 +39,7 @@
                     name="omnivoxPassword"
                     type="password"
                     value={$form.omnivoxPassword}
-                    readonly={$delayed}
+                    readonly={$submitting}
                 />
 
                 {#if $errors.omnivoxPassword}
@@ -56,7 +56,7 @@
                         min="0"
                         max="999999"
                         value={$form.code}
-                        readonly={$delayed}
+                        readonly={$submitting}
                     />
 
                     {#if $errors.code}
@@ -71,7 +71,12 @@
 
             <label data-error={$errors.password}>
                 Mot de passe
-                <input name="password" type="password" value={$form.password} readonly={$delayed} />
+                <input
+                    name="password"
+                    type="password"
+                    value={$form.password}
+                    readonly={$submitting}
+                />
 
                 {#if $errors.password}
                     <span>{$errors.password[0]}</span>
@@ -84,7 +89,7 @@
                     name="confirmPassword"
                     type="password"
                     value={$form.confirmPassword}
-                    readonly={$delayed}
+                    readonly={$submitting}
                 />
 
                 {#if $errors.confirmPassword}
@@ -109,7 +114,7 @@
     <input hidden name="firstName" type="text" bind:value={$form.firstName} readonly />
     <input hidden name="lastName" type="text" bind:value={$form.lastName} readonly />
 
-    {#if !$delayed}
+    {#if !$submitting}
         <button type="submit" class="filled flex w-7/12 items-center justify-center self-center">
             {$form.firstStep ? "Suivant" : "S'inscrire"} <i class="bx bx-chevron-right text-lg" />
         </button>
@@ -120,7 +125,7 @@
     {/if}
 </form>
 
-{#if !$delayed}
+{#if !$submitting}
     <div class="my-3 flex items-center gap-6">
         <hr class="w-full" />
         <span> ou </span>

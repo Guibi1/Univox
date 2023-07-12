@@ -68,7 +68,15 @@ export const inscriptionSchema = inscriptionPartialSchema
         }
     });
 
-export const resetPasswordSchema = z.object({ email, omnivoxPassword, password });
+export const resetPasswordSchema = z.object({
+    email,
+    omnivoxPassword,
+    password,
+    mfaId: z.string().default(""),
+    code: z.string().regex(/\d{6}/).optional(),
+
+    session: z.string(),
+});
 
 export const importScheduleSchema = z.object({ omnivoxPassword });
 

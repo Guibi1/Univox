@@ -5,7 +5,9 @@
 
     export let data;
 
-    const { form, errors, submitting, enhance } = superForm(data.form, { taintedMessage: null });
+    const { form, errors, submitting, message, enhance } = superForm(data.form, {
+        taintedMessage: null,
+    });
 </script>
 
 <svelte:head>
@@ -40,13 +42,31 @@
         </label>
 
         <label data-error={$errors.password}>
-            Mot de passe
+            Nouveau mot de passe
             <input name="password" type="password" value={$form.password} readonly={$submitting} />
 
             {#if $errors.password}
                 <span>{$errors.password[0]}</span>
             {/if}
         </label>
+
+        {#if $form.mfaId}
+            <label data-error={$errors.code}>
+                Code de sécurité ({$message === "T" ? "application" : "email"})
+                <input
+                    name="code"
+                    type="number"
+                    min="0"
+                    max="999999"
+                    value={$form.code}
+                    readonly={$submitting}
+                />
+
+                {#if $errors.code}
+                    <span>{$errors.code[0]}</span>
+                {/if}
+            </label>
+        {/if}
 
         <a href={"/connexion" + $page.url.search} class="flex self-start">
             <i class="bx bx-chevron-left text-lg" />

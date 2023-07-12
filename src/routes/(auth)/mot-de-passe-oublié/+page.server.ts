@@ -14,14 +14,39 @@ export const actions = {
     reset: async ({ request, url }) => {
         const form = await superValidate(request, resetPasswordSchema);
 
-        if (!form.valid) {
+        const baseUrl = form.data.email.match(/\d{7}@(.*).qc.ca/)?.[1];
+        if (!form.valid || !baseUrl) {
             return fail(400, { form });
         }
 
-        try {
-            await omnivox.login(form.data.email, form.data.omnivoxPassword);
-        } catch (e) {
-            return setError(form, "omnivoxPassword", "Mot de passe omnivox incorrect");
+        if (!form.data.session) {
+            try {
+                const login = await omnivox.login(form.data.email, form.data.omnivoxPassword);
+
+                if (login.mfa) {
+                    form.data.session = JSON.stringify(login.session.cookies);
+                    form.data.mfaId = login.mfa.id;
+                    form.message = login.mfa.type;
+                    return { form };
+                }
+            } catch (e) {
+                return setError(form, "omnivoxPassword", "Mot de passe omnivox incorrect");
+            }
+        } else {
+            if (!form.data.code) {
+                return setError(form, "code", "Champ nécessaire");
+            }
+
+            const result = await omnivox.submitCode2FA(
+                form.data.code,
+                { cookies: JSON.parse(form.data.session), baseUrl },
+                form.data.mfaId
+            );
+
+            form.data.code = undefined;
+            if (!result.success) {
+                return setError(form, "code", "Code invalide");
+            }
         }
 
         try {
