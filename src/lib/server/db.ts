@@ -533,7 +533,7 @@ export async function searchBooks(
         .where(
             and(
                 ne(booksTable.userId, user.id),
-                inArray(booksTable.code, codes),
+                codes.length > 0 ? inArray(booksTable.code, codes) : undefined,
                 or(
                     eq(booksTable.isbn, query),
                     eq(booksTable.title, query),
