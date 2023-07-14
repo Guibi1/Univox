@@ -9,12 +9,12 @@
 
 <div class="flex h-screen items-center justify-center">
     <div
-        class="bg-glass relative w-full overflow-hidden transition-[height] max-tablet:!h-full tablet:w-[32rem] tablet:rounded-2xl"
+        class="bg-glass max-md:!h-full md:w-[32rem] md:rounded-2xl relative w-full overflow-hidden transition-[height]"
         style="height: {height}px;"
     >
         <main
             bind:clientHeight={height}
-            class="flex h-full w-full flex-col items-stretch gap-2 px-4 py-12 tablet:absolute tablet:h-auto tablet:px-10"
+            class="md:absolute md:h-auto md:px-10 flex h-full w-full flex-col items-stretch gap-2 px-4 py-12"
         >
             <slot />
         </main>

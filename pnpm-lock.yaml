@@ -13,6 +13,9 @@ dependencies:
   '@planetscale/database':
     specifier: ^1.7.0
     version: 1.7.0
+  '@skeletonlabs/skeleton':
+    specifier: ^1.9.0
+    version: 1.9.0(svelte@4.0.5)
   '@sveltejs/adapter-vercel':
     specifier: ^3.0.2
     version: 3.0.2(@sveltejs/kit@1.22.3)
@@ -1022,6 +1025,15 @@ packages:
     dependencies:
       estree-walker: 2.0.2
       picomatch: 2.3.1
+    dev: false
+
+  /@skeletonlabs/skeleton@1.9.0(svelte@4.0.5):
+    resolution: {integrity: sha512-8dPp2l4d7p07FD4PXejY4p4my8SpurHwGPw2SCMvKPVde49js13BTvZ26dWo7pfPuPozrXsOzEF2mZxpSv2W+A==}
+    peerDependencies:
+      svelte: ^3.56.0 || ^4.0.0
+    dependencies:
+      esm-env: 1.0.0
+      svelte: 4.0.5
     dev: false
 
   /@sveltejs/adapter-vercel@3.0.2(@sveltejs/kit@1.22.3):

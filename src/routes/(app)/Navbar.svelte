@@ -23,7 +23,7 @@
 </script>
 
 <nav class="flex h-16 items-stretch justify-between bg-blue-secondary">
-    <div class="grid aspect-square tablet:hidden">
+    <div class="md:hidden grid aspect-square">
         <Dropdown actions={[pages]} position="bottom-right">
             <i slot="button" class="bx bx-menu text-2xl" />
         </Dropdown>
@@ -36,7 +36,7 @@
         </a>
     </div>
 
-    <ul class="relative hidden h-full flex-row items-center justify-between tablet:flex">
+    <ul class="md:flex relative hidden h-full flex-row items-center justify-between">
         {#each pages as page, i}
             <li class="relative h-full">
                 <a

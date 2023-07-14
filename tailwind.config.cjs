@@ -1,7 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: ["src/app.html", "src/**/*.svelte"],
-    darkMode: ["class", '[data-colorscheme="dark"]'],
     theme: {
         extend: {
             colors: {
@@ -19,11 +17,18 @@ module.exports = {
                 "gray3": "#202020",
             },
         },
-        screens: {
-            tablet: "800px",
-            laptop: "1024px",
-            desktop: "1280px",
-        },
     },
-    plugins: [require("tailwind-scrollbar")({ nocompatible: true })],
+    darkMode: "class",
+    content: [
+        "src/app.html",
+        "src/**/*.svelte",
+        require("path").join(
+            require.resolve("@skeletonlabs/skeleton"),
+            "../**/*.{html,js,svelte,ts}"
+        ),
+    ],
+    plugins: [
+        ...require("@skeletonlabs/skeleton/tailwind/skeleton.cjs")(),
+        require("tailwind-scrollbar")({ nocompatible: true }),
+    ],
 };

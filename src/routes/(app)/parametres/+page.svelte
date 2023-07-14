@@ -17,7 +17,7 @@
     <title>Univox | Paramètres</title>
 </svelte:head>
 
-<div class="mx-auto grid gap-6 py-4 laptop:grid-cols-[max-content_40rem] laptop:divide-x">
+<div class="lg:grid-cols-[max-content_40rem] lg:divide-x mx-auto grid gap-6 py-4">
     <div class="flex flex-col items-center gap-2 text-center">
         <div class="h-32">
             <Avatar />
@@ -49,7 +49,7 @@
         </a>
     </div>
 
-    <div class="laptop:pl-6">
+    <div class="lg:pl-6">
         <h1 class="my-4 gap-4 border-b-2 pb-2">Paramètres</h1>
 
         <form use:enhance method="post" class="grid grid-cols-2 items-center gap-x-2 gap-y-4">
