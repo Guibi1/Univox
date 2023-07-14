@@ -1,8 +1,8 @@
-import type { Auth as LuciaAuth } from "$lib/server/lucia";
+import type { Auth as LuciaAuth } from "$lib/server/db";
 import { usersTable } from "$lib/server/schemas/users";
-import type { Notification, User as OldUser, Schedule, ServerUser } from "$lib/types";
+import type { Notification, Schedule, ServerUser } from "$lib/types";
 import type { InferModel } from "drizzle-orm";
-import type { AuthRequest } from "lucia-auth";
+import type { AuthRequest, User } from "lucia-auth";
 
 declare global {
     namespace App {
@@ -10,7 +10,7 @@ declare global {
             auth: AuthRequest;
             user: ServerUser;
             schedule: Schedule;
-            friends: OldUser[];
+            friends: User[];
             groups: Group[];
             notifications: Notification[];
         }

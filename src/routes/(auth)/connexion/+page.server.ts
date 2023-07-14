@@ -1,5 +1,5 @@
 import { connexionSchema } from "$lib/formSchema";
-import { auth } from "$lib/server/lucia";
+import { auth } from "$lib/server/auth";
 import { fail } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";

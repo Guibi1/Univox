@@ -1,6 +1,6 @@
 import { newPasswordSchema } from "$lib/formSchema";
 import schoolNames from "$lib/schoolNames";
-import { auth } from "$lib/server/lucia.js";
+import { auth } from "$lib/server/auth.js";
 import { fail, redirect } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms/server";
 

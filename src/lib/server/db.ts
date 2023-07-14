@@ -10,11 +10,11 @@ import type {
 } from "$lib/types";
 import { connect } from "@planetscale/database";
 import chalk from "chalk";
-import { and, eq, inArray, ne, or } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, ne, or } from "drizzle-orm";
 import type { MySqlUpdateSetSource } from "drizzle-orm/mysql-core";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 import type { User } from "lucia-auth";
-import { auth } from "./lucia";
+import { auth } from "./auth";
 import { booksTable } from "./schemas/books";
 import { friendsTable } from "./schemas/friends";
 import { groupUsersTable, groupsTable } from "./schemas/groups";
@@ -27,13 +27,13 @@ const log = (...text: unknown[]) =>
 const warn = (...text: unknown[]) =>
     console.warn(chalk.bgRed(" WARNING "), chalk.magenta("[database]"), chalk.red("➜ "), ...text);
 
-export const planetScaleConnection = connect({
-    host: DATABASE_HOST,
-    username: DATABASE_USERNAME,
-    password: DATABASE_PASSWORD,
-});
-
-const db = drizzle(planetScaleConnection);
+const db = drizzle(
+    connect({
+        host: DATABASE_HOST,
+        username: DATABASE_USERNAME,
+        password: DATABASE_PASSWORD,
+    })
+);
 
 //////////////////////
 // -*-*- USER -*-*- //
@@ -124,7 +124,7 @@ export async function getFriendsId(user: User): Promise<string[]> {
  */
 export async function getFriends(user: User): Promise<User[]> {
     return await db
-        .select(usersTable._.columns)
+        .select(getTableColumns(usersTable))
         .from(friendsTable)
         .where(or(eq(friendsTable.friendId, user.id), eq(friendsTable.userId, user.id)))
         .innerJoin(
@@ -340,11 +340,7 @@ export async function updateGroup(
 export async function getSchedule(user: User, empty = false): Promise<Schedule> {
     const result = (
         await db
-            .select({
-                id: schedulesTable.id,
-                periods: periodsTable._.columns,
-                lessons: lessonsTable._.columns,
-            })
+            .select({ id: schedulesTable.id })
             .from(schedulesTable)
             .where(eq(schedulesTable.userId, user.id))
             .limit(1)
@@ -608,7 +604,7 @@ export async function getNotifications(user: User): Promise<Notification[]> {
             id: notificationsTable.id,
             kind: notificationsTable.kind,
             details: notificationsTable.details,
-            sender: usersTable._.columns,
+            sender: getTableColumns(usersTable),
         })
         .from(notificationsTable)
         .where(eq(notificationsTable.userId, user.id))
@@ -701,7 +697,7 @@ export async function getNotificationIfItExists(
                     id: notificationsTable.id,
                     kind: notificationsTable.kind,
                     details: notificationsTable.details,
-                    sender: usersTable._.columns,
+                    sender: getTableColumns(usersTable),
                 })
                 .from(notificationsTable)
                 .where(

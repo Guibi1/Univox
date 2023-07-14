@@ -1,5 +1,5 @@
+import { auth } from "$lib/server/auth";
 import * as db from "$lib/server/db";
-import { auth } from "$lib/server/lucia";
 import { fail, redirect, type Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 
