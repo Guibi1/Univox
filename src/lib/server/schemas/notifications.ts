@@ -4,12 +4,12 @@ export const notificationsTable = mysqlTable(
     "notifications",
     {
         id: serial("id").primaryKey(),
-        userId: varchar("userid", { length: 15 }).notNull(),
-        senderId: varchar("senderid", { length: 15 }).notNull(),
+        userId: varchar("user_id", { length: 15 }).notNull(),
+        senderId: varchar("sender_id", { length: 15 }).notNull(),
         kind: mysqlEnum("kind", ["FriendRequest", "GroupRequest"]).notNull(),
         details: json("details"),
     },
     (notification) => ({
-        userIndex: index("useridx").on(notification.userId),
+        userIndex: index("user_idx").on(notification.userId),
     })
 );

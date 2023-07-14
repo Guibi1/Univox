@@ -9,11 +9,11 @@ export const groupUsersTable = mysqlTable(
     "group_users",
     {
         id: serial("id").primaryKey(),
-        userId: varchar("userid", { length: 15 }).notNull(),
-        groupId: int("groupid").notNull(),
+        userId: varchar("user_id", { length: 15 }).notNull(),
+        groupId: int("group_id").notNull(),
     },
     (groupUser) => ({
-        userIndex: index("useridx").on(groupUser.userId),
-        groupIndex: index("groupidx").on(groupUser.groupId),
+        userIndex: index("user_idx").on(groupUser.userId),
+        groupIndex: index("group_idx").on(groupUser.groupId),
     })
 );

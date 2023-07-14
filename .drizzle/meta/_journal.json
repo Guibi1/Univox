@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1689364341794,
+      "tag": "0000_sudden_spiral",
+      "breakpoints": true
+    }
+  ]
+}

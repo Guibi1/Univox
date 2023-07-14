@@ -4,7 +4,7 @@ export const booksTable = mysqlTable(
     "books",
     {
         id: serial("id").primaryKey(),
-        userId: varchar("userid", { length: 15 }).notNull(),
+        userId: varchar("user_id", { length: 15 }).notNull(),
         title: varchar("title", { length: 128 }).notNull(),
         isbn: varchar("isbn", { length: 16 }).notNull(),
         image: varchar("image", { length: 256 }),
@@ -14,6 +14,6 @@ export const booksTable = mysqlTable(
         code: varchar("code", { length: 32 }).notNull(),
     },
     (book) => ({
-        userIndex: index("useridx").on(book.userId),
+        userIndex: index("user_idx").on(book.userId),
     })
 );

@@ -7,16 +7,15 @@ const userLocalsHandle = (async ({ event, resolve }) => {
     event.locals.auth = auth.handleRequest(event);
     const { user } = await event.locals.auth.validateUser();
 
-    const uuu = false;
-    if (uuu) {
+    if (user) {
         if (event.route.id?.startsWith("/(auth)")) {
             throw redirect(302, event.url.searchParams.get("ref") ?? `/`);
         } else {
-            event.locals.user = uuu;
-            event.locals.schedule = await db.getSchedule(uuu);
-            event.locals.friends = await db.getFriends(uuu);
-            event.locals.groups = await db.getGroups(uuu);
-            event.locals.notifications = await db.getNotifications(uuu);
+            event.locals.user = user;
+            event.locals.schedule = await db.getSchedule(user);
+            event.locals.friends = await db.getFriends(user);
+            event.locals.groups = await db.getGroups(user);
+            event.locals.notifications = await db.getNotifications(user);
         }
     } else if (event.route.id?.startsWith("/(app)")) {
         throw redirect(302, `/connexion?ref=${event.url.pathname}`);

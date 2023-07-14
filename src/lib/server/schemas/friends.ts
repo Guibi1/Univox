@@ -6,11 +6,11 @@ export const friendsTable = mysqlTable(
     "friends",
     {
         id: serial("id").primaryKey(),
-        userId: varchar("userid", { length: 15 }).notNull(),
-        friendId: varchar("friendid", { length: 15 }).notNull(),
+        userId: varchar("user_id", { length: 15 }).notNull(),
+        friendId: varchar("friend_id", { length: 15 }).notNull(),
     },
     (friend) => ({
-        userIndex: index("useridx").on(friend.userId),
+        userIndex: index("user_idx").on(friend.userId),
     })
 );
 

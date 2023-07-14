@@ -11,6 +11,6 @@ export const usersTable = mysqlTable(
         avatar: varchar("avatar", { length: 64 }).notNull(),
     },
     (user) => ({
-        daIndex: uniqueIndex("daidx").on(user.da),
+        daIndex: uniqueIndex("da_idx").on(user.da),
     })
 );

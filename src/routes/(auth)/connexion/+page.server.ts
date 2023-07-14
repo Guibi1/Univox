@@ -24,7 +24,7 @@ export const actions = {
             ]);
             const session = await auth.createSession(key.userId);
             locals.auth.setSession(session);
-        } catch {
+        } catch (e) {
             return setError(form, "password", "Mot de passe erroné");
         }
 

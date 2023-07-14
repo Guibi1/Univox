@@ -35,14 +35,14 @@ export const periodsTable = mysqlTable(
     "period_schedules",
     {
         id: serial("id").primaryKey(),
-        scheduleId: int("scheduleid").notNull(),
+        scheduleId: int("schedule_id").notNull(),
 
         name: varchar("name", { length: 128 }).notNull(),
         timeStart: mysqlDayjs("time_start").notNull(),
         timeEnd: mysqlDayjs("time_end").notNull(),
     },
     (period) => ({
-        scheduleIndex: index("scheduleidx").on(period.scheduleId),
+        scheduleIndex: index("schedule_idx").on(period.scheduleId),
     })
 );
 
@@ -50,7 +50,7 @@ export const lessonsTable = mysqlTable(
     "period_lessons",
     {
         id: serial("id").primaryKey(),
-        scheduleId: int("scheduleid").notNull(),
+        scheduleId: int("schedule_id").notNull(),
 
         name: varchar("name", { length: 128 }).notNull(),
         timeStart: mysqlDayjs("time_start").notNull(),
@@ -64,7 +64,7 @@ export const lessonsTable = mysqlTable(
         virtual: boolean("is_virtual").notNull(),
     },
     (lesson) => ({
-        scheduleIndex: index("scheduleidx").on(lesson.scheduleId),
+        scheduleIndex: index("schedule_idx").on(lesson.scheduleId),
     })
 );
 
@@ -74,8 +74,14 @@ export const schedulesRelations = relations(schedulesTable, ({ one, many }) => (
     lessons: many(lessonsTable),
 }));
 export const periodsRelations = relations(periodsTable, ({ one }) => ({
-    schedule: one(schedulesTable),
+    schedule: one(schedulesTable, {
+        fields: [periodsTable.scheduleId],
+        references: [schedulesTable.id],
+    }),
 }));
 export const lessonsRelations = relations(lessonsTable, ({ one }) => ({
-    schedule: one(schedulesTable),
+    schedule: one(schedulesTable, {
+        fields: [lessonsTable.scheduleId],
+        references: [schedulesTable.id],
+    }),
 }));
