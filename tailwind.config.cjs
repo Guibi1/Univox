@@ -27,8 +27,5 @@ module.exports = {
             "../**/*.{html,js,svelte,ts}"
         ),
     ],
-    plugins: [
-        ...require("@skeletonlabs/skeleton/tailwind/skeleton.cjs")(),
-        require("tailwind-scrollbar")({ nocompatible: true }),
-    ],
+    plugins: [...require("@skeletonlabs/skeleton/tailwind/skeleton.cjs")()],
 };
