@@ -1,5 +1,5 @@
-import type { Period, Schedule } from "$lib/Types";
 import { scheduleFromJson } from "$lib/sanitization";
+import type { Period, Schedule } from "$lib/types";
 import { writable } from "svelte/store";
 import { api } from "sveltekit-api-fetch";
 
@@ -21,7 +21,7 @@ function createScheduleStore() {
                 periods: [
                     {
                         ...period,
-                        _id: period._id.toHexString(),
+                        id: period.id,
                         timeStart: period.timeStart.toJSON(),
                         timeEnd: period.timeEnd.toJSON(),
                     },
@@ -36,7 +36,7 @@ function createScheduleStore() {
             await api.DELETE("/api/schedule", {
                 period: {
                     ...period,
-                    _id: period._id.toHexString(),
+                    id: period.id,
                     timeStart: period.timeStart.toJSON(),
                     timeEnd: period.timeEnd.toJSON(),
                 },

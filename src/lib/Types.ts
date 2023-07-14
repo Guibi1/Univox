@@ -1,50 +1,25 @@
 import type { Dayjs } from "dayjs";
-import type { Types } from "mongoose";
-
-/**
- * Represents a user and its public data
- */
-export interface User {
-    _id: Types.ObjectId;
-    da: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    avatar: string;
-}
-
-/**
- * Represents a user as it is stored on the database.
- * An object of this type shoud never leave the server-side
- */
-export interface ServerUser extends User {
-    passwordHash: string;
-    friendsId: Types.ObjectId[];
-    notificationsId: Types.ObjectId[];
-    groupsId: Types.ObjectId[];
-    settingsId: Types.ObjectId;
-    scheduleId: Types.ObjectId;
-}
+import type { User } from "lucia-auth";
 
 /**
  * Represents a friend group
  */
 export interface Group {
-    _id: Types.ObjectId;
+    id: number;
     name: string;
-    usersId: Types.ObjectId[];
+    usersId: string[];
 }
 
 /**
  * Represents a book to be sold
  */
 export interface Book {
-    _id: Types.ObjectId;
+    id: number;
+    userId: string;
     code: string;
-    sellerId: Types.ObjectId;
     title: string;
-    ISBN: string;
-    src: string[];
+    isbn: string;
+    image: string | null;
     author: string;
     price: number;
     state: string;
@@ -54,16 +29,16 @@ export interface Book {
  * Represents a user's schedule
  */
 export interface Schedule {
-    _id: Types.ObjectId;
+    id: number;
     periods: Period[];
-    classes: Class[];
+    lessons: Lesson[];
 }
 
 /**
  * Represents a time period in a schedule
  */
 export interface Period {
-    _id: Types.ObjectId;
+    id: number;
     name: string;
     timeStart: Dayjs;
     timeEnd: Dayjs;
@@ -72,7 +47,7 @@ export interface Period {
 /**
  * Represents a time period that comes from Omnviox
  */
-export interface Class extends Period {
+export interface Lesson extends Period {
     code: string;
     group: number;
     local: string;
@@ -81,18 +56,21 @@ export interface Class extends Period {
     virtual: boolean;
 }
 
+export function isLesson(period: Period): period is Lesson {
+    return "teacher" in period;
+}
+
 /**
  * Represents a user's notification
  */
 export interface Notification {
-    _id: Types.ObjectId;
+    id: number;
     kind: NotificationKind;
+    details: unknown;
     sender: User;
 }
 
 /**
  * Represents the type of notification that was received by the user
  */
-export enum NotificationKind {
-    FriendRequest = "FriendRequest",
-}
+export type NotificationKind = "FriendRequest" | "GroupRequest";

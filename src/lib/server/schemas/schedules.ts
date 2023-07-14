@@ -1,29 +1,60 @@
-import { boolean, datetime, index, mysqlTable, smallint, varchar } from "drizzle-orm/mysql-core";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import { relations } from "drizzle-orm";
+import {
+    boolean,
+    customType,
+    index,
+    int,
+    mysqlTable,
+    serial,
+    smallint,
+    varchar,
+} from "drizzle-orm/mysql-core";
+import { usersTable } from "./users";
+
+// Dayjs type for the mysql database
+const mysqlDayjs = customType<{ data: Dayjs; driverData: Date }>({
+    dataType: () => "datetime",
+    toDriver: (value) => value.toDate(),
+    fromDriver: (value) => dayjs(value),
+});
+
+export const schedulesTable = mysqlTable(
+    "schedules",
+    {
+        id: serial("id").primaryKey(),
+        userId: varchar("userid", { length: 15 }).notNull(),
+    },
+    (schedule) => ({
+        userIndex: index("useridx").on(schedule.userId),
+    })
+);
 
 export const periodsTable = mysqlTable(
     "period_schedules",
     {
-        id: varchar("id", { length: 15 }).primaryKey(),
-        userId: varchar("user_id", { length: 15 }).notNull(),
+        id: serial("id").primaryKey(),
+        scheduleId: int("scheduleid").notNull(),
 
         name: varchar("name", { length: 128 }).notNull(),
-        timeStart: datetime("time_start").notNull(),
-        timeEnd: datetime("time_end").notNull(),
+        timeStart: mysqlDayjs("time_start").notNull(),
+        timeEnd: mysqlDayjs("time_end").notNull(),
     },
     (period) => ({
-        userIndex: index("user_idx").on(period.userId),
+        scheduleIndex: index("scheduleidx").on(period.scheduleId),
     })
 );
 
 export const lessonsTable = mysqlTable(
     "period_lessons",
     {
-        id: varchar("id", { length: 15 }).primaryKey(),
-        userId: varchar("user_id", { length: 15 }).notNull(),
+        id: serial("id").primaryKey(),
+        scheduleId: int("scheduleid").notNull(),
 
         name: varchar("name", { length: 128 }).notNull(),
-        timeStart: datetime("time_start").notNull(),
-        timeEnd: datetime("time_end").notNull(),
+        timeStart: mysqlDayjs("time_start").notNull(),
+        timeEnd: mysqlDayjs("time_end").notNull(),
 
         code: varchar("code", { length: 32 }).notNull(),
         group: smallint("group").notNull(),
@@ -33,6 +64,18 @@ export const lessonsTable = mysqlTable(
         virtual: boolean("is_virtual").notNull(),
     },
     (lesson) => ({
-        userIndex: index("user_idx").on(lesson.userId),
+        scheduleIndex: index("scheduleidx").on(lesson.scheduleId),
     })
 );
+
+export const schedulesRelations = relations(schedulesTable, ({ one, many }) => ({
+    user: one(usersTable, { fields: [schedulesTable.userId], references: [usersTable.id] }),
+    periods: many(periodsTable),
+    lessons: many(lessonsTable),
+}));
+export const periodsRelations = relations(periodsTable, ({ one }) => ({
+    schedule: one(schedulesTable),
+}));
+export const lessonsRelations = relations(lessonsTable, ({ one }) => ({
+    schedule: one(schedulesTable),
+}));

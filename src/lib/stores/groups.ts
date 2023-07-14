@@ -1,4 +1,5 @@
-import type { Group, User } from "$lib/Types";
+import type { Group } from "$lib/types";
+import type { User } from "lucia-auth";
 import { writable } from "svelte/store";
 import { api } from "sveltekit-api-fetch";
 
@@ -12,21 +13,19 @@ function createGroupsStore() {
 
     async function create(users: User[]) {
         const { success } = await (
-            await api.POST("/api/groups", { usersId: users.map((u) => u._id.toHexString()) })
+            await api.POST("/api/groups", { usersId: users.map((u) => u.id) })
         ).json();
         if (success) refresh();
     }
 
     async function quit(group: Group) {
-        const { success } = await (
-            await api.DELETE("/api/groups", { groupId: group._id.toHexString() })
-        ).json();
+        const { success } = await (await api.DELETE("/api/groups", { groupId: group.id })).json();
         if (success) refresh();
     }
 
     async function rename(group: Group, name: string) {
         const { success } = await (
-            await api.POST("/api/groups/name", { groupId: group._id.toHexString(), name })
+            await api.POST("/api/groups/name", { groupId: group.id, name })
         ).json();
         if (success) refresh();
     }
@@ -34,8 +33,8 @@ function createGroupsStore() {
     async function inviteToGroup(group: Group, users: User[]) {
         const { success } = await (
             await api.POST("/api/groups/invite", {
-                groupId: group._id.toHexString(),
-                usersId: users.map((u) => u._id.toHexString()),
+                groupId: group.id,
+                usersId: users.map((u) => u.id),
             })
         ).json();
         if (success) refresh();
@@ -43,7 +42,7 @@ function createGroupsStore() {
 
     async function getMembers(group: Group) {
         const { success, members } = await (
-            await api.POST("/api/groups/members", { groupId: group._id.toHexString() })
+            await api.POST("/api/groups/members", { groupId: group.id })
         ).json();
         if (success) refresh();
 

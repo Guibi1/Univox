@@ -1,6 +1,5 @@
-import type { Period, Schedule } from "$lib/Types";
+import type { Period, Schedule } from "$lib/types";
 import type { Dayjs } from "dayjs";
-import { Types } from "mongoose";
 
 /**
  * Calculates the common occupied time for a given day and a list of periods.
@@ -18,7 +17,7 @@ export function getCommonOccupied(date: Dayjs, periods: Period[]): Period[] {
     // Add a free time in our result array
     const addOccupied = (timeStart: Dayjs, timeEnd: Dayjs) =>
         occupiedTime.push({
-            _id: new Types.ObjectId(),
+            id: -1,
             name: "Occupé",
             timeStart,
             timeEnd,
@@ -78,8 +77,8 @@ export function getWeekCommonOccupations(week: Dayjs, periods: Period[]): Schedu
 
     //Et on return les périodes libres
     return {
-        _id: new Types.ObjectId(),
+        id: -1,
         periods: free,
-        classes: [],
+        lessons: [],
     };
 }

@@ -1,9 +1,7 @@
 import { imageSchema, newBookSchema } from "$lib/formSchema";
 import * as db from "$lib/server/db";
-import { uploadBookImage } from "$lib/server/storageBucket";
 import { fail, redirect } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
-import { Types } from "mongoose";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
 
@@ -50,20 +48,19 @@ export const actions = {
         const imagesSrc: string[] = [];
         for (const image of images) {
             const name = randomUUID();
-            uploads.push(uploadBookImage(image, name));
+            // uploads.push(uploadBookImage(image, name));
             imagesSrc.push(`/api/images/book/${name}`);
         }
 
         const book = {
-            _id: new Types.ObjectId(),
-            sellerId: locals.user._id,
+            userId: locals.user.id,
             title: form.data.title,
             author: form.data.author,
             state: form.data.state,
             price: form.data.price,
-            ISBN: form.data.ISBN,
+            isbn: form.data.ISBN,
             code: form.data.classCode,
-            src: imagesSrc,
+            image: "",
         };
 
         await Promise.allSettled(uploads);

@@ -3,7 +3,6 @@
  */
 
 import * as db from "$lib/server/db";
-import type { FirstDayOfTheWeek } from "$lib/stores/firstDayOfTheWeek";
 import { error, json } from "@sveltejs/kit";
 import { apiValidate } from "sveltekit-api-fetch";
 import { z } from "zod";
@@ -18,19 +17,11 @@ const _putSchema = z.object({
         ),
 });
 
-/**
- * Updates the user's first day of the week
- * @param {string} firstDayOfTheWeek The new first day of the week
- */
 export const PUT = (async ({ locals, request, cookies }) => {
     const { data } = await apiValidate(request, _putSchema);
 
     // Save the setting
-    if (
-        !(await db.setSettings(locals.user, {
-            firstDayOfTheWeek: data.firstDayOfTheWeek as FirstDayOfTheWeek,
-        }))
-    ) {
+    if (!(await db.setSettings(locals.user, ""))) {
         throw error(500, "Couldn't save the user's settings.");
     }
 

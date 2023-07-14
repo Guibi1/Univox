@@ -2,8 +2,7 @@
  * @file A Svelte store that manages the user's notification
  */
 
-import type { Notification, NotificationKind } from "$lib/Types";
-import type { Types } from "mongoose";
+import type { Notification, NotificationKind } from "$lib/types";
 import { writable } from "svelte/store";
 import { api } from "sveltekit-api-fetch";
 
@@ -23,9 +22,9 @@ function createNotificationsStore() {
      * @param kind The kind of notification to send
      * @param receiverId The user that will receive the notification
      */
-    async function create(kind: NotificationKind, receiverId: Types.ObjectId) {
+    async function create(kind: NotificationKind, receiverId: string) {
         const { success } = await (
-            await api.POST("/api/notifications", { kind, receiverId: receiverId.toHexString() })
+            await api.POST("/api/notifications", { kind, receiverId: receiverId })
         ).json();
         if (success) refresh();
     }
@@ -37,7 +36,7 @@ function createNotificationsStore() {
     async function remove(notification: Notification) {
         const { success } = await (
             await api.DELETE("/api/notifications", {
-                notificationId: notification._id.toHexString(),
+                notificationId: notification.id,
             })
         ).json();
         if (success) refresh();

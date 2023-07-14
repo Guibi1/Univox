@@ -1,10 +1,11 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import type { Group, User } from "$lib/Types";
+    import type { Group } from "$lib/types";
     import groups from "$lib/stores/groups";
     import Dropdown from "./Dropdown.svelte";
     import ExpandableArrow from "./ExpandableArrow.svelte";
     import Option from "./Option.svelte";
+    import type { User } from "lucia-auth";
 
     export let group: Group;
     export let selectedFriends: User[];
@@ -23,7 +24,7 @@
         const params = new URLSearchParams($page.url.searchParams);
         params.delete("friendId");
         params.delete("commonSchedule");
-        params.set("groupId", group._id.toString());
+        params.set("groupId", group.id.toString());
         return `?${params}`;
     };
 </script>

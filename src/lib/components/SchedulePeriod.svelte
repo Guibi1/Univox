@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { Class, Period } from "$lib/Types";
+    import type { Lesson, Period } from "$lib/types";
     import schedule from "$lib/stores/schedule";
     import classNames from "classnames";
 
-    export let period: Period | Class;
+    export let period: Period | Lesson;
     export let rowHeight: number;
     export let timeStart: number;
     export let isRight = true;

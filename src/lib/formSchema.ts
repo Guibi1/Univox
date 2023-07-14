@@ -74,11 +74,15 @@ export const resetPasswordSchema = z.object({
     password,
     mfaId: z.string().default(""),
     code: z.string().regex(/\d{6}/).optional(),
-
     session: z.string(),
 });
 
-export const importScheduleSchema = z.object({ omnivoxPassword });
+export const importScheduleSchema = z.object({
+    omnivoxPassword,
+    mfaId: z.string().default(""),
+    code: z.string().regex(/\d{6}/).optional(),
+    session: z.string(),
+});
 
 export const newPeriodSchema = z
     .object({

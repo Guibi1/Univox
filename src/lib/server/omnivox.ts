@@ -2,13 +2,12 @@
  * @file Allows to interact with Omnivox. (login, schedule, etc)
  */
 
-import type { Class } from "$lib/Types";
+import type { Lesson } from "$lib/types";
 import * as cheerio from "cheerio";
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { Types } from "mongoose";
 import sharp from "sharp";
 
 dayjs.extend(customParseFormat);
@@ -255,9 +254,9 @@ async function getScheduleCookies(session: OmnivoxSession): Promise<ScheduleCook
  * @param htmlPage The PageHTML returned by `fetchSchedulePageHTML`
  * @returns The user's schedule for the entire session
  */
-export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Class[]> {
-    const schedule: Class[] = [];
-    const orderedSchedule: Class[][] = Array.from({ length: 5 }, () => []);
+export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Omit<Lesson, "id">[]> {
+    const schedule: Omit<Lesson, "id">[] = [];
+    const orderedSchedule: Omit<Lesson, "id">[][] = Array.from({ length: 5 }, () => []);
 
     const $ = cheerio.load(htmlPage.html);
     const rows = $("table .CelluleHoraire > tbody > tr:not(:first)");
@@ -292,8 +291,7 @@ export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Class[]
                 }
             }
 
-            const c: Class = {
-                _id: new Types.ObjectId(),
+            const c: Omit<Lesson, "id"> = {
                 name: match[1],
                 code: match[2] || "",
                 group: match[3] ? Number(match[3]) : 0,
@@ -321,9 +319,9 @@ export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Class[]
  */
 async function getScheduleForAllSession(
     htmlPage: PageHTML,
-    orderedSchedule: Class[][]
-): Promise<Class[]> {
-    const classes: Class[] = [];
+    orderedSchedule: Omit<Lesson, "id">[][]
+): Promise<Omit<Lesson, "id">[]> {
+    const classes: Omit<Lesson, "id">[] = [];
     let currentMonday = dayjs().startOf("day").day(-8);
     let lastClassesLength = 0;
     let emptyWeeksInARow = 0;

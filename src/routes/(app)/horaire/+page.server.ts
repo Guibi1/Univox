@@ -4,7 +4,6 @@ import { fail } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { Types } from "mongoose";
 import { superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
 
@@ -32,7 +31,6 @@ export const actions = {
         try {
             await db.addPeriodsToSchedule(locals.user, [
                 {
-                    _id: new Types.ObjectId(),
                     name: form.data.name,
                     timeStart: dayjs(form.data.date + form.data.startTime, "YYYY-MM-DDHH:mm"),
                     timeEnd: dayjs(form.data.date + form.data.endTime, "YYYY-MM-DDHH:mm"),

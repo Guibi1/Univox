@@ -1,6 +1,6 @@
 import { browser } from "$app/environment";
 import { invalidate } from "$app/navigation";
-import type { User } from "$lib/Types";
+import type { User } from "lucia-auth";
 import { writable } from "svelte/store";
 import { api } from "sveltekit-api-fetch";
 

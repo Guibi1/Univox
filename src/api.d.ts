@@ -15,12 +15,12 @@ type ProjectAPI = {
     };
     POST: {
         "/api/user/avatar": { avatar: string };
-        "/api/schedule": { periods: { name: string; _id: string; timeStart: string; timeEnd: string }[] };
+        "/api/schedule": { periods: { name: string; id: number; timeStart: string; timeEnd: string }[] };
         "/api/notifications": { kind: string; receiverId: string };
         "/api/groups": { usersId: string[] };
-        "/api/groups/name": { groupId: string; name: string };
-        "/api/groups/members": { groupId: string };
-        "/api/groups/invite": { groupId: string; usersId: string[] };
+        "/api/groups/name": { groupId: number; name: string };
+        "/api/groups/members": { groupId: number };
+        "/api/groups/invite": { groupId: number; usersId: string[] };
         "/api/friends": { friendId: string };
     };
     PUT: {
@@ -28,10 +28,10 @@ type ProjectAPI = {
         "/api/settings/colorScheme": { colorScheme: string };
     };
     DELETE: {
-        "/api/schedule": { period: { name: string; _id: string; timeStart: string; timeEnd: string } };
-        "/api/notifications": { notificationId: string };
-        "/api/groups": { groupId: string };
+        "/api/schedule": { period: { name: string; id: number; timeStart: string; timeEnd: string } };
+        "/api/notifications": { notificationId: number };
+        "/api/groups": { groupId: number };
         "/api/friends": { friendId: string };
-        "/api/book": { bookId: string };
+        "/api/book": { bookId: number };
     };
 };

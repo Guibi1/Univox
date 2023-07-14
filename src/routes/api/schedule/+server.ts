@@ -1,11 +1,6 @@
-/**
- * @file API endpoint to add periods to the schedule, fetch the user's schedule, and delete a period
- */
-
 import * as db from "$lib/server/db";
 import { json } from "@sveltejs/kit";
 import dayjs from "dayjs";
-import { Types, isObjectIdOrHexString } from "mongoose";
 import { apiValidate } from "sveltekit-api-fetch";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
@@ -15,10 +10,7 @@ const _postSchema = z.object({
         .array(
             z.object({
                 name: z.string().min(1),
-                _id: z
-                    .string()
-                    .refine((s) => isObjectIdOrHexString(s))
-                    .transform((s) => new Types.ObjectId(s)),
+                id: z.number(),
                 timeStart: z
                     .string()
                     .datetime()
@@ -41,10 +33,7 @@ export const POST = (async ({ request, locals }) => {
 const _deleteSchema = z.object({
     period: z.object({
         name: z.string().min(1),
-        _id: z
-            .string()
-            .refine((s) => isObjectIdOrHexString(s))
-            .transform((s) => new Types.ObjectId(s)),
+        id: z.number(),
         timeStart: z
             .string()
             .datetime()

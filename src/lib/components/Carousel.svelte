@@ -100,6 +100,7 @@
         use:dropFiles={images.length < maxImagesCount && !readOnly}
         on:dragenter={() => (isDragginOver = images.length < maxImagesCount && !readOnly)}
         class="relative flex h-64 items-stretch bg-neutral-700"
+        role="form"
     >
         {#if images.length === 0}
             <!-- Empty state with file input and label -->
@@ -140,6 +141,7 @@
                 transition:fade
                 on:dragleave={() => (isDragginOver = false)}
                 class="absolute inset-0 z-10 flex cursor-pointer flex-col items-center justify-center gap-1 bg-blue-secondary"
+                role="form"
             >
                 <i class="bx bx-cloud-upload pointer-events-none text-7xl" />
                 <p class="pointer-events-none">Glissez ici des images de votre livre</p>

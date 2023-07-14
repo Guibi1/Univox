@@ -1,5 +1,3 @@
-import { arrayIdToString, objectIdToString } from "$lib/sanitization";
-import { serverUserToUser } from "$lib/server/db";
 import friends from "$lib/stores/friends";
 import groups from "$lib/stores/groups";
 import notifications from "$lib/stores/notifications";
@@ -9,7 +7,7 @@ import type { LayoutServerLoad } from "./$types";
 
 export const load = (({ locals }) => {
     // Stores are up to date during SSR
-    user.set(serverUserToUser(locals.user));
+    user.set(locals.user);
     schedule.set(locals.schedule);
     friends.set(locals.friends);
     groups.set(locals.groups);
@@ -17,11 +15,11 @@ export const load = (({ locals }) => {
 
     return {
         storesInitialValue: {
-            user: objectIdToString(serverUserToUser(locals.user)),
-            schedule: objectIdToString(locals.schedule),
-            friends: arrayIdToString(locals.friends),
-            groups: arrayIdToString(locals.groups),
-            notifications: arrayIdToString(locals.notifications),
+            user: locals.user,
+            schedule: locals.schedule,
+            friends: locals.friends,
+            groups: locals.groups,
+            notifications: locals.notifications,
         },
     };
 }) satisfies LayoutServerLoad;

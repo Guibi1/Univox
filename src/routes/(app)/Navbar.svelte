@@ -84,7 +84,7 @@
                                 <button
                                     class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
                                     on:click={async () => {
-                                        await friends.add(notification.sender._id);
+                                        await friends.add(notification.sender.id);
                                         await notifications.remove(notification);
                                     }}
                                 >

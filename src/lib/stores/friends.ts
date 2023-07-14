@@ -1,5 +1,4 @@
-import type { User } from "$lib/Types";
-import type { Types } from "mongoose";
+import type { User } from "lucia-auth";
 import { writable } from "svelte/store";
 import { api } from "sveltekit-api-fetch";
 
@@ -12,17 +11,13 @@ function createFriendsStore() {
         if (success) set(friends);
     }
 
-    async function add(id: Types.ObjectId) {
-        const { success } = await (
-            await api.POST("/api/friends", { friendId: id.toHexString() })
-        ).json();
+    async function add(id: string) {
+        const { success } = await (await api.POST("/api/friends", { friendId: id })).json();
         if (success) refresh();
     }
 
-    async function remove(id: Types.ObjectId) {
-        const { success } = await (
-            await api.DELETE("/api/friends", { friendId: id.toHexString() })
-        ).json();
+    async function remove(id: string) {
+        const { success } = await (await api.DELETE("/api/friends", { friendId: id })).json();
         if (success) refresh();
     }
 

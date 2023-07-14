@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Schedule } from "$lib/Types";
+    import type { Schedule } from "$lib/types";
     import { weekdayOffset } from "$lib/stores/firstDayOfTheWeek";
     import classNames from "classnames";
     import dayjs, { Dayjs } from "dayjs";
@@ -35,7 +35,7 @@
 
     function getPeriods(schedule: Schedule, day: Dayjs) {
         return schedule.periods
-            .concat(schedule.classes)
+            .concat(schedule.lessons)
             .filter((p) => p.timeStart.isSame(day, "day"));
     }
 

@@ -3,21 +3,13 @@
  */
 import * as db from "$lib/server/db";
 import { error, json } from "@sveltejs/kit";
-import { Types, isObjectIdOrHexString } from "mongoose";
 import { apiValidate } from "sveltekit-api-fetch";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
 const _postSchema = z.object({
-    groupId: z.string().refine((s) => isObjectIdOrHexString(s)),
-    usersId: z
-        .array(
-            z
-                .string()
-                .refine((s) => isObjectIdOrHexString(s))
-                .transform((s) => new Types.ObjectId(s))
-        )
-        .min(1),
+    groupId: z.number(),
+    usersId: z.array(z.string()).min(1),
 });
 
 export const POST = (async ({ request, locals }) => {

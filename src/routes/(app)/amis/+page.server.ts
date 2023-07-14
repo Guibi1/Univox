@@ -1,29 +1,28 @@
-import { NotificationKind, type Period, type Schedule, type User } from "$lib/Types";
 import { getWeekCommonOccupations } from "$lib/commonOccupations";
-import { arrayIdToString, objectIdToString, scheduleFromJson } from "$lib/sanitization";
+import { scheduleFromJson } from "$lib/sanitization";
 import * as db from "$lib/server/db";
+import type { Period, Schedule } from "$lib/types";
 import dayjs from "dayjs";
-import { isObjectIdOrHexString } from "mongoose";
+import type { User } from "lucia-auth";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ locals, url, depends }) => {
     depends("app:notifications");
 
     const query = url.searchParams.get("query") ?? "";
-    const friendId = url.searchParams.get("friendId") ?? "";
-    const groupId = url.searchParams.get("groupId") ?? "";
+    const friendId = url.searchParams.get("friendId");
+    const groupId = Number.parseInt(url.searchParams.get("groupId") ?? "");
     const isCommonSchedule = url.searchParams.get("commonSchedule") !== null;
 
     let schedule: Schedule | null = null;
 
-    if (isObjectIdOrHexString(groupId)) {
+    if (groupId) {
         const group = await db.getGroup(groupId);
         if (group) {
             const membersCombinedPeriods: Period[] = [];
             for (const userId of group.usersId) {
-                const user = await db.getServerUser(userId);
-                const userObject = await db.getUser(userId);
-                if (user && userObject) {
+                const user = await db.getUser(userId);
+                if (user) {
                     const memberSchedule = scheduleFromJson(await db.getSchedule(user));
                     membersCombinedPeriods.push(
                         ...memberSchedule.periods,
@@ -34,11 +33,8 @@ export const load = (async ({ locals, url, depends }) => {
 
             schedule = getWeekCommonOccupations(dayjs(), membersCombinedPeriods);
         }
-    } else if (
-        isObjectIdOrHexString(friendId) &&
-        locals.user.friendsId.some((id) => id.equals(friendId))
-    ) {
-        const friend = await db.getServerUser(friendId);
+    } else if (friendId && (await db.getFriendsId(locals.user)).some((id) => id === friendId)) {
+        const friend = await db.getUser(friendId);
 
         if (friend) {
             if (isCommonSchedule) {
@@ -63,17 +59,17 @@ export const load = (async ({ locals, url, depends }) => {
     for (const user of users) {
         const friendRequestSent = !!(await db.getNotificationIfItExists(
             locals.user,
-            NotificationKind.FriendRequest,
+            "FriendRequest",
             user
         ));
-        result.push({ user: db.serverUserToUser(user), friendRequestSent });
+        result.push({ user: user, friendRequestSent });
     }
 
     return {
         query,
         friendId,
         groupId,
-        schedule: objectIdToString(schedule),
-        searchResults: arrayIdToString(result),
+        schedule: schedule,
+        searchResults: result,
     };
 }) satisfies PageServerLoad;

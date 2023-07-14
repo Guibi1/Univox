@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/stores";
-    import { NotificationKind, type User } from "$lib/Types";
+    import type { NotificationKind } from "$lib/types.js";
     import Avatar from "$lib/components/Avatar.svelte";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import GroupElement from "$lib/components/GroupElement.svelte";
@@ -12,6 +12,7 @@
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import notifications from "$lib/stores/notifications";
+    import type { User } from "lucia-auth";
 
     export let data;
 
@@ -39,7 +40,7 @@
     // Generates the search params that redirects to the user's schedule
     $: getFriendUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
-        params.set("friendId", friend._id.toString());
+        params.set("friendId", friend.id.toString());
         params.delete("commonSchedule");
         params.delete("groupId");
         return `?${params}`;
@@ -50,7 +51,7 @@
         const params = new URLSearchParams($page.url.searchParams);
         params.delete("friendId");
         params.delete("groupId");
-        params.set("friendId", friend._id.toString());
+        params.set("friendId", friend.id.toString());
         params.set("commonSchedule", "commonSchedule");
         return `?${params}`;
     };
@@ -63,11 +64,13 @@
 <div class="mx-auto my-4 flex w-[40rem] flex-row items-center justify-center gap-4">
     <SearchBar bind:query {handleSearch} />
 
-    <i
-        class="bx bx-search-alt h-10 w-10 cursor-pointer text-4xl"
+    <button
         on:click={handleSearch}
         on:keypress={handleSearch}
-    />
+        class="grid h-10 w-10 cursor-pointer"
+    >
+        <i class="bx bx-search-alt text-4xl" />
+    </button>
 </div>
 
 <div class="grid flex-grow grid-cols-[4fr_3fr] divide-x-4 divide-black overflow-x-scroll">
@@ -103,7 +106,7 @@
                                                 separate
                                                 text="Retirer l'ami.e"
                                                 color="red"
-                                                onClick={() => friends.remove(friend._id)}
+                                                onClick={() => friends.remove(friend.id)}
                                             />
                                         </Dropdown>
                                     </div>
@@ -161,8 +164,8 @@
                                         class="filled"
                                         on:click={async () => {
                                             await notifications.create(
-                                                NotificationKind.FriendRequest,
-                                                result.user._id
+                                                "FriendRequest",
+                                                result.user.id
                                             );
                                             invalidate("app:notifications");
                                         }}

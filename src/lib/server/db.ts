@@ -1,44 +1,31 @@
 import { DATABASE_HOST, DATABASE_PASSWORD, DATABASE_USERNAME } from "$env/static/private";
-import {
+import type {
+    Book,
+    Group,
+    Lesson,
+    Notification,
     NotificationKind,
-    type Book,
-    type Class,
-    type Group,
-    type Notification,
-    type Period,
-    type Schedule,
-    type ServerUser,
-    type User,
-} from "$lib/Types";
+    Period,
+    Schedule,
+} from "$lib/types";
 import { connect } from "@planetscale/database";
-import bcryptjs from "bcryptjs";
 import chalk from "chalk";
+import { and, eq, inArray, ne, or } from "drizzle-orm";
+import type { MySqlUpdateSetSource } from "drizzle-orm/mysql-core";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
-import mongoose, { Types, type FilterQuery } from "mongoose";
-import Books from "./models/books";
-import Groups from "./models/groups";
-import Notifications from "./models/notifications";
-import Schedules from "./models/schedules";
-import Settings from "./models/settings";
-import Users from "./models/users";
-import * as storageBucket from "./storageBucket";
+import type { User } from "lucia-auth";
+import { auth } from "./lucia";
+import { booksTable } from "./schemas/books";
+import { friendsTable } from "./schemas/friends";
+import { groupUsersTable, groupsTable } from "./schemas/groups";
+import { notificationsTable } from "./schemas/notifications";
+import { lessonsTable, periodsTable, schedulesTable } from "./schemas/schedules";
+import { usersTable } from "./schemas/users";
 
 const log = (...text: unknown[]) =>
     console.log(chalk.bgBlue(" INFO "), chalk.magenta("[database]"), chalk.blue("➜ "), ...text);
 const warn = (...text: unknown[]) =>
     console.warn(chalk.bgRed(" WARNING "), chalk.magenta("[database]"), chalk.red("➜ "), ...text);
-
-/**
- * Connects the app to the database if its not already connected
- */
-mongoose.set("strictQuery", false);
-if (mongoose.connection.readyState !== 1) {
-    mongoose
-        .connect("mongodb://127.0.0.1:27017/univox")
-        .then(() => log("Connected"))
-        .then(() => storageBucket.connect())
-        .catch(() => warn("Couldn't connect"));
-}
 
 export const planetScaleConnection = connect({
     host: DATABASE_HOST,
@@ -53,128 +40,16 @@ const db = drizzle(planetScaleConnection);
 //////////////////////
 
 /**
- * Casts a server user to a normal user by deleting the unwanted properties
- * @param serverUser The server user to cast
- * @returns The casted user
- */
-export function serverUserToUser(serverUser: ServerUser): User {
-    const cleanUser = { ...serverUser } as User & {
-        passwordHash?: string;
-        friendsId?: Types.ObjectId[];
-        notificationsId?: Types.ObjectId[];
-        settingsId?: Types.ObjectId;
-        scheduleId?: Types.ObjectId;
-        __v?: number;
-    };
-
-    delete cleanUser.passwordHash;
-    delete cleanUser.friendsId;
-    delete cleanUser.notificationsId;
-    delete cleanUser.settingsId;
-    delete cleanUser.scheduleId;
-    delete cleanUser.__v;
-
-    return cleanUser;
-}
-
-/**
- * Finds the requested user in the database and returns it as a server user
- * @param id The user id
- * @returns The requested server user, or null if it doesn't exist
- */
-export async function getServerUser(id: Types.ObjectId | string): Promise<ServerUser | null> {
-    const doc: mongoose.HydratedDocument<ServerUser> | null = await Users.findById(id);
-    if (!doc) {
-        log("A user couldn't be found");
-        return null;
-    }
-    return { ...doc.toObject() };
-}
-
-/**
- * Finds the requested user in the database and returns it as a normal user
+ * Finds the requested user in the database and returns it
  * @param id The user id
  * @returns The requested user, or null if it doesn't exist
  */
-export async function getUser(id: Types.ObjectId | string): Promise<User | null> {
-    const user = await getServerUser(id);
-    if (!user) {
-        log("A user couldn't be found");
-        return null;
-    }
-    return serverUserToUser(user);
-}
-
-/**
- * Finds one matching user in the database and returns it as a normal user
- * @param filter Filters to match a specific user
- * @returns The requested user, or null if it wasn't found
- */
-export async function findUser(filter: FilterQuery<ServerUser>): Promise<User | null> {
-    const doc: mongoose.HydratedDocument<ServerUser> | null = await Users.findOne(filter);
-    if (!doc) {
-        log("A user couldn't be found");
-        return null;
-    }
-    return serverUserToUser({ ...doc.toObject() });
-}
-
-/**
- * Tests the provided login credentials to confirm a login attempt
- * @param da The provided DA
- * @param password The provided password
- * @returns The server user with the provided credentials, or null if no user matched them
- */
-export async function compareUserPassword(
-    email: string,
-    password: string
-): Promise<ServerUser | null> {
-    const user = await Users.findOne({ email });
-    if (user && (await bcryptjs.compare(password, user.passwordHash))) {
-        return user;
-    }
-    return null;
-}
-
-/**
- * Creates a new user in the databases
- * @param user The new user to create
- * @param password The user's password
- * @returns The newly created server user
- */
-export async function createUser(user: User, password: string): Promise<ServerUser | null> {
-    if ((await findUser({ da: user.da })) !== null) {
-        warn("The function 'createUser' was called with a 'da' that was already in the database");
-        return null;
-    }
-
-    const scheduleId: Types.ObjectId = (await Schedules.create({}))._id;
-    const settingsId: Types.ObjectId = (await Settings.create({}))._id;
-    const doc: mongoose.HydratedDocument<ServerUser> = await Users.create({
-        ...user,
-        scheduleId,
-        settingsId,
-        passwordHash: await bcryptjs.hash(password ?? "", 11),
-    });
-    log("New user created!");
-    return { ...doc.toObject() };
-}
-
-/**
- * Modifies the user's password
- * @param user The user to update
- * @param password The new password
- * @returns True if the operation succeded, false otherwise
- */
-export async function updateUserPassword(user: User, password: string): Promise<boolean> {
+export async function getUser(id: string): Promise<User | null> {
     try {
-        await Users.findByIdAndUpdate(user, {
-            $set: { passwordHash: await bcryptjs.hash(password, 11) },
-        });
-        return true;
+        return await auth.getUser(id);
     } catch {
-        warn("The function 'updateUserPassword' was called but failed to update the user's data");
-        return false;
+        log("A user couldn't be found");
+        return null;
     }
 }
 
@@ -185,11 +60,11 @@ export async function updateUserPassword(user: User, password: string): Promise<
  * @returns True if the operation succeded, false otherwise
  */
 export async function updateUser(
-    user: ServerUser,
-    data: mongoose.AnyKeys<ServerUser>
+    user: User,
+    data: Partial<Lucia.UserAttributes>
 ): Promise<boolean> {
     try {
-        await Users.findByIdAndUpdate(user, { $set: data });
+        await auth.updateUserAttributes(user.id, data);
         return true;
     } catch {
         warn("The function 'updateUser' was called but failed to update the user's data");
@@ -203,25 +78,25 @@ export async function updateUser(
  * @param query The search query
  * @returns An array of 5 matching users, or less
  */
-export async function searchUsers(user: ServerUser, query: string): Promise<ServerUser[]> {
+export async function searchUsers(user: User, query: string, limit = 5): Promise<User[]> {
     query = sanitizeQuery(query);
     query = normalizeQuery(query);
 
-    return (
-        await Users.find({
-            $and: [
-                { _id: { $ne: user._id } },
-                { _id: { $not: { $in: user?.friendsId } } },
-                {
-                    $or: [
-                        { da: { $eq: query } },
-                        { firstName: { $regex: query, $options: "i" } },
-                        { lastName: { $regex: query, $options: "i" } },
-                    ],
-                },
-            ],
-        }).limit(5)
-    ).map((user: mongoose.HydratedDocument<ServerUser>) => ({ ...user.toObject() }));
+    // TODO: Make sure the user isnt a friend
+    return await db
+        .select()
+        .from(usersTable)
+        .where(
+            and(
+                ne(usersTable.id, user.id),
+                or(
+                    eq(usersTable.da, query),
+                    eq(usersTable.firstName, query),
+                    eq(usersTable.lastName, query)
+                )
+            )
+        )
+        .limit(limit);
 }
 
 /////////////////////////
@@ -233,18 +108,29 @@ export async function searchUsers(user: ServerUser, query: string): Promise<Serv
  * @param user The current user
  * @returns An array of friends
  */
-export async function getFriends(user: ServerUser): Promise<User[]> {
-    const friends: User[] = [];
-    for (const friendId of user.friendsId) {
-        const friend = await getUser(friendId);
-        if (friend) {
-            friends.push(friend);
-        } else {
-            warn("The user's friendsId seems to contain a deleted user");
-        }
-    }
+export async function getFriendsId(user: User): Promise<string[]> {
+    const result = await db
+        .select({ a: friendsTable.userId, b: friendsTable.friendId })
+        .from(friendsTable)
+        .where(or(eq(friendsTable.friendId, user.id), eq(friendsTable.userId, user.id)));
 
-    return friends;
+    return result.map(({ a, b }) => (user.id !== a ? a : b));
+}
+
+/**
+ * Fetches the latests friends
+ * @param user The current user
+ * @returns An array of friends
+ */
+export async function getFriends(user: User): Promise<User[]> {
+    return await db
+        .select(usersTable._.columns)
+        .from(friendsTable)
+        .where(or(eq(friendsTable.friendId, user.id), eq(friendsTable.userId, user.id)))
+        .innerJoin(
+            usersTable,
+            or(eq(usersTable.id, friendsTable.friendId), eq(usersTable.id, friendsTable.userId))
+        );
 }
 
 /**
@@ -253,17 +139,12 @@ export async function getFriends(user: ServerUser): Promise<User[]> {
  * @param friendId The friend to add
  * @returns True if the operation succeded, false otherwise
  */
-export async function addFriend(user: ServerUser, friendId: Types.ObjectId): Promise<boolean> {
-    if (user._id === friendId) return false;
-    if (user.friendsId.includes(friendId)) return false;
+export async function addFriend(user: User, friendId: string): Promise<boolean> {
+    if (user.id === friendId) return false;
+    if ((await getFriends(user)).some((u) => u.id === friendId)) return false;
 
     try {
-        await Users.findByIdAndUpdate(user, {
-            $push: { friendsId: friendId },
-        });
-        await Users.findByIdAndUpdate(friendId, {
-            $push: { friendsId: user._id },
-        });
+        await db.insert(friendsTable).values({ userId: user.id, friendId });
         return true;
     } catch {
         warn("The function 'addFriend' was called but failed to update the user's data");
@@ -277,17 +158,18 @@ export async function addFriend(user: ServerUser, friendId: Types.ObjectId): Pro
  * @param friendId The friend to remove
  * @returns True if the operation succeded, false otherwise
  */
-export async function deleteFriend(user: ServerUser, friendId: Types.ObjectId): Promise<boolean> {
-    if (user._id === friendId) return false;
-    if (user.friendsId.includes(friendId)) return false;
+export async function deleteFriend(user: User, friendId: string): Promise<boolean> {
+    if (user.id === friendId) return false;
 
     try {
-        await Users.findByIdAndUpdate(user, {
-            $pull: { friendsId: friendId },
-        });
-        await Users.findByIdAndUpdate(friendId, {
-            $pull: { friendsId: user._id },
-        });
+        await db
+            .delete(friendsTable)
+            .where(
+                or(
+                    and(eq(friendsTable.userId, user.id), eq(friendsTable.friendId, friendId)),
+                    and(eq(friendsTable.userId, friendId), eq(friendsTable.friendId, user.id))
+                )
+            );
         return true;
     } catch {
         warn("The function 'deleteFriend' was called but failed to update the user's data");
@@ -304,14 +186,26 @@ export async function deleteFriend(user: ServerUser, friendId: Types.ObjectId): 
  * @param id The group id
  * @returns The group data
  */
-export async function getGroup(id: Types.ObjectId | string): Promise<Group | null> {
-    const doc = await Groups.findById(id);
-    if (!doc) {
+export async function getGroup(id: number): Promise<Group | null> {
+    try {
+        const result = await db
+            .select({
+                id: groupsTable.id,
+                name: groupsTable.name,
+                userId: groupUsersTable.userId,
+            })
+            .from(groupsTable)
+            .where(eq(groupsTable.id, id))
+            .innerJoin(groupUsersTable, eq(groupUsersTable.groupId, groupsTable.id));
+        return result.reduce<Group | null>((prev, v) => {
+            if (!prev) return { id: v.id, name: v.name, usersId: [v.userId] };
+            prev.usersId.push(v.userId);
+            return prev;
+        }, null);
+    } catch {
         log("A group couldn't be found");
         return null;
     }
-    const group = { ...doc.toObject() };
-    return group as Group;
 }
 
 /**
@@ -319,17 +213,23 @@ export async function getGroup(id: Types.ObjectId | string): Promise<Group | nul
  * @param user The target user
  * @returns An array of groups in which the user is
  */
-export async function getGroups(user: ServerUser): Promise<Group[]> {
-    const groups: Group[] = [];
-    for (const groupId of user.groupsId) {
-        const group = await getGroup(groupId);
-        if (group) {
-            groups.push(group);
-        } else {
-            warn("The user's groupsId seems to contain a deleted group");
-        }
-    }
-    return groups;
+export async function getGroups(user: User): Promise<Group[]> {
+    const result = await db
+        .select()
+        .from(groupUsersTable)
+        .where(eq(groupUsersTable.userId, user.id))
+        .innerJoin(groupsTable, eq(groupUsersTable.groupId, groupsTable.id));
+
+    return Array.from(
+        result
+            .reduce((groups, result) => {
+                const group = groups.get(result.groups.id) ?? { ...result.groups, usersId: [] };
+                group.usersId.push(result.group_users.userId);
+                groups.set(result.groups.id, group);
+                return groups;
+            }, new Map<number, Group>())
+            .values()
+    );
 }
 
 /**
@@ -338,24 +238,19 @@ export async function getGroups(user: ServerUser): Promise<Group[]> {
  * @param friendsId The friends to add to the new group
  * @returns True if the operation succeded, false otherwise
  */
-export async function createGroup(user: ServerUser, friendsId: Types.ObjectId[]): Promise<boolean> {
-    if (friendsId.some((id) => user._id.equals(id))) return false;
+export async function createGroup(user: User, friendsId: string[]): Promise<boolean> {
+    if (friendsId.some((id) => user.id === id)) return false;
     if (friendsId.length !== new Set(friendsId).size) return false;
 
     try {
-        const groupId: Types.ObjectId = (
-            await Groups.create({
-                name: "Nouveau groupe",
-                usersId: [...friendsId, user._id],
-            })
-        )._id;
+        const group = await db.insert(groupsTable).values({ name: "Nouveau groupe" });
 
-        for (const id of [user._id, ...friendsId]) {
-            await Users.findByIdAndUpdate(id, {
-                $push: { groupsId: groupId },
-            });
-        }
-        log("New group created");
+        await db.insert(groupUsersTable).values(
+            [user.id, ...friendsId].map((id) => ({
+                groupId: group.insertId as unknown as number,
+                userId: id,
+            }))
+        );
         return true;
     } catch {
         warn("The function 'createGroup' was called but failed to update the user's data");
@@ -367,21 +262,19 @@ export async function createGroup(user: ServerUser, friendsId: Types.ObjectId[])
  * Adds a friend to an existing group
  * @param user The current user
  * @param group The targeted group
- * @param friendId The friend to add to the group
+ * @param friendsId The friends to add to the group
  * @returns True if the operation succeded, false otherwise
  */
-export async function addToGroup(
-    user: ServerUser,
-    group: Group,
-    friendsId: Types.ObjectId[]
-): Promise<boolean> {
-    if (!group.usersId.some((id) => user._id.equals(id))) return false;
+export async function addToGroup(user: User, group: Group, friendsId: string[]): Promise<boolean> {
+    if (!group.usersId.some((id) => user.id === id)) return false;
 
     try {
-        for (const friendId of friendsId) {
-            if (group.usersId.some((id) => friendId._id.equals(id))) continue;
-            await Groups.findByIdAndUpdate(group, { $push: { usersId: friendId } });
-        }
+        await db.insert(groupUsersTable).values(
+            [user.id, ...friendsId].map((id) => ({
+                groupId: group.id,
+                userId: id,
+            }))
+        );
         return true;
     } catch {
         warn("The function 'addToGroup' was called but failed to update the user's data");
@@ -392,23 +285,14 @@ export async function addToGroup(
 /**
  * Removes a user from a group
  * @param user The current user
- * @param group The targeted group
+ * @param groupId The targeted group's id
  * @returns True if the operation succeded, false otherwise
  */
-export async function quitGroup(user: User, group: Group): Promise<boolean> {
-    if (!group.usersId.some((id) => id.equals(user._id))) return false;
-
+export async function quitGroup(user: User, groupId: number): Promise<boolean> {
     try {
-        if (group.usersId.length < 3) {
-            await Groups.findByIdAndDelete(group);
-
-            for (const id of group.usersId) {
-                await Users.findByIdAndUpdate(id, { $pull: { groupsId: group._id } });
-            }
-        } else {
-            await Groups.findByIdAndUpdate(group, { $pull: { usersId: user._id } });
-            await Users.findByIdAndUpdate(user, { $pull: { groupsId: group._id } });
-        }
+        await db
+            .delete(groupUsersTable)
+            .where(and(eq(groupUsersTable.userId, user.id), eq(groupUsersTable.groupId, groupId)));
 
         return true;
     } catch {
@@ -426,16 +310,17 @@ export async function quitGroup(user: User, group: Group): Promise<boolean> {
  *
  */
 export async function updateGroup(
-    user: ServerUser,
+    user: User,
     group: Group,
-    data: mongoose.AnyKeys<Group>
+    data: MySqlUpdateSetSource<typeof groupsTable>
 ): Promise<boolean> {
-    if (!user.groupsId.some((g) => g.equals(group._id))) {
+    if (!group.usersId.some((id) => id === user.id)) {
         return false;
     }
 
     try {
-        await Groups.findByIdAndUpdate(group, { $set: data });
+        await db.update(groupsTable).set(data).where(eq(groupsTable.id, group.id));
+
         return true;
     } catch {
         warn("The function 'updateGroup' was called but failed to update the group's data");
@@ -452,15 +337,37 @@ export async function updateGroup(
  * @param user The targeted user
  * @returns The user's schedule
  */
-export async function getSchedule(user: ServerUser): Promise<Schedule> {
-    const doc: mongoose.HydratedDocument<Schedule> | null = await Schedules.findById(
-        user.scheduleId
-    );
-    if (!doc) {
-        warn("A schedule couldn't be found");
-        return { _id: user.scheduleId, classes: [], periods: [] };
+export async function getSchedule(user: User, empty = false): Promise<Schedule> {
+    const result = (
+        await db
+            .select({
+                id: schedulesTable.id,
+                periods: periodsTable._.columns,
+                lessons: lessonsTable._.columns,
+            })
+            .from(schedulesTable)
+            .where(eq(schedulesTable.userId, user.id))
+            .limit(1)
+    ).at(0);
+
+    if (!result) {
+        await db.insert(schedulesTable).values({ userId: user.id });
+        return getSchedule(user, empty);
     }
-    return { ...doc.toObject() };
+
+    if (empty) return { id: result.id, periods: [], lessons: [] };
+
+    const periods = await db
+        .select()
+        .from(periodsTable)
+        .where(eq(periodsTable.scheduleId, result.id));
+
+    const lessons = await db
+        .select()
+        .from(lessonsTable)
+        .where(eq(lessonsTable.scheduleId, result.id));
+
+    return { id: result.id, periods, lessons };
 }
 
 /**
@@ -469,13 +376,17 @@ export async function getSchedule(user: ServerUser): Promise<Schedule> {
  * @param periods The array of periods to add
  * @returns True if the operation succeded, false otherwise
  */
-export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]): Promise<boolean> {
-    if (!user.settingsId) return false;
+export async function addPeriodsToSchedule(
+    user: User,
+    periods: Omit<Period, "id">[]
+): Promise<boolean> {
+    const schedule = await getSchedule(user, true);
 
     try {
-        await Schedules.findByIdAndUpdate(user.scheduleId, {
-            $push: { periods: periods },
-        });
+        await db
+            .insert(periodsTable)
+            .values(periods.map((p) => ({ ...p, scheduleId: schedule.id })));
+
         return true;
     } catch {
         warn("The function 'addPeriodsToSchedule' was called but failed to update the user's data");
@@ -484,21 +395,25 @@ export async function addPeriodsToSchedule(user: ServerUser, periods: Period[]):
 }
 
 /**
- * Adds all the provided classes to the user's schedule
+ * Adds all the provided lessons to the user's schedule
  * @param user The targeted user
- * @param classes The array of classes to add
+ * @param lessons The array of lessons to add
  * @returns True if the operation succeded, false otherwise
  */
-export async function addClassesToSchedule(user: ServerUser, classes: Class[]): Promise<boolean> {
-    if (!user.settingsId) return false;
+export async function addClassesToSchedule(
+    user: User,
+    lessons: Omit<Lesson, "id">[]
+): Promise<boolean> {
+    const schedule = await getSchedule(user, true);
 
     try {
-        await Schedules.findByIdAndUpdate(user.scheduleId, {
-            $push: { classes: classes },
-        });
+        await db
+            .insert(lessonsTable)
+            .values(lessons.map((l) => ({ ...l, scheduleId: schedule.id })));
+
         return true;
     } catch {
-        warn("The function 'addClassesToSchedule' was called but failed to update the user's data");
+        warn("The function 'addLessonsToSchedule' was called but failed to update the user's data");
         return false;
     }
 }
@@ -508,11 +423,12 @@ export async function addClassesToSchedule(user: ServerUser, classes: Class[]): 
  * @param user The targeted user
  * @returns True if the operation succeeded, false otherwise
  */
-export async function deleteAllClassesInSchedule(user: ServerUser): Promise<boolean> {
+export async function deleteAllClassesInSchedule(user: User): Promise<boolean> {
+    const schedule = await getSchedule(user, true);
+
     try {
-        await Schedules.findByIdAndUpdate(user.scheduleId, {
-            $set: { classes: [] },
-        });
+        await db.delete(lessonsTable).where(eq(lessonsTable.scheduleId, schedule.id));
+
         return true;
     } catch {
         warn(
@@ -528,13 +444,10 @@ export async function deleteAllClassesInSchedule(user: ServerUser): Promise<bool
  * @param period The period object to delete
  * @returns True if the operation succeeded, false otherwise
  */
-export async function deletePeriodFromSchedule(user: ServerUser, period: Period): Promise<boolean> {
+export async function deletePeriodFromSchedule(user: User, period: Period): Promise<boolean> {
     try {
-        await Schedules.findByIdAndUpdate(user.scheduleId, {
-            $pull: {
-                periods: period,
-            },
-        });
+        await db.delete(periodsTable).where(eq(periodsTable.id, period.id));
+
         return true;
     } catch {
         warn("The function 'deletePeriodById' was called but failed to update the user's data");
@@ -547,8 +460,15 @@ export async function deletePeriodFromSchedule(user: ServerUser, period: Period)
  * @param user The targeted user
  * @returns An array of all the book codes
  */
-export async function getClassCodes(user: ServerUser): Promise<string[]> {
-    return await Schedules.findById(user.scheduleId).distinct("classes.code");
+export async function getClassCodes(user: User): Promise<string[]> {
+    const schedule = await getSchedule(user, true);
+
+    return (
+        await db
+            .selectDistinct({ code: lessonsTable.code })
+            .from(lessonsTable)
+            .where(eq(lessonsTable.scheduleId, schedule.id))
+    ).map((r) => r.code);
 }
 
 //////////////////////
@@ -560,13 +480,16 @@ export async function getClassCodes(user: ServerUser): Promise<string[]> {
  * @param bookId The targeted book's ID
  * @returns The requested book or null if it doesn't exist
  */
-export async function getBook(bookId: Types.ObjectId | string): Promise<Book | null> {
-    const doc: mongoose.HydratedDocument<Book> | null = await Books.findById(bookId);
-    if (!doc) {
+export async function getBook(bookId: number): Promise<Book | null> {
+    const book = (await db.select().from(booksTable).where(eq(booksTable.id, bookId)).limit(1)).at(
+        0
+    );
+
+    if (!book) {
         log("A book couldn't be found");
         return null;
     }
-    return { ...doc.toObject() };
+    return book;
 }
 
 /**
@@ -574,10 +497,8 @@ export async function getBook(bookId: Types.ObjectId | string): Promise<Book | n
  * @param user The targeted user
  * @returns An array of all the user's books
  */
-export async function getBooks(user: ServerUser): Promise<Book[]> {
-    return (await Books.find({ sellerId: user._id })).map((b: mongoose.Document<Book>) => ({
-        ...b.toObject(),
-    }));
+export async function getBooks(user: User): Promise<Book[]> {
+    return await db.select().from(booksTable).where(eq(booksTable.userId, user.id));
 }
 
 /**
@@ -585,8 +506,13 @@ export async function getBooks(user: ServerUser): Promise<Book[]> {
  * @param user The targeted user
  * @returns An array of all the book codes
  */
-export async function getBookCodes(user: ServerUser): Promise<string[]> {
-    return await Books.find({ sellerId: { $ne: user._id } }).distinct("code");
+export async function getBookCodes(user: User): Promise<string[]> {
+    return (
+        await db
+            .selectDistinct({ code: booksTable.code })
+            .from(booksTable)
+            .where(ne(booksTable.userId, user.id))
+    ).map((o) => o.code);
 }
 
 /**
@@ -597,32 +523,29 @@ export async function getBookCodes(user: ServerUser): Promise<string[]> {
  * @returns An array of 5 corresponding books, or less
  */
 export async function searchBooks(
-    user: ServerUser,
+    user: User,
     query: string,
-    codes: string[]
+    codes: string[],
+    limit = 5
 ): Promise<Book[]> {
     query = sanitizeQuery(query);
     query = normalizeQuery(query);
 
-    return (
-        await Books.find({
-            $and: [
-                { sellerId: { $ne: user._id } },
-                ...(codes.length > 0 ? [{ code: { $in: codes } }] : []),
-                ...(query.length > 0
-                    ? [
-                          {
-                              $or: [
-                                  { ISBN: { $eq: query } },
-                                  { title: { $regex: query, $options: "i" } },
-                                  { author: { $regex: query, $options: "i" } },
-                              ],
-                          },
-                      ]
-                    : []),
-            ],
-        }).limit(15)
-    ).map((book: mongoose.HydratedDocument<Book>) => ({ ...book.toObject() }));
+    return await db
+        .select()
+        .from(booksTable)
+        .where(
+            and(
+                ne(booksTable.userId, user.id),
+                inArray(booksTable.code, codes),
+                or(
+                    eq(booksTable.isbn, query),
+                    eq(booksTable.title, query),
+                    eq(booksTable.author, query)
+                )
+            )
+        )
+        .limit(limit);
 }
 
 /**
@@ -630,13 +553,13 @@ export async function searchBooks(
  * @param book The book to add
  * @returns True if the operation succeded, false otherwise
  */
-export async function addBookListing(user: ServerUser, book: Book): Promise<boolean> {
-    if (!user._id.equals(book.sellerId)) {
+export async function addBookListing(user: User, book: Omit<Book, "id">): Promise<boolean> {
+    if (user.id !== book.userId) {
         return false;
     }
 
     try {
-        await Books.create(book);
+        await db.insert(booksTable).values(book);
         log("New book created");
         return true;
     } catch {
@@ -650,28 +573,18 @@ export async function addBookListing(user: ServerUser, book: Book): Promise<bool
  * @param book The book to add
  * @returns True if the operation succeded, false otherwise
  */
-export async function deleteBookListing(
-    user: ServerUser,
-    bookId: Types.ObjectId
-): Promise<boolean> {
-    const book = await getBook(bookId);
-    if (book == null || !book.sellerId.equals(user._id)) {
-        return false;
-    }
-
+export async function deleteBookListing(user: User, bookId: number): Promise<boolean> {
     try {
-        const book: mongoose.HydratedDocument<Book> | null = await Books.findByIdAndDelete(bookId);
-        if (!book) {
+        const query = await db
+            .delete(booksTable)
+            .where(and(eq(booksTable.id, bookId), eq(booksTable.userId, user.id)));
+
+        if (query.rowsAffected === 0) {
             return false;
         }
 
-        // Delete the images
-        for (const src of book.src) {
-            const filename = src.split("/").at(-1);
-            if (filename) {
-                storageBucket.deleteBookImage(filename);
-            }
-        }
+        // TODO: Delete the image
+
         log("Book deleted");
         return true;
     } catch {
@@ -689,15 +602,17 @@ export async function deleteBookListing(
  * @param user The target user
  * @returns An array of notification
  */
-export async function getNotifications(user: ServerUser): Promise<Notification[]> {
-    const doc: mongoose.HydratedDocument<Notification>[] = await Notifications.find({
-        _id: { $in: user.notificationsId },
-    }).populate("sender");
-
-    return doc.map((notification) => {
-        const n = notification.toObject() as Notification;
-        return { ...n, sender: serverUserToUser(n.sender as ServerUser) };
-    });
+export async function getNotifications(user: User): Promise<Notification[]> {
+    return await db
+        .select({
+            id: notificationsTable.id,
+            kind: notificationsTable.kind,
+            details: notificationsTable.details,
+            sender: usersTable._.columns,
+        })
+        .from(notificationsTable)
+        .where(eq(notificationsTable.userId, user.id))
+        .innerJoin(usersTable, eq(notificationsTable.senderId, usersTable.id));
 }
 
 /**
@@ -708,11 +623,12 @@ export async function getNotifications(user: ServerUser): Promise<Notification[]
  * @returns True if the operation succeded, false otherwise
  */
 export async function sendNotification(
-    user: ServerUser,
+    user: User,
+    receiverId: string,
     kind: NotificationKind,
-    receiverId: Types.ObjectId | string
+    details: unknown
 ): Promise<boolean> {
-    const receiver = await getServerUser(receiverId);
+    const receiver = await getUser(receiverId);
     if (!receiver) return false;
 
     // If the notification is already sent
@@ -721,20 +637,21 @@ export async function sendNotification(
     }
 
     // If the other user already sent a friend request
-    const otherUserRequest = await getNotificationIfItExists(receiver, kind, user);
-    if (kind == NotificationKind.FriendRequest && otherUserRequest) {
-        if (await addFriend(user, receiver._id)) {
-            await deleteNotification(user, otherUserRequest._id);
-            return true;
+    if (kind === "FriendRequest") {
+        const otherUserRequest = await getNotificationIfItExists(receiver, kind, user);
+        if (otherUserRequest) {
+            if (await addFriend(user, receiver.id)) {
+                await deleteNotification(user, otherUserRequest.id);
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     try {
-        const notificationId = (await Notifications.create({ kind, sender: user._id }))._id;
-        await Users.findByIdAndUpdate(receiverId, {
-            $push: { notificationsId: notificationId },
-        });
+        await db
+            .insert(notificationsTable)
+            .values({ userId: receiverId, senderId: user.id, kind, details });
         return true;
     } catch {
         warn("The function 'sendNotification' was called but failed to update the user's data");
@@ -748,16 +665,16 @@ export async function sendNotification(
  * @param notificationId The ID of the targeted notification
  * @returns True if the operation succeded, false otherwise
  */
-export async function deleteNotification(
-    user: ServerUser,
-    notificationId: Types.ObjectId | string
-): Promise<boolean> {
-    if (!user.notificationsId.some((id) => id.equals(notificationId))) return false;
-
+export async function deleteNotification(user: User, notificationId: number): Promise<boolean> {
     try {
-        await Users.findByIdAndUpdate(user._id, {
-            $pull: { notificationsId: notificationId },
-        });
+        await db
+            .delete(notificationsTable)
+            .where(
+                and(
+                    eq(notificationsTable.id, notificationId),
+                    eq(notificationsTable.userId, user.id)
+                )
+            );
         return true;
     } catch {
         warn("The function 'deleteNotification' was called but failed to update the user's data");
@@ -773,36 +690,44 @@ export async function deleteNotification(
  * @returns The notification if it has been found
  */
 export async function getNotificationIfItExists(
-    sender: ServerUser,
+    sender: User,
     kind: NotificationKind,
-    receiver: ServerUser
+    receiver: User
 ): Promise<Notification | null> {
     return (
-        (await getNotifications(receiver)).find(
-            (n) => n.kind == kind && n.sender._id.equals(sender._id)
-        ) ?? null
+        (
+            await db
+                .select({
+                    id: notificationsTable.id,
+                    kind: notificationsTable.kind,
+                    details: notificationsTable.details,
+                    sender: usersTable._.columns,
+                })
+                .from(notificationsTable)
+                .where(
+                    and(
+                        eq(notificationsTable.userId, receiver.id),
+                        eq(notificationsTable.senderId, sender.id),
+                        eq(notificationsTable.kind, kind)
+                    )
+                )
+                .innerJoin(usersTable, eq(notificationsTable.senderId, usersTable.id))
+                .limit(1)
+        ).at(0) ?? null
     );
 }
 
 //////////////////////////
 // -*-*- SETTINGS -*-*- //
 //////////////////////////
-
+type Settings = "";
 /**
  * Fetches the user's latest settings
  * @param user The current user
  * @returns The user's settings
  */
-export async function getSettings(user: ServerUser): Promise<Settings | null> {
-    const doc: mongoose.HydratedDocument<Settings> | null = await Settings.findById(
-        user.settingsId
-    );
-
-    if (!doc) {
-        warn("User's settings couldn't be found");
-        return null;
-    }
-    return { ...doc.toObject() };
+export async function getSettings(user: User): Promise<Settings | null> {
+    throw "No settings";
 }
 
 /**
@@ -811,14 +736,8 @@ export async function getSettings(user: ServerUser): Promise<Settings | null> {
  * @param settings The new settings
  * @returns True if the operation succeded, false otherwise
  */
-export async function setSettings(user: ServerUser, settings: Settings): Promise<boolean> {
-    try {
-        await Settings.findByIdAndUpdate(user.settingsId, { $set: settings });
-        return true;
-    } catch {
-        warn("The function 'setSettings' was called but failed to update the user's data");
-        return false;
-    }
+export async function setSettings(user: User, settings: Settings): Promise<boolean> {
+    throw "No settings";
 }
 
 /////////////////////////////////////
