@@ -717,29 +717,6 @@ export async function getNotificationIfItExists(
     );
 }
 
-//////////////////////////
-// -*-*- SETTINGS -*-*- //
-//////////////////////////
-type Settings = "";
-/**
- * Fetches the user's latest settings
- * @param user The current user
- * @returns The user's settings
- */
-export async function getSettings(user: User): Promise<Settings | null> {
-    throw "No settings";
-}
-
-/**
- * Updates the user's settings in the database
- * @param user The target user
- * @param settings The new settings
- * @returns True if the operation succeded, false otherwise
- */
-export async function setSettings(user: User, settings: Settings): Promise<boolean> {
-    throw "No settings";
-}
-
 /////////////////////////////////////
 // -*-*- QUERY NORMALIZATION -*-*- //
 /////////////////////////////////////

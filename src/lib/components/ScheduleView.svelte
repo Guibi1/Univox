@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { Schedule } from "$lib/types";
-    import { weekdayOffset } from "$lib/stores/firstDayOfTheWeek";
     import classNames from "classnames";
     import dayjs, { Dayjs } from "dayjs";
     import { onDestroy, onMount, tick } from "svelte";
@@ -41,7 +40,7 @@
 
     function getDaysToShow(startDay: Dayjs) {
         if (daysToShow >= 7 || daysToShow <= 0) {
-            return Array.from({ length: 7 }, (_, i) => startDay.day(i + $weekdayOffset));
+            return Array.from({ length: 7 }, (_, i) => startDay.day(i));
         } else {
             return Array.from({ length: daysToShow }, (_, i) => startDay.add(i, "days"));
         }

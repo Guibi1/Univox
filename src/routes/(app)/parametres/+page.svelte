@@ -3,7 +3,6 @@
     import Option from "$lib/components/Option.svelte";
     import Select from "$lib/components/Select.svelte";
     import colorScheme from "$lib/stores/colorScheme";
-    import firstDayOfTheWeek from "$lib/stores/firstDayOfTheWeek";
     import user from "$lib/stores/user";
     import { superForm } from "sveltekit-superforms/client";
 
@@ -54,13 +53,6 @@
         <h1 class="my-4 gap-4 border-b-2 pb-2">Paramètres</h1>
 
         <form use:enhance method="post" class="grid grid-cols-2 items-center gap-x-2 gap-y-4">
-            <Select bind:value={$firstDayOfTheWeek}>
-                <Option text="Lundi" />
-                <Option text="Samedi" />
-                <Option text="Dimanche" />
-            </Select>
-            <span class="ml-2 text-xl">Premier jour de la semaine</span>
-
             <Select bind:value={$colorScheme}>
                 <Option text="Foncé" value="dark" />
                 <Option text="Clair" value="light" />

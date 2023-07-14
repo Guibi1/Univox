@@ -24,7 +24,6 @@ type ProjectAPI = {
         "/api/friends": { friendId: string };
     };
     PUT: {
-        "/api/settings/firstDayOfTheWeek": { firstDayOfTheWeek: string };
         "/api/settings/colorScheme": { colorScheme: string };
     };
     DELETE: {
