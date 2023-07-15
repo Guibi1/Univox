@@ -21,7 +21,8 @@ function createColorSchemeStore() {
     function apply(color: ColorScheme) {
         setStore(color);
         if (typeof document !== "undefined") {
-            document.documentElement.setAttribute("data-colorScheme", color);
+            document.documentElement.classList.remove("dark", "light");
+            document.documentElement.classList.add(color);
         }
     }
 

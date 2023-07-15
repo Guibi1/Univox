@@ -33,6 +33,7 @@
     "dependencies": {
         "@dicebear/collection": "^6.0.4",
         "@dicebear/core": "^6.0.4",
+        "@floating-ui/dom": "^1.4.5",
         "@lucia-auth/adapter-mysql": "^1.1.1",
         "@planetscale/database": "^1.7.0",
         "@skeletonlabs/skeleton": "^1.9.0",

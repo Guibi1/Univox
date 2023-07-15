@@ -1,18 +1,17 @@
 <script lang="ts">
+    import { page } from "$app/stores";
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import notifications from "$lib/stores/notifications";
     import schedule from "$lib/stores/schedule";
     import user from "$lib/stores/user";
-    import type { LayoutData } from "./$types";
-    import Navbar from "./Navbar.svelte";
+    import Navbar from "../../lib/components/navbar/Navbar.svelte";
 
-    export let data: LayoutData;
-    user.set(data.storesInitialValue.user);
-    schedule.set(data.storesInitialValue.schedule);
-    friends.set(data.storesInitialValue.friends);
-    groups.set(data.storesInitialValue.groups);
-    notifications.set(data.storesInitialValue.notifications);
+    user.set($page.data.storesInitialValue.user);
+    schedule.set($page.data.storesInitialValue.schedule);
+    friends.set($page.data.storesInitialValue.friends);
+    groups.set($page.data.storesInitialValue.groups);
+    notifications.set($page.data.storesInitialValue.notifications);
 </script>
 
 <div class="grid h-screen grid-rows-[min-content_1fr] overflow-hidden">

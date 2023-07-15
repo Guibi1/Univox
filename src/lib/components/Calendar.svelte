@@ -18,37 +18,38 @@
 </script>
 
 <div>
-    <div class="flex h-10 items-center gap-2 px-2">
-        <i class="bx bx-calendar" />
+    <div class="flex h-10 items-center gap-1 px-2">
+        <i class="bx bx-calendar text-lg" />
 
-        <h3 class="flex-1">{displayMonth.format("MMMM YYYY")}</h3>
+        <h4 class="h4 flex-1 px-2">{displayMonth.format("MMMM YYYY")}</h4>
 
         <button
             on:click={() => (displayMonth = displayMonth.add(-1, "month"))}
-            class="rounded-full"
+            class="btn-icon variant-glass-primary h-7 w-7"
         >
             <i class="bx bxs-chevron-left" />
         </button>
-        <button on:click={() => (displayMonth = displayMonth.add(1, "month"))} class="rounded-full">
+
+        <button
+            on:click={() => (displayMonth = displayMonth.add(1, "month"))}
+            class="btn-icon variant-glass-primary h-7 w-7"
+        >
             <i class="bx bxs-chevron-right" />
         </button>
     </div>
 
-    <table class="flex flex-col">
+    <table class="flex flex-col gap-1">
         {#each getAllWeeks(displayMonth) as week}
-            <tr class="flex justify-between">
+            <tr class="flex justify-between gap-1">
                 {#each getDaysOfWeek(week) as day}
-                    <td class="grid">
+                    <td>
                         <button
                             on:click={() => (selectedDay = day)}
-                            class={classNames(
-                                "flex h-8 w-8 items-center justify-center rounded-full hover:bg-black",
-                                {
-                                    "opacity-40": day.month() !== displayMonth.month(),
-                                    "bg-neutral-900": day.isSame(selectedDay, "day"),
-                                    "!bg-blue-primary": day.isSame(dayjs(), "day"),
-                                }
-                            )}
+                            class={classNames("btn-icon h-8 w-8 hover:variant-glass-primary", {
+                                "opacity-50": day.month() !== displayMonth.month(),
+                                "!variant-filled-primary": day.isSame(selectedDay, "day"),
+                                "variant-ghost-primary": day.isSame(dayjs(), "day"),
+                            })}
                         >
                             {day.date()}
                         </button>

@@ -33,7 +33,7 @@ const colorSchemeHandle = (({ event, resolve }) => {
     const colorScheme = event.cookies.get("colorScheme") ?? "dark";
     return resolve(event, {
         transformPageChunk: ({ html }) =>
-            html.replace("%data.colorScheme%", `data-colorScheme="${colorScheme}"`),
+            html.replace("%data.colorScheme%", `class="${colorScheme}"`),
     });
 }) satisfies Handle;
 

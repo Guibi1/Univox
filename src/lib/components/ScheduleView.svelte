@@ -57,7 +57,7 @@
 </script>
 
 <div
-    class="grid grid-rows-[min-content_min-content_1fr] overflow-hidden rounded-2xl bg-white dark:bg-gray3"
+    class="bg-surface-100-800-token grid grid-rows-[min-content_min-content_1fr] overflow-hidden rounded-2xl"
 >
     <div class="m-4 flex items-center justify-between">
         <!-- Display the current week with start and end days -->
@@ -101,7 +101,7 @@
         {#each getDaysToShow(startDay) as day}
             <div class="flex flex-1 items-center gap-2 p-2 text-sm">
                 {#if currentTime.isSame(day, "day")}
-                    <div class="h-2 w-2 rounded-full bg-red-600" />
+                    <div class="bg-primary-300-600-token h-2 w-2 rounded-full" />
                 {/if}
 
                 {day.format("dd").charAt(0).toUpperCase() +
@@ -162,9 +162,9 @@
                         style={`top: ${getTopOffset(currentTime, timeStart)}rem;`}
                     >
                         <div
-                            class="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-600"
+                            class="bg-primary-300-600-token absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full"
                         />
-                        <hr class="-translate-y-1/2 border-2 !border-red-600" />
+                        <hr class="!border-primary-300-600-token -translate-y-1/2 border-2" />
                     </div>
                 {/if}
             </div>
