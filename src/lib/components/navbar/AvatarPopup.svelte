@@ -1,4 +1,4 @@
-<div data-popup="avatar" class="card w-48 shadow-xl">
+<div data-popup="avatar" class="card z-[9999] w-48 shadow-xl">
     <div class="arrow card" />
 
     <div class="btn-group-vertical flex flex-col items-stretch py-2">

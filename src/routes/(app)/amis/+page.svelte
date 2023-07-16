@@ -61,16 +61,10 @@
     <title>Univox | Amis</title>
 </svelte:head>
 
-<div class="mx-auto my-4 flex w-[40rem] flex-row items-center justify-center gap-4">
-    <SearchBar bind:query {handleSearch} />
-
-    <button
-        on:click={handleSearch}
-        on:keypress={handleSearch}
-        class="grid h-10 w-10 cursor-pointer"
-    >
-        <i class="bx bx-search-alt text-4xl" />
-    </button>
+<div class="bg-surface-100-800-token sticky top-0 z-50 pb-4">
+    <div class="mx-auto max-w-xl px-4 sm:w-3/5 sm:px-0">
+        <SearchBar bind:query {handleSearch} placeholder="Rechercher un da, un nom..." />
+    </div>
 </div>
 
 <div class="grid flex-grow grid-cols-[4fr_3fr] divide-x-4 divide-black overflow-x-scroll">

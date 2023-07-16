@@ -56,12 +56,10 @@
     }
 </script>
 
-<div
-    class="bg-surface-100-800-token grid grid-rows-[min-content_min-content_1fr] overflow-hidden rounded-2xl"
->
+<div class="grid grid-rows-[min-content_min-content_1fr] overflow-hidden">
     <div class="m-4 flex items-center justify-between">
         <!-- Display the current week with start and end days -->
-        <p class="text-2xl">
+        <p class="pl-4 text-2xl">
             <b>
                 {startDay.format("MMMM").charAt(0).toUpperCase() +
                     startDay.format("MMMM").slice(1).toLowerCase()}
@@ -70,26 +68,15 @@
             {startDay.year()}
         </p>
         <!-- Buttons for navigating to the previous or next week -->
-        <div class="flex h-8 items-stretch gap-0.5">
-            <button
-                on:click={() => moveWeek(-1)}
-                class="rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray2 dark:hover:bg-gray3"
-            >
-                <i class="bx bxs-left-arrow w-8 text-sm" />
+        <div class="btn-group variant-ghost h-8">
+            <button on:click={() => moveWeek(-1)}>
+                <i class="bx bxs-left-arrow text-sm" />
             </button>
 
-            <button
-                on:click={() => (startDay = dayjs())}
-                class="rounded-lg bg-gray-300 px-4 hover:bg-gray-400 dark:bg-gray2 dark:hover:bg-gray3"
-            >
-                Aujourd'hui
-            </button>
+            <button on:click={() => (startDay = dayjs())}> Aujourd'hui </button>
 
-            <button
-                on:click={() => moveWeek(1)}
-                class="rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray2 dark:hover:bg-gray3"
-            >
-                <i class="bx bxs-right-arrow w-8 text-sm" />
+            <button on:click={() => moveWeek(1)}>
+                <i class="bx bxs-right-arrow text-sm" />
             </button>
         </div>
     </div>

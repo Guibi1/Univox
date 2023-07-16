@@ -128,7 +128,7 @@ export async function login(
         }
     );
 
-    if (res.url.includes("?erreur=ERROR_0028")) {
+    if (res.headers.get("Location")?.includes("?erreur=ERROR_0028")) {
         throw "ERROR WHILE LOGIN: BAD CREDENTIALS";
     }
 

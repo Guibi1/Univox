@@ -9,99 +9,10 @@
         min-height: 100dvh;
     }
 
-    body {
-        @apply dark:bg-neutral-800 dark:fill-white dark:text-white;
-    }
-
-    h1 {
-        @apply text-4xl;
-    }
-
-    h2 {
-        @apply text-2xl;
-    }
-
-    h3 {
-        @apply text-xl;
-    }
-
-    h4 {
-        @apply text-lg;
-    }
-
-    input {
-        @apply h-12 rounded-lg border-2 border-neutral-600 bg-transparent p-4 text-center text-black outline-none;
-        @apply focus-visible:border-black dark:focus-visible:border-white;
-        @apply dark:bg-neutral-300 dark:text-black;
-
-        &:not(:placeholder-shown) {
-            @apply invalid:border-red-500;
-            @apply valid:focus:border-green-500;
-        }
-    }
-
-    label,
-    div.label {
-        @apply grid w-full grid-cols-1 grid-rows-[min-content_1fr] gap-1;
-
-        & > span {
-            @apply text-center text-red-600;
-        }
-
-        &[data-error="true"] {
-            input,
-            button > div[slot="button"] {
-                @apply border-red-500 focus:valid:border-red-500;
-            }
-        }
-    }
-
-    label > label:has(:placeholder-shown) > span {
-        display: none !important;
-    }
-
-    label:has(input:invalid) > span {
-        @apply block;
-    }
-
-    button.filled,
-    a.filled {
-        @apply flex h-12 items-center justify-center rounded-lg bg-blue-darkPrimary fill-black px-4 text-black hover:bg-blue-primary;
-        @apply dark:bg-blue-primary dark:fill-white dark:text-white dark:hover:bg-blue-darkPrimary;
-    }
-
-    button.outlined,
-    a.outlined {
-        @apply flex h-12 items-center justify-center rounded-lg border-2 border-blue-primary fill-black px-4 text-center text-black;
-        @apply dark:border-blue-darkPrimary dark:fill-white dark:text-white;
-    }
-
-    a {
-        @apply cursor-pointer fill-white text-black dark:text-white;
-    }
-
-    i.bx {
-        @apply flex items-center justify-center;
-    }
-
-    hr {
-        @apply border-neutral-700;
-        @apply dark:border-white;
-    }
-
-
     [hidden] {
         @apply !hidden;
     }
 }
 
 @layer components {
-    .bg-glass {
-        background: linear-gradient(150deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3));
-        @apply backdrop-blur-lg;
-
-        [data-colorscheme="dark"] & {
-            background: linear-gradient(150deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
-        }
-    }
 }

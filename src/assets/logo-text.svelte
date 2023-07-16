@@ -10,7 +10,7 @@
     version="1.1"
     {width}
     {height}
-    class="m-auto"
+    class="fill-token m-auto"
     preserveAspectRatio="xMinYMin meet"
 >
     <g>

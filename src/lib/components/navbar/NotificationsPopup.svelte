@@ -4,7 +4,7 @@
     import notifications from "$lib/stores/notifications";
 </script>
 
-<div data-popup="notifications" class="card z-30 w-48 py-2 shadow-xl">
+<div data-popup="notifications" class="card z-[9999] w-48 py-2 shadow-xl">
     <div class="arrow card bg-surface-100-800-token" />
 
     {#if $notifications.length === 0}

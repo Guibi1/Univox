@@ -23,21 +23,9 @@
     <title>Univox | Livres</title>
 </svelte:head>
 
-<h1 class="pt-2 text-center dark:bg-neutral-900">Acheter des livres</h1>
-
-<div
-    class="sticky top-0 z-50 flex justify-center border-b bg-white p-6 dark:border-neutral-500 dark:bg-neutral-900"
->
-    <div class="ml-10 flex w-1/2 flex-row items-center gap-3">
-        <SearchBar bind:query {handleSearch} />
-
-        <button
-            class="grid h-10 w-10 cursor-pointer"
-            on:click={handleSearch}
-            on:keypress={handleSearch}
-        >
-            <i class="bx bx-search-alt text-4xl" />
-        </button>
+<div class="bg-surface-100-800-token sticky top-0 z-50 pb-4">
+    <div class="mx-auto max-w-xl px-4 sm:w-3/5 sm:px-0">
+        <SearchBar bind:query {handleSearch} placeholder="Rechercher un livre..." />
     </div>
 </div>
 

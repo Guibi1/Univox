@@ -1,17 +1,12 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import Avatar from "$lib/components/Avatar.svelte";
-    import Dropdown from "$lib/components/Dropdown.svelte";
-    import EmptyDropdown from "$lib/components/EmptyDropdown.svelte";
-    import Option from "$lib/components/Option.svelte";
-    import friends from "$lib/stores/friends";
     import notifications from "$lib/stores/notifications";
     import LogoText from "$src/assets/logo-text.svelte";
-    import classNames from "classnames";
     import { AppBar, popup } from "@skeletonlabs/skeleton";
-    import Logo from "$src/assets/logo.svelte";
-    import NotificationsPopup from "./NotificationsPopup.svelte";
+    import classNames from "classnames";
     import AvatarPopup from "./AvatarPopup.svelte";
+    import NotificationsPopup from "./NotificationsPopup.svelte";
 
     const pages = [
         { text: "Accueil", href: "/" },
@@ -19,34 +14,21 @@
         { text: "Horaire", href: "/horaire" },
         { text: "Amis", href: "/amis" },
     ];
-
-    $: currentPage = pages.reduce(
-        (prev, { href }, i) => ($page.url.pathname.startsWith(href) ? i : prev),
-        0
-    );
 </script>
 
 <AppBar gridColumns="grid-cols-3" slotDefault="place-self-center" slotTrail="place-content-end">
-    <a slot="lead" href="/" class="fill-token">
+    <a slot="lead" href="/">
         <LogoText height="2rem" />
     </a>
 
     <ul class="relative hidden h-full flex-row items-center justify-between md:flex">
-        {#each pages as page, i}
+        {#each pages as page}
             <li class="relative h-full">
                 <a
                     href={page.href}
-                    class="flex h-full items-center px-8 text-center text-xl text-white transition-[color] duration-300 ease-in-out dark:text-white dark:hover:text-blue-primary"
+                    class="btn-sm px-4 text-lg transition hover:text-primary-500-400-token"
                 >
                     {page.text}
-
-                    {#if currentPage === i}
-                        <span class="absolute bottom-0 left-1/2 -translate-x-1/2">
-                            <hr
-                                class="w-20 border-2 !border-blue-primary transition duration-300 ease-in-out"
-                            />
-                        </span>
-                    {/if}
                 </a>
             </li>
         {/each}
