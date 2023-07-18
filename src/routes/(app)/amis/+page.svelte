@@ -1,7 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/stores";
-    import type { NotificationKind } from "$lib/types.js";
     import Avatar from "$lib/components/Avatar.svelte";
     import Dropdown from "$lib/components/Dropdown.svelte";
     import GroupElement from "$lib/components/GroupElement.svelte";
@@ -14,13 +13,11 @@
     import notifications from "$lib/stores/notifications";
     import type { User } from "lucia-auth";
 
-    export let data;
-
-    let query = data.query ?? "";
+    let query = $page.data.query ?? "";
     let selectedFriends: User[] = [];
 
     function handleSearch() {
-        const params = new URLSearchParams({ query, friendId: data.friendId ?? "" });
+        const params = new URLSearchParams({ query, friendId: $page.data.friendId ?? "" });
         goto(`?${params}`);
     }
 
@@ -131,15 +128,15 @@
                     </div>
                 {/if}
 
-                {#if data.query}
+                {#if $page.data.query}
                     <h2 class="mb-4 border-b border-black dark:border-white">
                         Autres utilisateurs
                     </h2>
 
-                    {#if data.searchResults.length === 0}
+                    {#if $page.data.searchResults.length === 0}
                         Aucun résultats
                     {:else}
-                        {#each data.searchResults as result}
+                        {#each $page.data.searchResults as result}
                             <div class="flex items-center justify-between gap-4 rounded-lg">
                                 <div class="flex flex-col gap-4">
                                     <span>
@@ -187,8 +184,8 @@
         </div>
     </div>
 
-    {#if data.schedule}
-        <ScheduleView schedule={scheduleFromJson(data.schedule)} />
+    {#if $page.data.schedule}
+        <ScheduleView schedule={scheduleFromJson($page.data.schedule)} />
     {:else}
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}

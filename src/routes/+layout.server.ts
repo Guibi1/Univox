@@ -9,7 +9,7 @@ export const load = (({ cookies }) => {
 
     // Data available throughout the site
     return {
-        storesInitialValue: {
+        stores: {
             colorScheme: color,
         },
     };

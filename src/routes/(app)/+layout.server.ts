@@ -5,21 +5,21 @@ import schedule from "$lib/stores/schedule";
 import user from "$lib/stores/user";
 import type { LayoutServerLoad } from "./$types";
 
-export const load = (({ locals }) => {
+export const load = (async ({ locals }) => {
     // Stores are up to date during SSR
     user.set(locals.user);
-    schedule.set(locals.schedule);
-    friends.set(locals.friends);
-    groups.set(locals.groups);
-    notifications.set(locals.notifications);
+    notifications.set(await locals.getNotifications());
+    schedule.set(await locals.getSchedule());
+    friends.set(await locals.getFriends());
+    groups.set(await locals.getGroups());
 
     return {
-        storesInitialValue: {
+        stores: {
             user: locals.user,
-            schedule: locals.schedule,
-            friends: locals.friends,
-            groups: locals.groups,
-            notifications: locals.notifications,
+            notifications: await locals.getNotifications(),
+            schedule: await locals.getSchedule(),
+            friends: await locals.getFriends(),
+            groups: await locals.getGroups(),
         },
     };
 }) satisfies LayoutServerLoad;

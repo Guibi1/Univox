@@ -15,7 +15,7 @@
     dayjs.extend(weekday);
     dayjs.locale(fr);
 
-    colorScheme.setInitial($page.data.storesInitialValue.colorScheme);
+    colorScheme.setInitial($page.data.stores.colorScheme);
     storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 </script>
 
