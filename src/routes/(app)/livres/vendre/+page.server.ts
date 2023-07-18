@@ -5,10 +5,10 @@ import { randomUUID } from "crypto";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
 
-export async function load({ locals }) {
+export const load = async ({ locals }) => {
     const form = await superValidate(newBookSchema);
     return { form, codes: await db.getClassCodes(locals.user) };
-}
+};
 
 export const actions = {
     default: async ({ request, locals }) => {
@@ -18,6 +18,8 @@ export const actions = {
         if (!form.valid || !(await db.getClassCodes(locals.user)).includes(form.data.classCode)) {
             return fail(400, { form });
         }
+
+        console.log("🚀 ~ file: +page.server.ts:17 ~ default: ~ form:", form.data);
 
         const images: File[] = [];
 
@@ -49,7 +51,7 @@ export const actions = {
         for (const image of images) {
             const name = randomUUID();
             // uploads.push(uploadBookImage(image, name));
-            imagesSrc.push(`/api/images/book/${name}`);
+            imagesSrc.push(`/api/images/book/${name + image}`);
         }
 
         const book = {
@@ -58,7 +60,7 @@ export const actions = {
             author: form.data.author,
             state: form.data.state,
             price: form.data.price,
-            isbn: form.data.ISBN,
+            isbn: form.data.isbn,
             code: form.data.classCode,
             image: "",
         };
