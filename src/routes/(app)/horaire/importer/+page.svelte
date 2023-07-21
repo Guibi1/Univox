@@ -1,11 +1,13 @@
 <script lang="ts">
+    import ConnectionOmnivox from "$lib/components/ConnectionOmnivox.svelte";
     import Loader from "$lib/components/Loader.svelte";
-    import schedule from "$lib/stores/schedule.js";
+    import schedule from "$lib/stores/schedule";
+    import user from "$lib/stores/user";
     import { superForm } from "sveltekit-superforms/client";
 
     export let data;
 
-    const { form, errors, delayed, enhance } = superForm(data.form, {
+    const { form, errors, submitting, message, enhance } = superForm(data.form, {
         taintedMessage: null,
         onResult: ({ result }) => {
             if (result.type === "redirect") {
@@ -25,32 +27,14 @@
     <h1>Importer mon horaire depuis Omnivox</h1>
 </div>
 
-{#if $delayed}
-    <div class="flex items-center justify-center">
-        <Loader />
-    </div>
-{/if}
+<form use:enhance class="m-auto flex w-80 flex-col gap-6" method="post" action="?/import">
+    <ConnectionOmnivox {form} {errors} {submitting} {message} email={$user.email} />
 
-<form
-    use:enhance
-    class="m-auto flex w-80 flex-col gap-6"
-    hidden={$delayed}
-    method="post"
-    action="?/import"
->
-    <label data-error={$errors.omnivoxPassword}>
-        Mot de passe Omnivox
-        <input
-            name="omnivoxPassword"
-            type="password"
-            value={$form.omnivoxPassword}
-            readonly={$delayed}
-        />
-
-        {#if $errors.omnivoxPassword}
-            <span>{$errors.omnivoxPassword[0]}</span>
-        {/if}
-    </label>
-
-    <button type="submit" class="filled">Importer l'horaire</button>
+    {#if !$submitting}
+        <button type="submit" class="btn variant-filled-secondary">Importer l'horaire</button>
+    {:else}
+        <div class="flex items-center justify-center">
+            <Loader />
+        </div>
+    {/if}
 </form>

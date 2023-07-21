@@ -1,4 +1,4 @@
-import { inscriptionPartialSchema, inscriptionSchema } from "$lib/formSchema";
+import { inscriptionSchema } from "$lib/formSchema";
 import { auth } from "$lib/server/auth";
 import * as omnivox from "$lib/server/omnivox";
 import { fail } from "@sveltejs/kit";
@@ -13,7 +13,7 @@ export const load = async () => {
 
 export const actions = {
     signup: async ({ locals, request }) => {
-        const form = await superValidate(request, inscriptionPartialSchema);
+        const form = await superValidate(request, inscriptionSchema);
 
         const baseUrl = form.data.email.match(/\d{7}@(.*).qc.ca/)?.[1];
         if (!form.valid || !baseUrl) {

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import ConnectionOmnivox from "$lib/components/ConnectionOmnivox.svelte";
     import Loader from "$lib/components/Loader.svelte";
     import { superForm } from "sveltekit-superforms/client";
 
@@ -24,59 +25,7 @@
         style="right: {$form.firstStep ? '0' : '150'}%;"
     >
         <div class="flex flex-col gap-4">
-            <label class="label" data-error={$errors.email}>
-                <span> Adresse courriel étudiante </span>
-
-                <input
-                    name="email"
-                    type="text"
-                    class="input"
-                    value={$form.email}
-                    readonly={$submitting}
-                />
-
-                {#if $errors.email}
-                    <span>{$errors.email[0]}</span>
-                {/if}
-            </label>
-
-            <label class="label" data-error={$errors.omnivoxPassword}>
-                <span> Mot de passe Omnivox </span>
-
-                <input
-                    name="omnivoxPassword"
-                    type="password"
-                    class="input"
-                    value={$form.omnivoxPassword}
-                    readonly={$submitting}
-                />
-
-                {#if $errors.omnivoxPassword}
-                    <span>{$errors.omnivoxPassword[0]}</span>
-                {/if}
-            </label>
-
-            {#if $form.mfaId}
-                <label class="label" data-error={$errors.code}>
-                    <span>
-                        Code de sécurité ({$message === "T" ? "application" : "email"})
-                    </span>
-
-                    <input
-                        name="code"
-                        type="number"
-                        min="0"
-                        max="999999"
-                        class="input"
-                        value={$form.code}
-                        readonly={$submitting}
-                    />
-
-                    {#if $errors.code}
-                        <span>{$errors.code[0]}</span>
-                    {/if}
-                </label>
-            {/if}
+            <ConnectionOmnivox {form} {errors} {submitting} {message} />
         </div>
 
         <div hidden={$form.firstStep} class="flex flex-col gap-4">
@@ -133,8 +82,6 @@
         bind:checked={$form.firstStep}
         readonly
     />
-    <input hidden name="session" type="text" bind:value={$form.session} readonly />
-    <input hidden name="mfaId" type="text" bind:value={$form.mfaId} readonly />
     <input hidden name="firstName" type="text" bind:value={$form.firstName} readonly />
     <input hidden name="lastName" type="text" bind:value={$form.lastName} readonly />
 

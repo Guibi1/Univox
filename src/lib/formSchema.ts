@@ -36,27 +36,25 @@ export const newPasswordSchema = z
         }
     });
 
-export const connexionSchema = z.object({ email, password });
-
-export const inscriptionPartialSchema = z.object({
+export const connectionOmnivoxSchema = z.object({
     email,
     omnivoxPassword,
-    password: z.string(),
-    confirmPassword: z.string(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
     mfaId: z.string().default(""),
     code: z.string().regex(/\d{6}/).optional(),
-
-    firstStep: z.boolean().default(true),
     session: z.string(),
 });
 
-export const inscriptionSchema = inscriptionPartialSchema
+export const connexionSchema = z.object({ email, password });
+
+export const inscriptionSchema = connectionOmnivoxSchema
     .extend({
-        password,
+        email,
+        password: z.string(),
         confirmPassword: z.string(),
-        firstStep: z.boolean().default(false),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+
+        firstStep: z.boolean().default(true),
     })
     .superRefine(({ confirmPassword, password }, { addIssue }) => {
         if (confirmPassword !== password) {
@@ -68,21 +66,7 @@ export const inscriptionSchema = inscriptionPartialSchema
         }
     });
 
-export const resetPasswordSchema = z.object({
-    email,
-    omnivoxPassword,
-    password,
-    mfaId: z.string().default(""),
-    code: z.string().regex(/\d{6}/).optional(),
-    session: z.string(),
-});
-
-export const importScheduleSchema = z.object({
-    omnivoxPassword,
-    mfaId: z.string().default(""),
-    code: z.string().regex(/\d{6}/).optional(),
-    session: z.string(),
-});
+export const resetPasswordSchema = connectionOmnivoxSchema.extend({ password });
 
 export const newPeriodSchema = z
     .object({

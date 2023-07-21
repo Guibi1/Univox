@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import ConnectionOmnivox from "$lib/components/ConnectionOmnivox.svelte";
     import Loader from "$lib/components/Loader.svelte";
     import { toastStore } from "@skeletonlabs/skeleton";
     import { superForm } from "sveltekit-superforms/client";
@@ -28,37 +29,7 @@
 
 <form use:enhance class="m-auto flex w-9/12 flex-col gap-6" method="post" action="?/reset">
     <div class="flex flex-col gap-4">
-        <label class="label" data-error={$errors.email}>
-            <span> Adresse courriel étudiante </span>
-
-            <input
-                name="email"
-                type="email"
-                class="input"
-                value={$form.email}
-                readonly={$submitting}
-            />
-
-            {#if $errors.email}
-                <span>{$errors.email[0]}</span>
-            {/if}
-        </label>
-
-        <label class="label" data-error={$errors.omnivoxPassword}>
-            <span> Mot de passe Omnivox </span>
-
-            <input
-                name="omnivoxPassword"
-                type="password"
-                class="input"
-                value={$form.omnivoxPassword}
-                readonly={$submitting}
-            />
-
-            {#if $errors.omnivoxPassword}
-                <span>{$errors.omnivoxPassword[0]}</span>
-            {/if}
-        </label>
+        <ConnectionOmnivox {form} {errors} {submitting} {message} />
 
         <label class="label" data-error={$errors.password}>
             <span> Nouveau mot de passe </span>
@@ -76,28 +47,6 @@
             {/if}
         </label>
 
-        {#if $form.mfaId}
-            <label class="label" data-error={$errors.code}>
-                <span>
-                    Code de sécurité ({$message === "T" ? "application" : "email"})
-                </span>
-
-                <input
-                    name="code"
-                    type="number"
-                    class="input"
-                    min="0"
-                    max="999999"
-                    value={$form.code}
-                    readonly={$submitting}
-                />
-
-                {#if $errors.code}
-                    <span>{$errors.code[0]}</span>
-                {/if}
-            </label>
-        {/if}
-
         {#if !$submitting}
             <a href={"/connexion" + $page.url.search} class="flex self-start">
                 <i class="bx bx-chevron-left text-lg" />
@@ -105,9 +54,6 @@
             </a>
         {/if}
     </div>
-
-    <input hidden name="session" type="text" bind:value={$form.session} readonly />
-    <input hidden name="mfaId" type="text" bind:value={$form.mfaId} readonly />
 
     {#if !$submitting}
         <button
