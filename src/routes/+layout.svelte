@@ -16,7 +16,7 @@
 
     export let data;
 
-    colorScheme.setInitial(data.storesInitialValue.colorScheme);
+    colorScheme.setInitial(data.stores.colorScheme);
     storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 </script>
 

@@ -1,7 +1,3 @@
-/**
- * @file API endpoints to manage the notifications
- */
-
 import * as db from "$lib/server/db";
 import type { NotificationKind } from "$lib/types";
 import { json } from "@sveltejs/kit";
@@ -38,5 +34,5 @@ export const DELETE = (async ({ request, locals }) => {
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {
-    return json({ success: true, notifications: locals.notifications });
+    return json({ success: true, notifications: locals.getNotifications() });
 }) satisfies RequestHandler;

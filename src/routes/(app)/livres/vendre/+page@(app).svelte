@@ -1,8 +1,6 @@
 <script lang="ts">
-    import Carousel from "$lib/components/Carousel.svelte";
     import Loader from "$lib/components/Loader.svelte";
-    import Option from "$lib/components/Option.svelte";
-    import Select from "$lib/components/Select.svelte";
+    import { FileDropzone } from "@skeletonlabs/skeleton";
     import { superForm } from "sveltekit-superforms/client";
 
     export let data;
@@ -10,86 +8,82 @@
     const { form, errors, delayed, enhance } = superForm(data.form, {
         taintedMessage: null,
         onSubmit: ({ data }) => {
-            for (const i in images) {
-                data.append("image" + i, images[i]);
+            if (!images) return;
+            let i = 0;
+            for (const image of images) {
+                //! TO TEST
+                data.append("image" + ++i, image);
             }
         },
     });
 
-    let images: File[] = [];
+    let images: FileList | undefined;
 </script>
 
 <svelte:head>
     <title>Univox | Vendre un livre</title>
 </svelte:head>
 
-<h1 class="text-center">Vendre un livre</h1>
+<h1 class="h2 m-6 text-center">Vendre un livre</h1>
 
 <form use:enhance class="m-auto grid max-w-5xl grid-cols-[2fr_2fr] gap-6" method="post">
     <div class="flex flex-col items-stretch gap-5">
-        <label data-error={$errors.title}>
-            Nom du livre
+        <label class="label" data-error={$errors.title}>
+            <span> Nom du livre </span>
 
-            <input name="title" type="text" value={$form.title} />
+            <input name="title" type="text" class="input" value={$form.title} />
 
             {#if $errors.title}
                 <span>{$errors.title[0]}</span>
             {/if}
         </label>
 
-        <label data-error={$errors.author}>
-            Nom de(s) l'auteur(s)
+        <label class="label" data-error={$errors.author}>
+            <span> Nom de(s) l'auteur(s) </span>
 
-            <input name="author" type="text" value={$form.author} />
+            <input name="author" type="text" class="input" value={$form.author} />
 
             {#if $errors.author}
                 <span>{$errors.author[0]}</span>
             {/if}
         </label>
 
-        <div class="label" data-error={$errors.state}>
-            L'état du livre
+        <label class="label" data-error={$errors.state}>
+            <span> L'état du livre </span>
 
-            <Select name="state" value={$form.state}>
-                <Option text="Neuf" />
-                <Option text="Usagé - Comme neuf" />
-                <Option text="Usagé - Bon état" />
-                <Option text="Usagé - Endommagé" />
-            </Select>
+            <select class="select" name="state" value={$form.state}>
+                <option selected disabled hidden value=""> Choisisez une option </option>
+                <option> Neuf </option>
+                <option> Usagé - Comme neuf </option>
+                <option> Usagé - Bon état </option>
+                <option> Usagé - Endommagé </option>
+            </select>
 
             {#if $errors.state}
                 <span>{$errors.state[0]}</span>
             {/if}
-        </div>
-
-        <label data-error={$errors.price}>
-            Prix de vente
-
-            <input name="price" type="text" value={$form.price} />
-
-            {#if $errors.price}
-                <span>{$errors.price[0]}</span>
-            {/if}
         </label>
 
-        <label data-error={$errors.ISBN}>
-            ISBN
+        <label class="label" data-error={$errors.isbn}>
+            <span> ISBN du livre </span>
 
-            <input name="ISBN" type="text" value={$form.ISBN} />
+            <input name="isbn" type="text" class="input" value={$form.isbn} />
 
-            {#if $errors.ISBN}
-                <span>{$errors.ISBN[0]}</span>
+            {#if $errors.isbn}
+                <span>{$errors.isbn[0]}</span>
             {/if}
         </label>
 
         <div class="label" data-error={$errors.classCode}>
-            Cours
+            <span> Cours </span>
 
-            <Select name="classCode" value={$form.classCode}>
+            <select class="select" name="classCode" value={$form.classCode}>
+                <option selected disabled hidden value=""> Choisisez une option </option>
+
                 {#each data.codes as code}
-                    <Option text={code} />
+                    <option>{code}</option>
                 {/each}
-            </Select>
+            </select>
 
             {#if $errors.classCode}
                 <span>{$errors.classCode[0]}</span>
@@ -99,17 +93,35 @@
 
     <div class="flex flex-col items-stretch gap-5">
         <div class="label" data-error={$errors.images}>
-            Images
+            <span> Images </span>
 
-            <Carousel bind:files={images} />
+            <FileDropzone bind:files={images} name="files" accept="image/png, image/jpeg">
+                <i slot="lead" class="bx bx-cloud-upload pointer-events-none text-7xl" />
+
+                <svelte:fragment slot="message">
+                    Glissez ici une image de votre livre
+                </svelte:fragment>
+
+                <svelte:fragment slot="meta">Seul les PNG et JPG sont acceptés</svelte:fragment>
+            </FileDropzone>
 
             {#if $errors.images}
                 <span>{$errors.images[0]}</span>
             {/if}
         </div>
 
+        <label class="label" data-error={$errors.price}>
+            <span> Prix de vente </span>
+
+            <input name="price" type="text" class="input" value={$form.price} />
+
+            {#if $errors.price}
+                <span>{$errors.price[0]}</span>
+            {/if}
+        </label>
+
         {#if !$delayed}
-            <button class="filled" type="submit"> Créer l'annonce </button>
+            <button class="btn variant-filled-secondary" type="submit"> Créer l'annonce </button>
         {:else}
             <div class="flex justify-center">
                 <Loader />

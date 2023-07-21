@@ -92,7 +92,7 @@ export const newBookSchema = z.object({
     price: z.number().min(0, "Le prix doit être positif").max(300, "Le prix doit être sous 300 $"),
     classCode: z.string().min(1, "Requis"),
     images: z.string().optional(),
-    ISBN: z
+    isbn: z
         .string()
         .min(1, "L'ISBN est requis")
         .regex(
