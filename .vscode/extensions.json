@@ -4,18 +4,12 @@
 
     // List of extensions which should be recommended for users of this workspace.
     "recommendations": [
-        "aaron-bond.better-comments",
         "bradlc.vscode-tailwindcss",
-        "ChakrounAnas.turbo-console-log",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "formulahendry.auto-rename-tag",
-        "moalamri.inline-fold",
         "ms-vscode.vscode-typescript-next",
         "stylelint.vscode-stylelint",
-        "svelte.svelte-vscode",
-        "mrmlnc.vscode-scss",
-        "usernamehw.errorlens"
+        "svelte.svelte-vscode"
     ],
     // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
     "unwantedRecommendations": []
