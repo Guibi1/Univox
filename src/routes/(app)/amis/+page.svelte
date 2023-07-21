@@ -13,11 +13,13 @@
     import notifications from "$lib/stores/notifications";
     import type { User } from "lucia-auth";
 
-    let query = $page.data.query ?? "";
+    export let data;
+
+    let query = data.query ?? "";
     let selectedFriends: User[] = [];
 
     function handleSearch() {
-        const params = new URLSearchParams({ query, friendId: $page.data.friendId ?? "" });
+        const params = new URLSearchParams({ query, friendId: data.friendId ?? "" });
         goto(`?${params}`);
     }
 
@@ -128,15 +130,15 @@
                     </div>
                 {/if}
 
-                {#if $page.data.query}
+                {#if data.query}
                     <h2 class="mb-4 border-b border-black dark:border-white">
                         Autres utilisateurs
                     </h2>
 
-                    {#if $page.data.searchResults.length === 0}
+                    {#if data.searchResults.length === 0}
                         Aucun résultats
                     {:else}
-                        {#each $page.data.searchResults as result}
+                        {#each data.searchResults as result}
                             <div class="flex items-center justify-between gap-4 rounded-lg">
                                 <div class="flex flex-col gap-4">
                                     <span>
@@ -184,8 +186,8 @@
         </div>
     </div>
 
-    {#if $page.data.schedule}
-        <ScheduleView schedule={scheduleFromJson($page.data.schedule)} />
+    {#if data.schedule}
+        <ScheduleView schedule={scheduleFromJson(data.schedule)} />
     {:else}
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}

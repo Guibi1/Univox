@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { page } from "$app/stores";
     import Navbar from "$lib/components/navbar/Navbar.svelte";
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
@@ -7,11 +6,13 @@
     import schedule from "$lib/stores/schedule";
     import user from "$lib/stores/user";
 
-    user.set($page.data.stores.user);
-    notifications.set($page.data.stores.notifications);
-    schedule.set($page.data.stores.schedule);
-    friends.set($page.data.stores.friends);
-    groups.set($page.data.stores.groups);
+    export let data;
+
+    user.set(data.stores.user);
+    notifications.set(data.stores.notifications);
+    schedule.set(data.stores.schedule);
+    friends.set(data.stores.friends);
+    groups.set(data.stores.groups);
 </script>
 
 <div class="grid h-screen grid-rows-[min-content_1fr] overflow-hidden">
