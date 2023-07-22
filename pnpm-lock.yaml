@@ -59,8 +59,8 @@ dependencies:
     specifier: ^3.4.6
     version: 3.4.6(postcss@8.4.26)(svelte@4.1.1)
   sveltekit-api-fetch:
-    specifier: ^3.0.0
-    version: 3.0.0(@sveltejs/kit@1.22.3)(svelte@4.1.1)(vite@4.4.5)(zod@3.21.4)
+    specifier: ^3.0.1
+    version: 3.0.1(@sveltejs/kit@1.22.3)(svelte@4.1.1)(vite@4.4.5)(zod@3.21.4)
   sveltekit-superforms:
     specifier: ^1.4.0
     version: 1.4.0(@sveltejs/kit@1.22.3)(svelte@4.1.1)(zod@3.21.4)
@@ -2338,7 +2338,7 @@ packages:
       foreground-child: 3.1.1
       jackspeak: 2.2.1
       minimatch: 9.0.3
-      minipass: 7.0.2
+      minipass: 5.0.0
       path-scurry: 1.10.1
     dev: false
 
@@ -2743,11 +2743,6 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
-  /minipass@7.0.2:
-    resolution: {integrity: sha512-eL79dXrE1q9dBbDCLg7xfn/vl7MS4F1gvJAgjJrQli/jbQWdUttuVawphqpffoIYfRdq78LHx6GP4bU/EQ2ATA==}
-    engines: {node: '>=16 || 14 >=14.17'}
-    dev: false
-
   /minizlib@2.1.2:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==}
     engines: {node: '>= 8'}
@@ -2963,7 +2958,7 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     dependencies:
       lru-cache: 10.0.0
-      minipass: 7.0.2
+      minipass: 5.0.0
     dev: false
 
   /path-type@4.0.0:
@@ -3613,8 +3608,8 @@ packages:
       magic-string: 0.30.1
       periscopic: 3.1.0
 
-  /sveltekit-api-fetch@3.0.0(@sveltejs/kit@1.22.3)(svelte@4.1.1)(vite@4.4.5)(zod@3.21.4):
-    resolution: {integrity: sha512-NcD/pBr6gDH6SjUhqK20AQbCp0hmqgmdKF2vC05IUl4gzKA8DWRsVFoI7QUoNjlJvCROYq9kLjaanUynMDlawA==}
+  /sveltekit-api-fetch@3.0.1(@sveltejs/kit@1.22.3)(svelte@4.1.1)(vite@4.4.5)(zod@3.21.4):
+    resolution: {integrity: sha512-c1YyyUAioFSI6a/vFiXtJep2PS7vIimDA5N60GccUZxXsDquJZyfrS7kvnb4oRvued7PEF7sLtQeVgdSXJB9oA==}
     peerDependencies:
       '@sveltejs/kit': ^1.22.0
       svelte: ^3.55.0 || ^4.0.0-next.0 || ^4.0.0

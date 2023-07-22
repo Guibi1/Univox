@@ -7,7 +7,7 @@ import type { User } from "lucia-auth";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ locals, url, depends }) => {
-    depends("app:notifications");
+    depends("friends:search");
 
     const query = url.searchParams.get("query") ?? "";
     const friendId = url.searchParams.get("friendId");
@@ -55,7 +55,7 @@ export const load = (async ({ locals, url, depends }) => {
 
     const result: { user: User; friendRequestSent: boolean }[] = [];
 
-    const users = await db.searchUsers(locals.user, query);
+    const users = query.length ? await db.searchUsers(locals.user, query) : [];
     for (const user of users) {
         const friendRequestSent = !!(await db.getNotificationIfItExists(
             locals.user,

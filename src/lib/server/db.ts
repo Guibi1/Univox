@@ -123,14 +123,18 @@ export async function getFriendsId(user: User): Promise<string[]> {
  * @returns An array of friends
  */
 export async function getFriends(user: User): Promise<User[]> {
-    return await db
-        .select(getTableColumns(usersTable))
-        .from(friendsTable)
-        .where(or(eq(friendsTable.friendId, user.id), eq(friendsTable.userId, user.id)))
-        .innerJoin(
-            usersTable,
-            or(eq(usersTable.id, friendsTable.friendId), eq(usersTable.id, friendsTable.userId))
-        );
+    return [
+        ...(await db
+            .select(getTableColumns(usersTable))
+            .from(friendsTable)
+            .where(eq(friendsTable.userId, user.id))
+            .innerJoin(usersTable, eq(usersTable.id, friendsTable.friendId))),
+        ...(await db
+            .select(getTableColumns(usersTable))
+            .from(friendsTable)
+            .where(eq(friendsTable.friendId, user.id))
+            .innerJoin(usersTable, eq(usersTable.id, friendsTable.userId))),
+    ];
 }
 
 /**

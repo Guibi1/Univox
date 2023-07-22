@@ -15,6 +15,6 @@ export const friendsTable = mysqlTable(
 );
 
 export const friendsRelations = relations(friendsTable, ({ one }) => ({
-    user: one(usersTable, { fields: [friendsTable.id], references: [usersTable.id] }),
+    user: one(usersTable, { fields: [friendsTable.userId], references: [usersTable.id] }),
     friend: one(usersTable, { fields: [friendsTable.friendId], references: [usersTable.id] }),
 }));

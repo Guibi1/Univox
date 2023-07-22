@@ -23,6 +23,11 @@
         goto(`?${params}`);
     }
 
+    async function addFriend(user: User) {
+        await notifications.create("FriendRequest", user.id);
+        await invalidate("friends:search");
+    }
+
     function friendsFilterQuery(friends: User[], query: string) {
         return friends.reduce<User[]>((prev, user) => {
             if (
@@ -72,46 +77,48 @@
             <div class="flex flex-col p-4">
                 <h2 class="mb-4 self-center">Vos amis</h2>
 
-                <ul class="flex flex-grow flex-col gap-4 py-4">
+                <ul class="list flex-grow flex-col gap-4 py-4">
                     {#each friendsFilterQuery($friends, query) as friend}
-                        <li>
-                            <div class="flex items-center justify-between rounded-md px-4">
-                                <div class="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        bind:group={selectedFriends}
-                                        value={friend}
+                        <li class="card grid">
+                            <a
+                                href={getFriendUrl(friend)}
+                                class="flex items-center justify-stretch gap-2"
+                            >
+                                <input
+                                    type="checkbox"
+                                    class="checkbox"
+                                    bind:group={selectedFriends}
+                                    bind:value={friend}
+                                />
+
+                                <div class="flex flex-row flex-grow gap-2 px-3">
+                                    <div class=" h-16 w-16 rounded-full">
+                                        <Avatar seed={friend.avatar} />
+                                    </div>
+
+                                    <div class="flex flex-col justify-center">
+                                        <span>
+                                            {friend.firstName}
+                                            {friend.lastName}
+                                        </span>
+
+                                        <small class="text-gray-500">{friend.email}</small>
+                                    </div>
+                                </div>
+
+                                <Dropdown>
+                                    <Option
+                                        text="Horaire libre commun"
+                                        href={getCommonScheduleUrl(friend)}
                                     />
-                                    <div class="flex flex-row gap-2 px-3">
-                                        <div class=" h-16 w-16 rounded-full">
-                                            <Avatar seed={friend.avatar} />
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <div>{friend.lastName + ", " + friend.firstName}</div>
-                                            <div class="text-sm text-gray-500">{friend.email}</div>
-                                        </div>
-                                        <Dropdown>
-                                            <Option
-                                                text="Horaire libre commun"
-                                                href={getCommonScheduleUrl(friend)}
-                                            />
-                                            <Option
-                                                separate
-                                                text="Retirer l'ami.e"
-                                                color="red"
-                                                onClick={() => friends.remove(friend.id)}
-                                            />
-                                        </Dropdown>
-                                    </div>
-                                </div>
-                                <div class="flex flex-row justify-between">
-                                    <div class="flex flex-row items-center gap-3 px-5">
-                                        <a class="filled h-10 w-24" href={getFriendUrl(friend)}>
-                                            Horaire
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                                    <Option
+                                        separate
+                                        text="Retirer l'ami.e"
+                                        color="red"
+                                        onClick={() => friends.remove(friend.id)}
+                                    />
+                                </Dropdown>
+                            </a>
                         </li>
                     {/each}
                 </ul>
@@ -151,17 +158,13 @@
                                 </div>
 
                                 {#if result.friendRequestSent}
-                                    <button class="filled">Demande envoyée</button>
+                                    <button class="btn variant-ghost-success" disabled>
+                                        Demande envoyée
+                                    </button>
                                 {:else}
                                     <button
-                                        class="filled"
-                                        on:click={async () => {
-                                            await notifications.create(
-                                                "FriendRequest",
-                                                result.user.id
-                                            );
-                                            invalidate("app:notifications");
-                                        }}
+                                        class="btn variant-ghost-primary"
+                                        on:click={() => addFriend(result.user)}
                                     >
                                         Ajouter en ami
                                     </button>
