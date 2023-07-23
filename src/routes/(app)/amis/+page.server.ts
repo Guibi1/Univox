@@ -3,13 +3,9 @@ import { scheduleFromJson } from "$lib/sanitization";
 import * as db from "$lib/server/db";
 import type { Period, Schedule } from "$lib/types";
 import dayjs from "dayjs";
-import type { User } from "lucia-auth";
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ locals, url, depends }) => {
-    depends("friends:search");
-
-    const query = url.searchParams.get("query") ?? "";
+export const load = (async ({ locals, url }) => {
     const friendId = url.searchParams.get("friendId");
     const groupId = Number.parseInt(url.searchParams.get("groupId") ?? "");
     const isCommonSchedule = url.searchParams.get("commonSchedule") !== null;
@@ -53,23 +49,9 @@ export const load = (async ({ locals, url, depends }) => {
         }
     }
 
-    const result: { user: User; friendRequestSent: boolean }[] = [];
-
-    const users = query.length ? await db.searchUsers(locals.user, query) : [];
-    for (const user of users) {
-        const friendRequestSent = !!(await db.getNotificationIfItExists(
-            locals.user,
-            "FriendRequest",
-            user
-        ));
-        result.push({ user: user, friendRequestSent });
-    }
-
     return {
-        query,
         friendId,
         groupId,
         schedule: schedule,
-        searchResults: result,
     };
 }) satisfies PageServerLoad;

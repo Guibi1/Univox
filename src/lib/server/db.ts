@@ -10,7 +10,7 @@ import type {
 } from "$lib/types";
 import { connect } from "@planetscale/database";
 import chalk from "chalk";
-import { and, eq, getTableColumns, inArray, ne, or } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, like, ne, notLike, or } from "drizzle-orm";
 import type { MySqlUpdateSetSource } from "drizzle-orm/mysql-core";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 import type { User } from "lucia-auth";
@@ -78,7 +78,12 @@ export async function updateUser(
  * @param query The search query
  * @returns An array of 5 matching users, or less
  */
-export async function searchUsers(user: User, query: string, limit = 5): Promise<User[]> {
+export async function searchUsers(
+    user: User,
+    query: string,
+    limit = 5,
+    sameSchool = true
+): Promise<User[]> {
     query = sanitizeQuery(query);
     query = normalizeQuery(query);
 
@@ -91,9 +96,11 @@ export async function searchUsers(user: User, query: string, limit = 5): Promise
                 ne(usersTable.id, user.id),
                 or(
                     eq(usersTable.da, query),
+                    eq(usersTable.email, query),
                     eq(usersTable.firstName, query),
                     eq(usersTable.lastName, query)
-                )
+                ),
+                (sameSchool ? like : notLike)(usersTable.email, `%@${user.email.split("@").at(1)}`)
             )
         )
         .limit(limit);

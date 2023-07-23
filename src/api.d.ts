@@ -22,6 +22,7 @@ type ProjectAPI = {
         "/api/groups/members": { groupId: number };
         "/api/groups/invite": { groupId: number; usersId: string[] };
         "/api/friends": { friendId: string };
+        "/api/friends/search": { searchQuery: string };
     };
     PUT: {
         "/api/settings/colorScheme": { colorScheme: string };

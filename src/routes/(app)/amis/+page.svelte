@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
+    import { goto } from "$app/navigation";
     import { page } from "$app/stores";
     import Avatar from "$lib/components/Avatar.svelte";
     import Dropdown from "$lib/components/Dropdown.svelte";
@@ -10,22 +10,19 @@
     import { scheduleFromJson } from "$lib/sanitization";
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
-    import notifications from "$lib/stores/notifications";
+    import { Accordion, AccordionItem, modalStore } from "@skeletonlabs/skeleton";
     import type { User } from "lucia-auth";
 
     export let data;
 
-    let query = data.query ?? "";
+    $: currentFriend = $friends.find((u) => u.id === data.friendId);
+
+    let query = "";
     let selectedFriends: User[] = [];
 
     function handleSearch() {
         const params = new URLSearchParams({ query, friendId: data.friendId ?? "" });
         goto(`?${params}`);
-    }
-
-    async function addFriend(user: User) {
-        await notifications.create("FriendRequest", user.id);
-        await invalidate("friends:search");
     }
 
     function friendsFilterQuery(friends: User[], query: string) {
@@ -71,122 +68,69 @@
     </div>
 </div>
 
-<div class="grid flex-grow grid-cols-[4fr_3fr] divide-x-4 divide-black overflow-x-scroll">
-    <div class="flex flex-col space-y-3">
-        <div class="grid flex-grow grid-cols-[1fr_1fr] divide-x-4 divide-black">
-            <div class="flex flex-col p-4">
-                <h2 class="mb-4 self-center">Vos amis</h2>
+<div class="grid flex-grow grid-cols-[20rem_1fr_20rem] mx-4 overflow-x-scroll">
+    <div class="flex flex-col p-4">
+        <h2 class="h4 text-center">Vos amis</h2>
 
-                <ul class="list flex-grow flex-col gap-4 py-4">
-                    {#each friendsFilterQuery($friends, query) as friend}
-                        <li class="card grid">
-                            <a
-                                href={getFriendUrl(friend)}
-                                class="flex items-center justify-stretch gap-2"
-                            >
-                                <input
-                                    type="checkbox"
-                                    class="checkbox"
-                                    bind:group={selectedFriends}
-                                    bind:value={friend}
-                                />
+        <nav class="list-nav">
+            <ul class="flex-grow flex-col gap-4 py-4">
+                {#each friendsFilterQuery($friends, query) as friend}
+                    <li>
+                        <a href={getFriendUrl(friend)} class="btn flex items-start justify-center">
+                            <input
+                                type="checkbox"
+                                class="checkbox"
+                                bind:group={selectedFriends}
+                                bind:value={friend}
+                                on:click|stopPropagation={() => {}}
+                            />
 
-                                <div class="flex flex-row flex-grow gap-2 px-3">
-                                    <div class=" h-16 w-16 rounded-full">
-                                        <Avatar seed={friend.avatar} />
-                                    </div>
-
-                                    <div class="flex flex-col justify-center">
-                                        <span>
-                                            {friend.firstName}
-                                            {friend.lastName}
-                                        </span>
-
-                                        <small class="text-gray-500">{friend.email}</small>
-                                    </div>
+                            <div class="flex flex-row gap-2">
+                                <div class="h-12 w-12">
+                                    <Avatar seed={friend.avatar} />
                                 </div>
 
-                                <Dropdown>
-                                    <Option
-                                        text="Horaire libre commun"
-                                        href={getCommonScheduleUrl(friend)}
-                                    />
-                                    <Option
-                                        separate
-                                        text="Retirer l'ami.e"
-                                        color="red"
-                                        onClick={() => friends.remove(friend.id)}
-                                    />
-                                </Dropdown>
-                            </a>
-                        </li>
-                    {/each}
-                </ul>
-
-                {#if selectedFriends.length >= 2}
-                    <div class="flex justify-center p-4">
-                        <button
-                            class="filled"
-                            on:click={() => {
-                                groups.create(selectedFriends);
-                                selectedFriends = [];
-                            }}
-                        >
-                            Créer un groupe
-                        </button>
-                    </div>
-                {/if}
-
-                {#if data.query}
-                    <h2 class="mb-4 border-b border-black dark:border-white">
-                        Autres utilisateurs
-                    </h2>
-
-                    {#if data.searchResults.length === 0}
-                        Aucun résultats
-                    {:else}
-                        {#each data.searchResults as result}
-                            <div class="flex items-center justify-between gap-4 rounded-lg">
-                                <div class="flex flex-col gap-4">
+                                <div class="flex flex-col justify-around items-start">
                                     <span>
-                                        {result.user.firstName}
-                                        {result.user.lastName}
+                                        {friend.firstName}
+                                        {friend.lastName}
                                     </span>
-                                    <small>
-                                        {result.user.email}
-                                    </small>
+
+                                    <small class="opacity-50">{friend.email}</small>
                                 </div>
-
-                                {#if result.friendRequestSent}
-                                    <button class="btn variant-ghost-success" disabled>
-                                        Demande envoyée
-                                    </button>
-                                {:else}
-                                    <button
-                                        class="btn variant-ghost-primary"
-                                        on:click={() => addFriend(result.user)}
-                                    >
-                                        Ajouter en ami
-                                    </button>
-                                {/if}
                             </div>
-                        {/each}
-                    {/if}
-                {/if}
-            </div>
+                        </a>
+                    </li>
+                {/each}
 
-            <div class="flex flex-col p-4">
-                <h2 class="mb-4 self-center">Vos groupes</h2>
+                {#each $groups as group}
+                    <li class="flex items-center justify-between rounded-md px-4">
+                        <GroupElement {group} {selectedFriends} />
+                    </li>
+                {/each}
+            </ul>
+        </nav>
 
-                <ul class="flex flex-col gap-4">
-                    {#each $groups as group}
-                        <li class="flex items-center justify-between rounded-md px-4">
-                            <GroupElement {group} {selectedFriends} />
-                        </li>
-                    {/each}
-                </ul>
+        {#if selectedFriends.length >= 2}
+            <div class="flex justify-center p-4">
+                <button
+                    class="filled"
+                    on:click={() => {
+                        groups.create(selectedFriends);
+                        selectedFriends = [];
+                    }}
+                >
+                    Créer un groupe
+                </button>
             </div>
-        </div>
+        {/if}
+
+        <button
+            class="btn variant-filled-primary"
+            on:click={() => modalStore.trigger({ type: "component", component: "add-friend" })}
+        >
+            Ajouter un ami
+        </button>
     </div>
 
     {#if data.schedule}
@@ -194,4 +138,46 @@
     {:else}
         <div class="p-4">Affichage de l'horaire commun</div>
     {/if}
+
+    <section class="flex flex-col m-4">
+        {#if currentFriend}
+            <div class="w-24 h-24 mx-auto">
+                <Avatar seed={currentFriend.avatar} />
+            </div>
+
+            <div class="card flex flex-col p-4 gap-4">
+                <div>
+                    <h4 class="h4">{currentFriend.firstName} {currentFriend.lastName}</h4>
+                    <span class="opacity-70">{currentFriend.email}</span>
+                </div>
+
+                <Accordion>
+                    <AccordionItem>
+                        <svelte:fragment slot="summary">Groupes en commun</svelte:fragment>
+                        <svelte:fragment slot="content">TODO</svelte:fragment>
+                    </AccordionItem>
+
+                    <AccordionItem>
+                        <svelte:fragment slot="summary">Plus d'actions</svelte:fragment>
+
+                        <div slot="content" class="grid">
+                            <button
+                                class="btn variant-ghost-error"
+                                on:click={() => currentFriend && friends.remove(currentFriend.id)}
+                            >
+                                Retirer l'ami
+                            </button>
+                        </div>
+                    </AccordionItem>
+                </Accordion>
+
+                <button
+                    class="btn variant-filled-primary"
+                    on:click={() => currentFriend && goto(getCommonScheduleUrl(currentFriend))}
+                >
+                    Disponibilités communes
+                </button>
+            </div>
+        {/if}
+    </section>
 </div>
