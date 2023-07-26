@@ -16,13 +16,13 @@ export const POST = (async ({ locals, request }) => {
     const { data } = await apiValidate(request, _postSchema);
 
     const group = await db.getGroup(data.groupId);
-    if (!group || group.usersId.every((id) => !locals.user.id.equals(id))) {
+    if (!group || group.usersId.every((id) => locals.user.id !== id)) {
         throw error(400, "Invalid data.");
     }
 
     const members: User[] = [];
     for (const id of group.usersId) {
-        if (locals.user.id.equals(id)) continue;
+        if (locals.user.id === id) continue;
         const user = await db.getUser(id);
         if (user) members.push(user);
     }

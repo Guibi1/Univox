@@ -39,10 +39,10 @@ export const actions = {
 
                 const result = await omnivox.submitCode2FA(
                     form.data.code,
-                    {
-                        cookies: JSON.parse(form.data.session),
-                        baseUrl: locals.user.email.match(/\d{7}@(.*).qc.ca/)?.[1],
-                    },
+                    omnivox.createSessionFromCookies(
+                        JSON.parse(form.data.session),
+                        locals.user.email
+                    ),
                     form.data.mfaId
                 );
 
@@ -54,10 +54,10 @@ export const actions = {
 
             try {
                 const html = await omnivox.fetchSchedulePageHTML(
-                    {
-                        cookies: JSON.parse(form.data.session),
-                        baseUrl: locals.user.email.match(/\d{7}@(.*).qc.ca/)?.[1],
-                    },
+                    omnivox.createSessionFromCookies(
+                        JSON.parse(form.data.session),
+                        locals.user.email
+                    ),
                     2023,
                     omnivox.Semester.Winter
                 );

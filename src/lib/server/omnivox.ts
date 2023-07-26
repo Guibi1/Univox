@@ -541,6 +541,19 @@ function formatCookies(...cookies: Cookies[]): string {
 }
 
 /**
+ * Parses the user's email to a valid omnivox baseUrl
+ * @param cookies The session cookies
+ * @param email The user's email address
+ * @returns The SessionCookie
+ */
+export function createSessionFromCookies(cookies: Cookies, email: string): OmnivoxSession {
+    const baseUrl = email.match(/\d{7}@(.*).qc.ca/)?.[1];
+    if (!baseUrl) throw "Invalid email";
+
+    return { cookies, baseUrl };
+}
+
+/**
  * Finds a regular expression match in the specified string.
  * @param {string|null} data The string to search for the regular expression match.
  * @param {RegExp} query The regular expression pattern to match in the string.

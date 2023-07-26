@@ -9,31 +9,33 @@ const localsHandle = (async ({ event, resolve }) => {
     event.locals.auth = auth.handleRequest(event);
     const { user } = await event.locals.auth.validateUser();
 
-    event.locals.user = user;
+    if (user) {
+        event.locals.user = user;
 
-    let schedule: Schedule | undefined;
-    event.locals.getSchedule = async (refresh = false) => {
-        if (!schedule || refresh) schedule = await db.getSchedule(user);
-        return schedule;
-    };
+        let schedule: Schedule | undefined;
+        event.locals.getSchedule = async (refresh = false) => {
+            if (!schedule || refresh) schedule = await db.getSchedule(user);
+            return schedule;
+        };
 
-    let friends: User[] | undefined;
-    event.locals.getFriends = async (refresh = false) => {
-        if (!friends || refresh) friends = await db.getFriends(user);
-        return friends;
-    };
+        let friends: User[] | undefined;
+        event.locals.getFriends = async (refresh = false) => {
+            if (!friends || refresh) friends = await db.getFriends(user);
+            return friends;
+        };
 
-    let groups: Group[] | undefined;
-    event.locals.getGroups = async (refresh = false) => {
-        if (!groups || refresh) groups = await db.getGroups(user);
-        return groups;
-    };
+        let groups: Group[] | undefined;
+        event.locals.getGroups = async (refresh = false) => {
+            if (!groups || refresh) groups = await db.getGroups(user);
+            return groups;
+        };
 
-    let notifications: Notification[] | undefined;
-    event.locals.getNotifications = async (refresh = false) => {
-        if (!notifications || refresh) notifications = await db.getNotifications(user);
-        return notifications;
-    };
+        let notifications: Notification[] | undefined;
+        event.locals.getNotifications = async (refresh = false) => {
+            if (!notifications || refresh) notifications = await db.getNotifications(user);
+            return notifications;
+        };
+    }
 
     return resolve(event);
 }) satisfies Handle;

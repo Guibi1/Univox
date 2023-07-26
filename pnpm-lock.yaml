@@ -12,10 +12,10 @@ dependencies:
     version: 1.4.5
   '@lucia-auth/adapter-mysql':
     specifier: ^1.1.1
-    version: 1.1.1(@planetscale/database@1.8.0)(lucia-auth@1.8.0)
+    version: 1.1.1(@planetscale/database@1.7.0)(lucia-auth@1.8.0)
   '@planetscale/database':
-    specifier: ^1.8.0
-    version: 1.8.0
+    specifier: ^1.7.0
+    version: 1.7.0
   '@skeletonlabs/skeleton':
     specifier: ^1.10.0
     version: 1.10.0(svelte@4.1.1)
@@ -45,7 +45,7 @@ dependencies:
     version: 1.11.9
   drizzle-orm:
     specifier: ^0.27.2
-    version: 0.27.2(@planetscale/database@1.8.0)
+    version: 0.27.2(@planetscale/database@1.7.0)
   lucia-auth:
     specifier: ^1.8.0
     version: 1.8.0
@@ -944,7 +944,7 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
 
-  /@lucia-auth/adapter-mysql@1.1.1(@planetscale/database@1.8.0)(lucia-auth@1.8.0):
+  /@lucia-auth/adapter-mysql@1.1.1(@planetscale/database@1.7.0)(lucia-auth@1.8.0):
     resolution: {integrity: sha512-br+/OBDNJ+eRc6RrZnnC20ef+2VEMrXFxNYvsbryPw64ito7vg40STblpENdjJF0o4R10mjWTO43wQ+56jyXLA==}
     peerDependencies:
       '@planetscale/database': ^1.0.0
@@ -956,7 +956,7 @@ packages:
       mysql2:
         optional: true
     dependencies:
-      '@planetscale/database': 1.8.0
+      '@planetscale/database': 1.7.0
       lucia-auth: 1.8.0
     dev: false
 
@@ -1003,8 +1003,8 @@ packages:
     dev: false
     optional: true
 
-  /@planetscale/database@1.8.0:
-    resolution: {integrity: sha512-+zk04eXRiaJGaRnJZkCxXbBtBvQDQJXCoxqlXhLY3HzAovXfsBnh6DjXRujPRQQ7GKtT8/tOlyvZ9h6ReM+GLQ==}
+  /@planetscale/database@1.7.0:
+    resolution: {integrity: sha512-lWR6biXChUyQnxsT4RT1CIeR3ZJvwTQXiQ+158MnY3VjLwjHEGakDzdH9kwUGPk6CHvu6UeqRXp1DgUOVHJFTw==}
     engines: {node: '>=16'}
     dev: false
 
@@ -1835,7 +1835,7 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.27.2(@planetscale/database@1.8.0):
+  /drizzle-orm@0.27.2(@planetscale/database@1.7.0):
     resolution: {integrity: sha512-ZvBvceff+JlgP7FxHKe0zOU9CkZ4RcOtibumIrqfYzDGuOeF0YUY0F9iMqYpRM7pxnLRfC+oO7rWOUH3T5oFQA==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
@@ -1897,7 +1897,7 @@ packages:
       sqlite3:
         optional: true
     dependencies:
-      '@planetscale/database': 1.8.0
+      '@planetscale/database': 1.7.0
     dev: false
 
   /eastasianwidth@0.2.0:
