@@ -13,7 +13,7 @@ function createNotificationsStore() {
      * Updates the store with the latest information from the server
      */
     async function refresh() {
-        const { success, notifications } = await (await api.GET("/api/notifications")).json();
+        const { success, notifications } = await (await api.GET("/api/notifications", {})).json();
         if (success) set(notifications);
     }
 
@@ -24,7 +24,7 @@ function createNotificationsStore() {
      */
     async function create(kind: NotificationKind, receiverId: string) {
         const { success } = await (
-            await api.POST("/api/notifications", { kind, receiverId: receiverId })
+            await api.POST("/api/notifications", { body: { kind, receiverId: receiverId } })
         ).json();
         if (success) refresh();
     }
@@ -36,7 +36,9 @@ function createNotificationsStore() {
     async function remove(notification: Notification) {
         const { success } = await (
             await api.DELETE("/api/notifications", {
-                notificationId: notification.id,
+                body: {
+                    notificationId: notification.id,
+                },
             })
         ).json();
         if (success) refresh();

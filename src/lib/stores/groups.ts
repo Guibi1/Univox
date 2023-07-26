@@ -7,25 +7,27 @@ function createGroupsStore() {
     const { subscribe, set } = writable<Group[]>();
 
     async function refresh() {
-        const groups = await (await api.GET("/api/groups")).json();
+        const groups = await (await api.GET("/api/groups", {})).json();
         set(groups);
     }
 
     async function create(users: User[]) {
         const { success } = await (
-            await api.POST("/api/groups", { usersId: users.map((u) => u.id) })
+            await api.POST("/api/groups", { body: { usersId: users.map((u) => u.id) } })
         ).json();
         if (success) refresh();
     }
 
     async function quit(group: Group) {
-        const { success } = await (await api.DELETE("/api/groups", { groupId: group.id })).json();
+        const { success } = await (
+            await api.DELETE("/api/groups", { body: { groupId: group.id } })
+        ).json();
         if (success) refresh();
     }
 
     async function rename(group: Group, name: string) {
         const { success } = await (
-            await api.POST("/api/groups/name", { groupId: group.id, name })
+            await api.POST("/api/groups/name", { body: { groupId: group.id, name } })
         ).json();
         if (success) refresh();
     }
@@ -33,8 +35,10 @@ function createGroupsStore() {
     async function inviteToGroup(group: Group, users: User[]) {
         const { success } = await (
             await api.POST("/api/groups/invite", {
-                groupId: group.id,
-                usersId: users.map((u) => u.id),
+                body: {
+                    groupId: group.id,
+                    usersId: users.map((u) => u.id),
+                },
             })
         ).json();
         if (success) refresh();
@@ -42,7 +46,7 @@ function createGroupsStore() {
 
     async function getMembers(group: Group) {
         const { success, members } = await (
-            await api.POST("/api/groups/members", { groupId: group.id })
+            await api.POST("/api/groups/members", { body: { groupId: group.id } })
         ).json();
         if (success) refresh();
 

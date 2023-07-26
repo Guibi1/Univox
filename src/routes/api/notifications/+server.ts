@@ -1,7 +1,7 @@
 import * as db from "$lib/server/db";
 import type { NotificationKind } from "$lib/types";
 import { json } from "@sveltejs/kit";
-import { apiValidate } from "sveltekit-api-fetch";
+import { apiValidate } from "sveltekit-api-fetch/server";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 

@@ -3,7 +3,7 @@
  */
 
 import { json } from "@sveltejs/kit";
-import { apiValidate } from "sveltekit-api-fetch";
+import { apiValidate } from "sveltekit-api-fetch/server";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 

@@ -23,12 +23,12 @@ function createUserStore() {
     };
 
     async function refresh() {
-        const { success, user } = await (await api.GET("/api/user")).json();
+        const { success, user } = await (await api.GET("/api/user", {})).json();
         if (success) set(user);
     }
 
     async function setAvatar(seed: string) {
-        api.POST("/api/user/avatar", { avatar: seed });
+        api.POST("/api/user/avatar", { body: { avatar: seed } });
         update((user) => ({ ...user, avatar: seed }));
     }
 

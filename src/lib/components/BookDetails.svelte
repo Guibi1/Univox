@@ -11,7 +11,9 @@
     async function removeBook() {
         if (!book) return;
 
-        const { success } = await (await api.DELETE("/api/book", { bookId: book.id })).json();
+        const { success } = await (
+            await api.DELETE("/api/book", { body: { bookId: book.id } })
+        ).json();
 
         if (success) {
             invalidate("books");

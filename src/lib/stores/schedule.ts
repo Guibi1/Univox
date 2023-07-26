@@ -11,21 +11,23 @@ function createScheduleStore() {
     }
 
     async function refresh() {
-        const { success, schedule } = await (await api.GET("/api/schedule")).json();
+        const { success, schedule } = await (await api.GET("/api/schedule", {})).json();
         if (success) set(schedule);
     }
 
     async function add(period: Period) {
         const { success } = await (
             await api.POST("/api/schedule", {
-                periods: [
-                    {
-                        ...period,
-                        id: period.id,
-                        timeStart: period.timeStart.toJSON(),
-                        timeEnd: period.timeEnd.toJSON(),
-                    },
-                ],
+                body: {
+                    periods: [
+                        {
+                            ...period,
+                            id: period.id,
+                            timeStart: period.timeStart.toJSON(),
+                            timeEnd: period.timeEnd.toJSON(),
+                        },
+                    ],
+                },
             })
         ).json();
         if (success) refresh();
@@ -34,11 +36,13 @@ function createScheduleStore() {
     async function remove(period: Period) {
         const { success } = await (
             await api.DELETE("/api/schedule", {
-                period: {
-                    ...period,
-                    id: period.id,
-                    timeStart: period.timeStart.toJSON(),
-                    timeEnd: period.timeEnd.toJSON(),
+                body: {
+                    period: {
+                        ...period,
+                        id: period.id,
+                        timeStart: period.timeStart.toJSON(),
+                        timeEnd: period.timeEnd.toJSON(),
+                    },
                 },
             })
         ).json();

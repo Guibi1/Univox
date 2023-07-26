@@ -35,7 +35,7 @@ function createColorSchemeStore() {
     async function set(color: ColorScheme) {
         apply(color);
         if (bc) bc.postMessage(color);
-        await api.PUT("/api/settings/colorScheme", { colorScheme: color });
+        await api.PUT("/api/settings/colorScheme", { body: { colorScheme: color } });
     }
 
     return {

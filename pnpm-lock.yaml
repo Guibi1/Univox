@@ -59,8 +59,8 @@ dependencies:
     specifier: ^3.4.6
     version: 3.4.6(postcss@8.4.26)(svelte@4.1.1)
   sveltekit-api-fetch:
-    specifier: ^3.0.1
-    version: 3.0.1(@sveltejs/kit@1.22.3)(svelte@4.1.1)(vite@4.4.5)(zod@3.21.4)
+    specifier: ^3.1.0
+    version: 3.1.0(@sveltejs/kit@1.22.3)(svelte@4.1.1)(vite@4.4.5)(zod@3.21.4)
   sveltekit-superforms:
     specifier: ^1.4.0
     version: 1.4.0(@sveltejs/kit@1.22.3)(svelte@4.1.1)(zod@3.21.4)
@@ -2336,7 +2336,7 @@ packages:
     hasBin: true
     dependencies:
       foreground-child: 3.1.1
-      jackspeak: 2.2.1
+      jackspeak: 2.2.2
       minimatch: 9.0.3
       minipass: 5.0.0
       path-scurry: 1.10.1
@@ -2534,8 +2534,8 @@ packages:
   /isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  /jackspeak@2.2.1:
-    resolution: {integrity: sha512-MXbxovZ/Pm42f6cDIDkl3xpwv1AGwObKwfmjs2nQePiy85tP3fatofl3FC1aBsOtP/6fq5SbtgHwWcMsLP+bDw==}
+  /jackspeak@2.2.2:
+    resolution: {integrity: sha512-mgNtVv4vUuaKA97yxUHoA3+FkuhtxkjdXEWOyB/N76fjy0FjezEt34oy3epBtvCvS+7DyKwqCFWx/oJLV5+kCg==}
     engines: {node: '>=14'}
     dependencies:
       '@isaacs/cliui': 8.0.2
@@ -3608,8 +3608,8 @@ packages:
       magic-string: 0.30.1
       periscopic: 3.1.0
 
-  /sveltekit-api-fetch@3.0.1(@sveltejs/kit@1.22.3)(svelte@4.1.1)(vite@4.4.5)(zod@3.21.4):
-    resolution: {integrity: sha512-c1YyyUAioFSI6a/vFiXtJep2PS7vIimDA5N60GccUZxXsDquJZyfrS7kvnb4oRvued7PEF7sLtQeVgdSXJB9oA==}
+  /sveltekit-api-fetch@3.1.0(@sveltejs/kit@1.22.3)(svelte@4.1.1)(vite@4.4.5)(zod@3.21.4):
+    resolution: {integrity: sha512-TazP6UkpnS1ePAuY2rnGzZFUAV2EZ/4j4YxLM3QPOXDIKZON4x3Wpk1GtYWRqB1c2I5UqUBmNEMwY4T3+GCNUQ==}
     peerDependencies:
       '@sveltejs/kit': ^1.22.0
       svelte: ^3.55.0 || ^4.0.0-next.0 || ^4.0.0

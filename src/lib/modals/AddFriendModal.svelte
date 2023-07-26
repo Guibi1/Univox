@@ -21,7 +21,7 @@
     }
 
     async function onInput() {
-        const res = await api.POST("/api/friends/search", { searchQuery });
+        const res = await api.POST("/api/friends/search", { body: { searchQuery } });
         results = await res.json();
     }
 
