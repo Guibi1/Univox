@@ -17,7 +17,7 @@
     <title>Univox | Paramètres</title>
 </svelte:head>
 
-<div class="lg:grid-cols-[max-content_40rem] lg:divide-x mx-auto grid gap-6 py-4">
+<div class="lg:grid-cols-[max-content_20rem] lg:divide-x mx-auto grid gap-6 py-4">
     <div class="flex flex-col items-center gap-2 text-center">
         <div class="h-32">
             <Avatar />
@@ -28,10 +28,10 @@
             Avatar au hasard
         </button>
 
-        <h1>
+        <h2 class="h2">
             {$user.firstName}
             {$user.lastName}
-        </h1>
+        </h2>
 
         <span class="flex items-center justify-center gap-2">
             <i class="bx bx-map text-2xl" />
@@ -50,19 +50,25 @@
     </div>
 
     <div class="lg:pl-6">
-        <h1 class="my-4 gap-4 border-b-2 pb-2">Paramètres</h1>
+        <h1 class="h1 my-4">Paramètres</h1>
 
-        <form use:enhance method="post" class="grid grid-cols-2 items-center gap-x-2 gap-y-4">
-            <Select bind:value={$colorScheme}>
-                <Option text="Foncé" value="dark" />
-                <Option text="Clair" value="light" />
-            </Select>
-            <span class="ml-2 text-xl">Thème du site</span>
+        <form use:enhance method="post" class="flex flex-col gap-x-2 gap-y-4">
+            <label class="label">
+                <span> Thème du site </span>
 
-            <div class="flex flex-col">
+                <select bind:value={$colorScheme} class="select">
+                    <option value="dark">Foncé</option>
+                    <option value="light">Clair</option>
+                </select>
+            </label>
+
+            <label class="label">
+                <span> Nouveau mot de passe </span>
+
                 <input
                     name="password"
                     type="password"
+                    class="input"
                     value={$form.password}
                     readonly={$submitting}
                 />
@@ -70,13 +76,15 @@
                 {#if $errors.password}
                     <span>{$errors.password[0]}</span>
                 {/if}
-            </div>
-            <label for="password" class="ml-2 text-xl">Nouveau mot de passe</label>
+            </label>
 
-            <div class="flex flex-col">
+            <label class="label">
+                <span> Confirmer le nouveau mot de passe </span>
+
                 <input
                     name="confirmPassword"
                     type="password"
+                    class="input"
                     value={$form.confirmPassword}
                     readonly={$submitting}
                 />
@@ -84,12 +92,9 @@
                 {#if $errors.confirmPassword}
                     <span>{$errors.confirmPassword[0]}</span>
                 {/if}
-            </div>
-            <label for="confirmPassword" class="ml-2 text-xl">
-                Confirmer le nouveau mot de passe
             </label>
 
-            <button class="outlined col-span-2 self-center">Sauvgarder et quitter</button>
+            <button class="btn variant-filled-primary my-4">Sauvgarder et quitter</button>
         </form>
     </div>
 </div>
