@@ -2,14 +2,15 @@
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
     import Avatar from "$lib/components/Avatar.svelte";
-    import Dropdown from "$lib/components/Dropdown.svelte";
-    import GroupElement from "$lib/components/GroupElement.svelte";
-    import Option from "$lib/components/Option.svelte";
+    import Loader from "$lib/components/Loader.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
+    import UserCard from "$lib/components/UserCard.svelte";
     import { scheduleFromJson } from "$lib/sanitization";
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
+    import schedule from "$lib/stores/schedule";
+    import type { Group } from "$lib/types.js";
     import { Accordion, AccordionItem, modalStore } from "@skeletonlabs/skeleton";
     import type { User } from "lucia-auth";
 
@@ -47,6 +48,15 @@
         return `?${params}`;
     };
 
+    // Generates the search params that redirects to the user's schedule
+    $: getGroupUrl = (group: Group) => {
+        const params = new URLSearchParams($page.url.searchParams);
+        params.delete("friendId");
+        params.delete("commonSchedule");
+        params.set("groupId", group.id.toString());
+        return `?${params}`;
+    };
+
     // Generates the search params that redirects to the common schedule between the user and a friend
     $: getCommonScheduleUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
@@ -76,53 +86,43 @@
             <ul class="flex-grow flex-col gap-4 py-4">
                 {#each friendsFilterQuery($friends, query) as friend}
                     <li>
-                        <a href={getFriendUrl(friend)} class="btn flex items-start justify-center">
+                        <a href={getFriendUrl(friend)} class="btn flex justify-start">
                             <input
                                 type="checkbox"
                                 class="checkbox"
+                                value={friend}
                                 bind:group={selectedFriends}
-                                bind:value={friend}
                                 on:click|stopPropagation={() => {}}
                             />
 
-                            <div class="flex flex-row gap-2">
-                                <div class="h-12 w-12">
-                                    <Avatar seed={friend.avatar} />
-                                </div>
-
-                                <div class="flex flex-col justify-around items-start">
-                                    <span>
-                                        {friend.firstName}
-                                        {friend.lastName}
-                                    </span>
-
-                                    <small class="opacity-50">{friend.email}</small>
-                                </div>
-                            </div>
+                            <UserCard user={friend} />
                         </a>
                     </li>
                 {/each}
 
                 {#each $groups as group}
-                    <li class="flex items-center justify-between rounded-md px-4">
-                        <GroupElement {group} {selectedFriends} />
+                    <li>
+                        <a href={getGroupUrl(group)} class="btn flex justify-start">
+                            <div class="flex flex-col justify-around items-start">
+                                <span>{group.name}</span>
+                                <small class="opacity-50"> {group.usersId.length} personnes</small>
+                            </div>
+                        </a>
                     </li>
                 {/each}
             </ul>
         </nav>
 
         {#if selectedFriends.length >= 2}
-            <div class="flex justify-center p-4">
-                <button
-                    class="filled"
-                    on:click={() => {
-                        groups.create(selectedFriends);
-                        selectedFriends = [];
-                    }}
-                >
-                    Créer un groupe
-                </button>
-            </div>
+            <button
+                class="btn variant-filled-secondary my-4"
+                on:click={() => {
+                    groups.create(selectedFriends);
+                    selectedFriends = [];
+                }}
+            >
+                Créer un groupe
+            </button>
         {/if}
 
         <button
@@ -133,11 +133,17 @@
         </button>
     </div>
 
-    {#if data.schedule}
-        <ScheduleView schedule={scheduleFromJson(data.schedule)} />
-    {:else}
-        <div class="p-4">Affichage de l'horaire commun</div>
-    {/if}
+    {#await data.streamed.schedule}
+        <div class="grid justify-center items-center">
+            <Loader />
+        </div>
+    {:then schedule}
+        {#if schedule}
+            <ScheduleView schedule={scheduleFromJson(schedule)} />
+        {:else}
+            <div class="p-4">Affichage de l'horaire commun</div>
+        {/if}
+    {/await}
 
     <section class="flex flex-col m-4">
         {#if currentFriend}
@@ -178,6 +184,47 @@
                     Disponibilités communes
                 </button>
             </div>
+        {:else}
+            {#await data.streamed.group then group}
+                {#if group}
+                    <div class="flex flex-col m-4">
+                        <h4 class="h4">{group.name}</h4>
+
+                        <div class="card flex flex-col p-4 gap-4">
+                            <h5 class="h5">Membres</h5>
+                            <ul class="flex flex-col gap-2">
+                                {#each group.users as user}
+                                    <li>
+                                        <UserCard {user} />
+                                    </li>
+                                {/each}
+                            </ul>
+
+                            <Accordion>
+                                <AccordionItem>
+                                    <svelte:fragment slot="summary">Plus d'actions</svelte:fragment>
+
+                                    <div slot="content" class="grid gap-2">
+                                        <button
+                                            class="btn variant-ghost-secondary"
+                                            on:click={() => groups.rename(group)}
+                                        >
+                                            Renommer le groupe
+                                        </button>
+
+                                        <button
+                                            class="btn variant-ghost-error"
+                                            on:click={() => groups.quit(group)}
+                                        >
+                                            Quitter le groupe
+                                        </button>
+                                    </div>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+                    </div>
+                {/if}
+            {/await}
         {/if}
     </section>
 </div>

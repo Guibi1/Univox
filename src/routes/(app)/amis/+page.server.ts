@@ -1,57 +1,56 @@
 import { getWeekCommonOccupations } from "$lib/commonOccupations";
 import { scheduleFromJson } from "$lib/sanitization";
 import * as db from "$lib/server/db";
-import type { Period, Schedule } from "$lib/types";
+import type { Period } from "$lib/types";
 import dayjs from "dayjs";
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ locals, url }) => {
+export const load = (({ locals, url }) => {
     const friendId = url.searchParams.get("friendId");
     const groupId = Number.parseInt(url.searchParams.get("groupId") ?? "");
     const isCommonSchedule = url.searchParams.get("commonSchedule") !== null;
 
-    let schedule: Schedule | null = null;
+    const group = Promise.resolve(groupId ? db.getGroupWithUsers(groupId) : null);
 
-    if (groupId) {
-        const group = await db.getGroup(groupId);
-        if (group) {
+    const getSchedule = async () => {
+        const grp = await group;
+        if (grp) {
             const membersCombinedPeriods: Period[] = [];
-            for (const userId of group.usersId) {
-                const user = await db.getUser(userId);
-                if (user) {
-                    const memberSchedule = scheduleFromJson(await db.getSchedule(user));
-                    membersCombinedPeriods.push(
-                        ...memberSchedule.periods,
-                        ...memberSchedule.classes
-                    );
+            for (const user of grp.users) {
+                const memberSchedule = scheduleFromJson(await db.getSchedule(user));
+                membersCombinedPeriods.push(...memberSchedule.periods, ...memberSchedule.classes);
+            }
+
+            return getWeekCommonOccupations(dayjs(), membersCombinedPeriods);
+        }
+
+        if (friendId && (await db.getFriendsId(locals.user)).some((id) => id === friendId)) {
+            const friend = await db.getUser(friendId);
+
+            if (friend) {
+                if (isCommonSchedule) {
+                    const friendScheduleToCompare = scheduleFromJson(await db.getSchedule(friend));
+                    const localUserSchedule = scheduleFromJson(await db.getSchedule(locals.user));
+
+                    return getWeekCommonOccupations(dayjs(), [
+                        ...friendScheduleToCompare.periods,
+                        ...friendScheduleToCompare.classes,
+                        ...localUserSchedule.periods,
+                        ...localUserSchedule.classes,
+                    ]);
+                } else {
+                    return await db.getSchedule(friend);
                 }
             }
-
-            schedule = getWeekCommonOccupations(dayjs(), membersCombinedPeriods);
         }
-    } else if (friendId && (await db.getFriendsId(locals.user)).some((id) => id === friendId)) {
-        const friend = await db.getUser(friendId);
-
-        if (friend) {
-            if (isCommonSchedule) {
-                const friendScheduleToCompare = scheduleFromJson(await db.getSchedule(friend));
-                const localUserSchedule = scheduleFromJson(await db.getSchedule(locals.user));
-
-                schedule = getWeekCommonOccupations(dayjs(), [
-                    ...friendScheduleToCompare.periods,
-                    ...friendScheduleToCompare.classes,
-                    ...localUserSchedule.periods,
-                    ...localUserSchedule.classes,
-                ]);
-            } else {
-                schedule = await db.getSchedule(friend);
-            }
-        }
-    }
+        return null;
+    };
 
     return {
         friendId,
-        groupId,
-        schedule: schedule,
+        streamed: {
+            group,
+            schedule: getSchedule(),
+        },
     };
 }) satisfies PageServerLoad;

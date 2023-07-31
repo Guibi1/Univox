@@ -1,4 +1,5 @@
 import type { Group } from "$lib/types";
+import { modalStore } from "@skeletonlabs/skeleton";
 import type { User } from "lucia-auth";
 import { writable } from "svelte/store";
 import { api } from "sveltekit-api-fetch";
@@ -25,11 +26,20 @@ function createGroupsStore() {
         if (success) refresh();
     }
 
-    async function rename(group: Group, name: string) {
-        const { success } = await (
-            await api.POST("/api/groups/name", { body: { groupId: group.id, name } })
-        ).json();
-        if (success) refresh();
+    async function rename(group: Group) {
+        modalStore.trigger({
+            type: "prompt",
+            title: "Renommer le groupe",
+            body: "Entrez le nouveau nom du groupe",
+            value: group.name,
+            valueAttr: { type: "text", minlength: 3, maxlength: 30, required: true },
+            response: async (name: string) => {
+                const { success } = await (
+                    await api.POST("/api/groups/name", { body: { groupId: group.id, name } })
+                ).json();
+                if (success) refresh();
+            },
+        });
     }
 
     async function inviteToGroup(group: Group, users: User[]) {

@@ -6,7 +6,7 @@ import type { RequestHandler } from "./$types";
 
 const _postSchema = z.object({
     groupId: z.number(),
-    name: z.string().min(3),
+    name: z.string().min(3).max(30),
 });
 
 export const POST = (async ({ request, locals }) => {

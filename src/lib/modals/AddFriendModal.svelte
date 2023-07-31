@@ -12,6 +12,7 @@
 
     function addFriend(user: User) {
         friends.add(user.id);
+        $modalStore[0].response?.(user);
         modalStore.close();
         toastStore.trigger({
             message: "Demande d'ami envoyée",
@@ -33,9 +34,9 @@
     }
 </script>
 
-<div
+<modal
     bind:this={elemSearch}
-    class="card bg-surface-100/60 dark:bg-surface-500/30 backdrop-blur-lg overflow-hidden w-full max-w-[800px] shadow-xl mt-8 mb-auto"
+    class="card bg-surface-100/60 dark:bg-surface-500/30 backdrop-blur-lg overflow-hidden w-modal shadow-xl mt-8 mb-auto"
 >
     <!-- Header -->
     <header class="bg-surface-300-600-token flex items-center">
@@ -96,4 +97,4 @@
         <span><kbd class="kbd">Tab</kbd> pour naviguer</span>
         <span><kbd class="kbd">Enter</kbd> pour ajouter en ami</span>
     </footer>
-</div>
+</modal>

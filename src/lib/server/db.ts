@@ -10,8 +10,18 @@ import type {
 } from "$lib/types";
 import { connect } from "@planetscale/database";
 import chalk from "chalk";
-import { and, eq, getTableColumns, inArray, like, ne, notLike, or } from "drizzle-orm";
-import type { MySqlUpdateSetSource } from "drizzle-orm/mysql-core";
+import {
+    aliasedTable,
+    and,
+    eq,
+    getTableColumns,
+    inArray,
+    like,
+    ne,
+    notLike,
+    or,
+} from "drizzle-orm";
+import { alias, type MySqlUpdateSetSource } from "drizzle-orm/mysql-core";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 import type { User } from "lucia-auth";
 import { auth } from "./auth";
@@ -208,9 +218,44 @@ export async function getGroup(id: number): Promise<Group | null> {
             .from(groupsTable)
             .where(eq(groupsTable.id, id))
             .innerJoin(groupUsersTable, eq(groupUsersTable.groupId, groupsTable.id));
+
         return result.reduce<Group | null>((prev, v) => {
             if (!prev) return { id: v.id, name: v.name, usersId: [v.userId] };
             prev.usersId.push(v.userId);
+            return prev;
+        }, null);
+    } catch {
+        log("A group couldn't be found");
+        return null;
+    }
+}
+
+/**
+ * Fetches a group's data from de the database
+ * @param id The group id
+ * @returns The group data
+ */
+export async function getGroupWithUsers(id: number): Promise<(Group & { users: User[] }) | null> {
+    try {
+        const result = await db
+            .select({
+                id: groupsTable.id,
+                name: groupsTable.name,
+                userId: groupUsersTable.userId,
+                user: getTableColumns(usersTable),
+            })
+            .from(groupsTable)
+            .where(eq(groupsTable.id, id))
+            .innerJoin(groupUsersTable, eq(groupUsersTable.groupId, groupsTable.id))
+            .innerJoin(usersTable, eq(groupUsersTable.userId, usersTable.id));
+
+        return result.reduce<(Group & { users: User[] }) | null>((prev, v) => {
+            if (!prev) {
+                return { id: v.id, name: v.name, usersId: [v.userId], users: [v.user] };
+            }
+
+            prev.usersId.push(v.userId);
+            prev.users.push(v.user);
             return prev;
         }, null);
     } catch {
@@ -226,16 +271,23 @@ export async function getGroup(id: number): Promise<Group | null> {
  */
 export async function getGroups(user: User): Promise<Group[]> {
     const result = await db
-        .select()
+        .select({
+            groups: getTableColumns(groupsTable),
+            userId: alias(groupUsersTable, "others").userId,
+        })
         .from(groupUsersTable)
         .where(eq(groupUsersTable.userId, user.id))
-        .innerJoin(groupsTable, eq(groupUsersTable.groupId, groupsTable.id));
+        .innerJoin(groupsTable, eq(groupUsersTable.groupId, groupsTable.id))
+        .innerJoin(
+            alias(groupUsersTable, "others"),
+            eq(groupUsersTable.groupId, aliasedTable(groupUsersTable, "others").groupId)
+        );
 
     return Array.from(
         result
             .reduce((groups, result) => {
                 const group = groups.get(result.groups.id) ?? { ...result.groups, usersId: [] };
-                group.usersId.push(result.group_users.userId);
+                group.usersId.push(result.userId);
                 groups.set(result.groups.id, group);
                 return groups;
             }, new Map<number, Group>())
