@@ -23,10 +23,7 @@
                     <div class="grid h-8 grid-cols-2 gap-2">
                         <button
                             class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
-                            on:click={async () => {
-                                await friends.add(notification.sender.id);
-                                await notifications.remove(notification);
-                            }}
+                            on:click={() => friends.add(notification.sender.id)}
                         >
                             <i class="bx bx-check text-2xl" />
                         </button>

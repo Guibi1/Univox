@@ -712,7 +712,7 @@ export async function sendNotification(
     user: User,
     receiverId: string,
     kind: NotificationKind,
-    details: unknown
+    details?: unknown
 ): Promise<boolean> {
     const receiver = await getUser(receiverId);
     if (!receiver) return false;

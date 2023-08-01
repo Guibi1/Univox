@@ -12,7 +12,7 @@ export const POST = (async ({ request, locals }) => {
     const { data } = await apiValidate(request, _postSchema);
 
     return json({
-        success: await db.addFriend(locals.user, data.friendId),
+        success: await db.sendNotification(locals.user, data.friendId, "FriendRequest"),
     });
 }) satisfies RequestHandler;
 

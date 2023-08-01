@@ -6,7 +6,7 @@ import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
 const _postSchema = z.object({
-    kind: z.string(),
+    kind: z.string().transform((k) => k as NotificationKind),
     receiverId: z.string().length(15),
 });
 
@@ -14,12 +14,7 @@ export const POST = (async ({ request, locals }) => {
     const { data } = await apiValidate(request, _postSchema);
 
     return json({
-        success: await db.sendNotification(
-            locals.user,
-            data.receiverId,
-            data.kind as NotificationKind,
-            {}
-        ),
+        success: await db.sendNotification(locals.user, data.receiverId, data.kind),
     });
 }) satisfies RequestHandler;
 
