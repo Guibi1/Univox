@@ -1,6 +1,6 @@
 import type { Auth as LuciaAuth } from "$lib/server/auth";
 import { usersTable } from "$lib/server/schemas/users";
-import type { Notification } from "$lib/types";
+import type { Group, Notification, Schedule } from "$lib/types";
 import type { InferModel } from "drizzle-orm";
 import type { AuthRequest, User } from "lucia-auth";
 

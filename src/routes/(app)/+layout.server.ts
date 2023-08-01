@@ -1,3 +1,4 @@
+import { scheduleToJson } from "$lib/sanitization";
 import friends from "$lib/stores/friends";
 import groups from "$lib/stores/groups";
 import notifications from "$lib/stores/notifications";
@@ -9,7 +10,7 @@ export const load = (async ({ locals }) => {
     // Stores are up to date during SSR
     user.set(locals.user);
     notifications.set(await locals.getNotifications());
-    schedule.set(await locals.getSchedule());
+    schedule.setStore(await locals.getSchedule());
     friends.set(await locals.getFriends());
     groups.set(await locals.getGroups());
 
@@ -17,7 +18,7 @@ export const load = (async ({ locals }) => {
         stores: {
             user: locals.user,
             notifications: await locals.getNotifications(),
-            schedule: await locals.getSchedule(),
+            schedule: scheduleToJson(await locals.getSchedule()),
             friends: await locals.getFriends(),
             groups: await locals.getGroups(),
         },

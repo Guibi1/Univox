@@ -52,5 +52,5 @@ export const DELETE = (async ({ request, locals }) => {
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {
-    return json({ success: true, schedule: locals.getSchedule() });
+    return json({ success: true, schedule: await locals.getSchedule() });
 }) satisfies RequestHandler;
