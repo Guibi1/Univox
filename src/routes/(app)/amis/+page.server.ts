@@ -1,31 +1,20 @@
 import { getWeekCommonOccupations } from "$lib/commonOccupations";
 import { scheduleFromJson } from "$lib/sanitization";
 import * as db from "$lib/server/db";
-import type { Period } from "$lib/types";
+import type { Schedule } from "$lib/types";
 import dayjs from "dayjs";
 import type { PageServerLoad } from "./$types";
 
-export const load = (({ locals, url }) => {
+export const load = (async ({ locals, url }) => {
     const friendId = url.searchParams.get("friendId");
     const groupId = Number.parseInt(url.searchParams.get("groupId") ?? "");
     const isCommonSchedule = url.searchParams.get("commonSchedule") !== null;
 
-    const group = Promise.resolve(groupId ? db.getGroupWithUsers(groupId) : null);
+    const group = groupId ? await db.getGroupWithUsers(groupId) : null;
 
-    const getSchedule = async () => {
-        const grp = await group;
-        if (grp) {
-            const membersCombinedPeriods: Period[] = [];
-            for (const user of grp.users) {
-                const memberSchedule = scheduleFromJson(await db.getSchedule(user));
-                membersCombinedPeriods.push(...memberSchedule.periods, ...memberSchedule.classes);
-            }
-
-            return getWeekCommonOccupations(dayjs(), membersCombinedPeriods);
-        }
-
-        if (friendId && (await db.getFriendsId(locals.user)).some((id) => id === friendId)) {
-            const friend = await db.getUser(friendId);
+    const getSchedule: () => Promise<Schedule | undefined> = async () => {
+        if (friendId) {
+            const friend = await db.getUserIfFriend(locals.user, friendId);
 
             if (friend) {
                 if (isCommonSchedule) {
@@ -42,14 +31,22 @@ export const load = (({ locals, url }) => {
                     return await db.getSchedule(friend);
                 }
             }
+        } else if (group) {
+            const schedules = group?.users.map((user) =>
+                db.getSchedule(user).then((s) => scheduleFromJson(s))
+            );
+
+            return getWeekCommonOccupations(
+                dayjs(),
+                (await Promise.all(schedules)).flatMap((s) => [...s.periods, ...s.lessons])
+            );
         }
-        return null;
     };
 
     return {
         friendId,
+        group,
         streamed: {
-            group,
             schedule: getSchedule(),
         },
     };

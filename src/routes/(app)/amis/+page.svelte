@@ -9,7 +9,6 @@
     import { scheduleFromJson } from "$lib/sanitization";
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
-    import schedule from "$lib/stores/schedule";
     import type { Group } from "$lib/types.js";
     import { Accordion, AccordionItem, modalStore } from "@skeletonlabs/skeleton";
     import type { User } from "lucia-auth";
@@ -184,47 +183,43 @@
                     Disponibilités communes
                 </button>
             </div>
-        {:else}
-            {#await data.streamed.group then group}
-                {#if group}
-                    <div class="flex flex-col m-4">
-                        <h4 class="h4">{group.name}</h4>
+        {:else if data.group}
+            <div class="flex flex-col m-4">
+                <h4 class="h4">{data.group.name}</h4>
 
-                        <div class="card flex flex-col p-4 gap-4">
-                            <h5 class="h5">Membres</h5>
-                            <ul class="flex flex-col gap-2">
-                                {#each group.users as user}
-                                    <li>
-                                        <UserCard {user} />
-                                    </li>
-                                {/each}
-                            </ul>
+                <div class="card flex flex-col p-4 gap-4">
+                    <h5 class="h5">Membres</h5>
+                    <ul class="flex flex-col gap-2">
+                        {#each data.group.users as user}
+                            <li>
+                                <UserCard {user} />
+                            </li>
+                        {/each}
+                    </ul>
 
-                            <Accordion>
-                                <AccordionItem>
-                                    <svelte:fragment slot="summary">Plus d'actions</svelte:fragment>
+                    <Accordion>
+                        <AccordionItem>
+                            <svelte:fragment slot="summary">Plus d'actions</svelte:fragment>
 
-                                    <div slot="content" class="grid gap-2">
-                                        <button
-                                            class="btn variant-ghost-secondary"
-                                            on:click={() => groups.rename(group)}
-                                        >
-                                            Renommer le groupe
-                                        </button>
+                            <div slot="content" class="grid gap-2">
+                                <button
+                                    class="btn variant-ghost-secondary"
+                                    on:click={() => data.group && groups.rename(data.group)}
+                                >
+                                    Renommer le groupe
+                                </button>
 
-                                        <button
-                                            class="btn variant-ghost-error"
-                                            on:click={() => groups.quit(group)}
-                                        >
-                                            Quitter le groupe
-                                        </button>
-                                    </div>
-                                </AccordionItem>
-                            </Accordion>
-                        </div>
-                    </div>
-                {/if}
-            {/await}
+                                <button
+                                    class="btn variant-ghost-error"
+                                    on:click={() => data.group && groups.quit(data.group)}
+                                >
+                                    Quitter le groupe
+                                </button>
+                            </div>
+                        </AccordionItem>
+                    </Accordion>
+                </div>
+            </div>
         {/if}
     </section>
 </div>

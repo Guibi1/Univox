@@ -125,6 +125,33 @@ export async function searchUsers(
  * @param user The current user
  * @returns An array of friends
  */
+export async function getUserIfFriend(user: User, id: string): Promise<User | null> {
+    const result = await db
+        .select({ ...getTableColumns(usersTable) })
+        .from(friendsTable)
+        .where(
+            or(
+                and(eq(friendsTable.friendId, id), eq(friendsTable.userId, user.id)),
+                and(eq(friendsTable.friendId, user.id), eq(friendsTable.userId, id))
+            )
+        )
+        .innerJoin(
+            usersTable,
+            and(
+                or(eq(friendsTable.friendId, id), eq(friendsTable.userId, id)),
+                ne(usersTable.id, user.id)
+            )
+        )
+        .limit(1);
+
+    return result.at(0) ?? null;
+}
+
+/**
+ * Fetches the latests friends
+ * @param user The current user
+ * @returns An array of friends
+ */
 export async function getFriendsId(user: User): Promise<string[]> {
     const result = await db
         .select({ a: friendsTable.userId, b: friendsTable.friendId })
