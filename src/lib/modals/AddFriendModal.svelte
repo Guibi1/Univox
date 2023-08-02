@@ -15,7 +15,7 @@
         $modalStore[0].response?.(user);
         modalStore.close();
         toastStore.trigger({
-            message: "Demande d'ami envoyée",
+            message: `Demande d'ami envoyée à <b>${user.firstName}</b>`,
             background: "variant-filled-success",
             timeout: 3000,
         });
@@ -28,7 +28,7 @@
 
     function onKeyDown(event: KeyboardEvent) {
         if (["Enter", "ArrowDown"].includes(event.code)) {
-            const queryFirstAnchorElement = elemSearch.querySelector("a");
+            const queryFirstAnchorElement = elemSearch.querySelector("button");
             if (queryFirstAnchorElement) queryFirstAnchorElement.focus();
         }
     }

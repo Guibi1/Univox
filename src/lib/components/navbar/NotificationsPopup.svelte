@@ -4,35 +4,37 @@
     import notifications from "$lib/stores/notifications";
 </script>
 
-<div data-popup="notifications" class="card z-[9999] w-48 py-2 shadow-xl">
-    <div class="arrow card bg-surface-100-800-token" />
+<div data-popup="notifications" class="card z-[9999] w-72 py-2 shadow-2xl">
+    <div class="arrow card" />
 
     {#if $notifications.length === 0}
-        <span class="w-fit p-6">Aucune notification</span>
+        <div class="text-center p-2">Aucune notification</div>
     {:else}
         {#each $notifications as notification}
             {#if notification.kind === "FriendRequest"}
-                <div class="flex flex-col gap-4 p-4">
-                    <div class="grid min-w-[15rem] grid-cols-[4rem_1fr] items-center gap-2">
+                <div class="flex gap-4 p-2 items-center justify-between">
+                    <div class="w-16 h-16 flex-none">
                         <Avatar seed={notification.sender.avatar} />
-
-                        {notification.sender.firstName}
-                        {notification.sender.lastName} veux vous ajouter en ami.
                     </div>
 
-                    <div class="grid h-8 grid-cols-2 gap-2">
+                    <span>
+                        {notification.sender.firstName}
+                        {notification.sender.lastName} veux vous ajouter en ami.
+                    </span>
+
+                    <div class="flex flex-col justify-center gap-2 pr-2">
                         <button
-                            class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
+                            class="btn-icon btn-icon-sm variant-ghost-success"
                             on:click={() => friends.add(notification.sender.id)}
                         >
-                            <i class="bx bx-check text-2xl" />
+                            <i class="bx bx-check text-xl" />
                         </button>
 
                         <button
-                            class="rounded bg-white transition-[background-color] dark:bg-neutral-600 dark:hover:bg-neutral-500"
+                            class="btn-icon btn-icon-sm variant-outline-error"
                             on:click={() => notifications.remove(notification)}
                         >
-                            <i class="bx bx-x text-2xl" />
+                            <i class="bx bx-x text-xl" />
                         </button>
                     </div>
                 </div>
