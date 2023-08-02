@@ -15,6 +15,7 @@ function createNotificationsStore() {
     async function refresh() {
         const { success, notifications } = await (await api.GET("/api/notifications", {})).json();
         if (success) set(notifications);
+        return success;
     }
 
     /**
@@ -27,6 +28,7 @@ function createNotificationsStore() {
             await api.POST("/api/notifications", { body: { kind, receiverId: receiverId } })
         ).json();
         if (success) refresh();
+        return success;
     }
 
     /**
@@ -42,6 +44,7 @@ function createNotificationsStore() {
             })
         ).json();
         if (success) refresh();
+        return success;
     }
 
     return {

@@ -30,5 +30,5 @@ export const DELETE = (async ({ request, locals }) => {
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {
-    return json(locals.getGroups());
+    return json({ success: true, groups: await locals.getGroups() });
 }) satisfies RequestHandler;

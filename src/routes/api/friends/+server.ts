@@ -29,5 +29,5 @@ export const DELETE = (async ({ request, locals }) => {
 }) satisfies RequestHandler;
 
 export const GET = (async ({ locals }) => {
-    return json({ success: true, friends: locals.getFriends() });
+    return json({ success: true, friends: await locals.getFriends() });
 }) satisfies RequestHandler;

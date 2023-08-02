@@ -13,6 +13,7 @@ function createScheduleStore() {
     async function refresh() {
         const { success, schedule } = await (await api.GET("/api/schedule", {})).json();
         if (success) set(schedule);
+        return success;
     }
 
     async function add(period: Period) {
@@ -31,6 +32,7 @@ function createScheduleStore() {
             })
         ).json();
         if (success) refresh();
+        return success;
     }
 
     async function remove(period: Period) {
@@ -47,6 +49,7 @@ function createScheduleStore() {
             })
         ).json();
         if (success) refresh();
+        return success;
     }
 
     return {

@@ -7,8 +7,8 @@ function createFriendsStore() {
 
     async function refresh() {
         const { success, friends } = await (await api.GET("/api/friends", {})).json();
-
         if (success) set(friends);
+        return success;
     }
 
     async function add(id: string) {
@@ -16,6 +16,7 @@ function createFriendsStore() {
             await api.POST("/api/friends", { body: { friendId: id } })
         ).json();
         if (success) refresh();
+        return success;
     }
 
     async function remove(id: string) {
@@ -23,6 +24,7 @@ function createFriendsStore() {
             await api.DELETE("/api/friends", { body: { friendId: id } })
         ).json();
         if (success) refresh();
+        return success;
     }
 
     return {

@@ -8,8 +8,9 @@ function createGroupsStore() {
     const { subscribe, set } = writable<Group[]>();
 
     async function refresh() {
-        const groups = await (await api.GET("/api/groups", {})).json();
-        set(groups);
+        const { success, groups } = await (await api.GET("/api/groups", {})).json();
+        if (success) set(groups);
+        return success;
     }
 
     async function create(users: User[]) {
@@ -17,6 +18,7 @@ function createGroupsStore() {
             await api.POST("/api/groups", { body: { usersId: users.map((u) => u.id) } })
         ).json();
         if (success) refresh();
+        return success;
     }
 
     async function quit(group: Group) {
@@ -24,6 +26,7 @@ function createGroupsStore() {
             await api.DELETE("/api/groups", { body: { groupId: group.id } })
         ).json();
         if (success) refresh();
+        return success;
     }
 
     async function rename(group: Group) {
@@ -52,6 +55,7 @@ function createGroupsStore() {
             })
         ).json();
         if (success) refresh();
+        return success;
     }
 
     async function getMembers(group: Group) {

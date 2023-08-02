@@ -25,6 +25,7 @@ function createUserStore() {
     async function refresh() {
         const { success, user } = await (await api.GET("/api/user", {})).json();
         if (success) set(user);
+        return success;
     }
 
     async function setAvatar(seed: string) {
