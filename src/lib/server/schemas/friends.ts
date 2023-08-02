@@ -1,6 +1,4 @@
-import { relations } from "drizzle-orm";
 import { index, mysqlTable, serial, varchar } from "drizzle-orm/mysql-core";
-import { usersTable } from "./users";
 
 export const friendsTable = mysqlTable(
     "friends",
@@ -13,8 +11,3 @@ export const friendsTable = mysqlTable(
         userIndex: index("user_idx").on(friend.userId),
     })
 );
-
-export const friendsRelations = relations(friendsTable, ({ one }) => ({
-    user: one(usersTable, { fields: [friendsTable.userId], references: [usersTable.id] }),
-    friend: one(usersTable, { fields: [friendsTable.friendId], references: [usersTable.id] }),
-}));

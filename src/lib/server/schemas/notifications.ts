@@ -11,5 +11,6 @@ export const notificationsTable = mysqlTable(
     },
     (notification) => ({
         userIndex: index("user_idx").on(notification.userId),
+        senderIndex: index("sender_idx").on(notification.senderId),
     })
 );

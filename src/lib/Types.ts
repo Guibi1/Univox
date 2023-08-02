@@ -29,7 +29,6 @@ export interface Book {
  * Represents a user's schedule
  */
 export interface Schedule {
-    id: number;
     periods: Period[];
     lessons: Lesson[];
 }
@@ -39,6 +38,8 @@ export interface Schedule {
  */
 export interface Period {
     id: number;
+    userId: string;
+
     name: string;
     timeStart: Dayjs;
     timeEnd: Dayjs;

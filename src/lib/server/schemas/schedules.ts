@@ -1,17 +1,14 @@
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { relations } from "drizzle-orm";
 import {
     boolean,
     customType,
     index,
-    int,
     mysqlTable,
     serial,
     smallint,
     varchar,
 } from "drizzle-orm/mysql-core";
-import { usersTable } from "./users";
 
 // Dayjs type for the mysql database
 const mysqlDayjs = customType<{ data: Dayjs; driverData: Date }>({
@@ -20,29 +17,18 @@ const mysqlDayjs = customType<{ data: Dayjs; driverData: Date }>({
     fromDriver: (value) => dayjs(value),
 });
 
-export const schedulesTable = mysqlTable(
-    "schedules",
-    {
-        id: serial("id").primaryKey(),
-        userId: varchar("userid", { length: 15 }).notNull(),
-    },
-    (schedule) => ({
-        userIndex: index("useridx").on(schedule.userId),
-    })
-);
-
 export const periodsTable = mysqlTable(
     "period_schedules",
     {
         id: serial("id").primaryKey(),
-        scheduleId: int("schedule_id").notNull(),
+        userId: varchar("user_id", { length: 15 }).notNull(),
 
         name: varchar("name", { length: 128 }).notNull(),
         timeStart: mysqlDayjs("time_start").notNull(),
         timeEnd: mysqlDayjs("time_end").notNull(),
     },
     (period) => ({
-        scheduleIndex: index("schedule_idx").on(period.scheduleId),
+        userIndex: index("user_idx").on(period.userId),
     })
 );
 
@@ -50,7 +36,7 @@ export const lessonsTable = mysqlTable(
     "period_lessons",
     {
         id: serial("id").primaryKey(),
-        scheduleId: int("schedule_id").notNull(),
+        userId: varchar("user_id", { length: 15 }).notNull(),
 
         name: varchar("name", { length: 128 }).notNull(),
         timeStart: mysqlDayjs("time_start").notNull(),
@@ -64,24 +50,6 @@ export const lessonsTable = mysqlTable(
         virtual: boolean("is_virtual").notNull(),
     },
     (lesson) => ({
-        scheduleIndex: index("schedule_idx").on(lesson.scheduleId),
+        userIndex: index("user_idx").on(lesson.userId),
     })
 );
-
-export const schedulesRelations = relations(schedulesTable, ({ one, many }) => ({
-    user: one(usersTable, { fields: [schedulesTable.userId], references: [usersTable.id] }),
-    periods: many(periodsTable),
-    lessons: many(lessonsTable),
-}));
-export const periodsRelations = relations(periodsTable, ({ one }) => ({
-    schedule: one(schedulesTable, {
-        fields: [periodsTable.scheduleId],
-        references: [schedulesTable.id],
-    }),
-}));
-export const lessonsRelations = relations(lessonsTable, ({ one }) => ({
-    schedule: one(schedulesTable, {
-        fields: [lessonsTable.scheduleId],
-        references: [schedulesTable.id],
-    }),
-}));

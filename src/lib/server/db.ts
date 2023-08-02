@@ -29,7 +29,7 @@ import { booksTable } from "./schemas/books";
 import { friendsTable } from "./schemas/friends";
 import { groupUsersTable, groupsTable } from "./schemas/groups";
 import { notificationsTable } from "./schemas/notifications";
-import { lessonsTable, periodsTable, schedulesTable } from "./schemas/schedules";
+import { lessonsTable, periodsTable } from "./schemas/schedules";
 import { usersTable } from "./schemas/users";
 
 const log = (...text: unknown[]) =>
@@ -427,33 +427,11 @@ export async function updateGroup(
  * @param user The targeted user
  * @returns The user's schedule
  */
-export async function getSchedule(user: User, empty = false): Promise<Schedule> {
-    const result = (
-        await db
-            .select({ id: schedulesTable.id })
-            .from(schedulesTable)
-            .where(eq(schedulesTable.userId, user.id))
-            .limit(1)
-    ).at(0);
+export async function getSchedule(user: User): Promise<Schedule> {
+    const periods = await db.select().from(periodsTable).where(eq(periodsTable.userId, user.id));
+    const lessons = await db.select().from(lessonsTable).where(eq(lessonsTable.userId, user.id));
 
-    if (!result) {
-        await db.insert(schedulesTable).values({ userId: user.id });
-        return getSchedule(user, empty);
-    }
-
-    if (empty) return { id: result.id, periods: [], lessons: [] };
-
-    const periods = await db
-        .select()
-        .from(periodsTable)
-        .where(eq(periodsTable.scheduleId, result.id));
-
-    const lessons = await db
-        .select()
-        .from(lessonsTable)
-        .where(eq(lessonsTable.scheduleId, result.id));
-
-    return { id: result.id, periods, lessons };
+    return { periods, lessons };
 }
 
 /**
@@ -466,12 +444,8 @@ export async function addPeriodsToSchedule(
     user: User,
     periods: Omit<Period, "id">[]
 ): Promise<boolean> {
-    const schedule = await getSchedule(user, true);
-
     try {
-        await db
-            .insert(periodsTable)
-            .values(periods.map((p) => ({ ...p, scheduleId: schedule.id })));
+        await db.insert(periodsTable).values(periods.map((p) => ({ ...p, userId: user.id })));
 
         return true;
     } catch {
@@ -490,12 +464,8 @@ export async function addClassesToSchedule(
     user: User,
     lessons: Omit<Lesson, "id">[]
 ): Promise<boolean> {
-    const schedule = await getSchedule(user, true);
-
     try {
-        await db
-            .insert(lessonsTable)
-            .values(lessons.map((l) => ({ ...l, scheduleId: schedule.id })));
+        await db.insert(lessonsTable).values(lessons.map((l) => ({ ...l, userId: user.id })));
 
         return true;
     } catch {
@@ -510,10 +480,8 @@ export async function addClassesToSchedule(
  * @returns True if the operation succeeded, false otherwise
  */
 export async function deleteAllClassesInSchedule(user: User): Promise<boolean> {
-    const schedule = await getSchedule(user, true);
-
     try {
-        await db.delete(lessonsTable).where(eq(lessonsTable.scheduleId, schedule.id));
+        await db.delete(lessonsTable).where(eq(lessonsTable.userId, user.id));
 
         return true;
     } catch {
@@ -547,13 +515,11 @@ export async function deletePeriodFromSchedule(user: User, period: Period): Prom
  * @returns An array of all the book codes
  */
 export async function getClassCodes(user: User): Promise<string[]> {
-    const schedule = await getSchedule(user, true);
-
     return (
         await db
             .selectDistinct({ code: lessonsTable.code })
             .from(lessonsTable)
-            .where(eq(lessonsTable.scheduleId, schedule.id))
+            .where(eq(lessonsTable.userId, user.id))
     ).map((r) => r.code);
 }
 
