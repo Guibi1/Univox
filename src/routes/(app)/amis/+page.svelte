@@ -4,7 +4,6 @@
     import Avatar from "$lib/components/Avatar.svelte";
     import Loader from "$lib/components/Loader.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
-    import SearchBar from "$lib/components/SearchBar.svelte";
     import UserCard from "$lib/components/UserCard.svelte";
     import { scheduleFromJson } from "$lib/sanitization";
     import friends from "$lib/stores/friends";
@@ -17,26 +16,7 @@
 
     $: currentFriend = $friends.find((u) => u.id === data.friendId);
 
-    let query = "";
     let selectedFriends: User[] = [];
-
-    function handleSearch() {
-        const params = new URLSearchParams({ query, friendId: data.friendId ?? "" });
-        goto(`?${params}`);
-    }
-
-    function friendsFilterQuery(friends: User[], query: string) {
-        return friends.reduce<User[]>((prev, user) => {
-            if (
-                query.length === 0 &&
-                user.da.includes(query) &&
-                `${user.firstName} ${user.lastName}`.toLowerCase().includes(query.toLowerCase())
-            ) {
-                return [user, ...prev];
-            }
-            return [...prev, user];
-        }, []);
-    }
 
     // Generates the search params that redirects to the user's schedule
     $: getFriendUrl = (friend: User) => {
@@ -59,7 +39,6 @@
     // Generates the search params that redirects to the common schedule between the user and a friend
     $: getCommonScheduleUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
-        params.delete("friendId");
         params.delete("groupId");
         params.set("friendId", friend.id.toString());
         params.set("commonSchedule", "commonSchedule");
@@ -71,19 +50,13 @@
     <title>Univox | Amis</title>
 </svelte:head>
 
-<div class="bg-surface-100-800-token sticky top-0 z-50 pb-4">
-    <div class="mx-auto max-w-xl px-4 sm:w-3/5 sm:px-0">
-        <SearchBar bind:query {handleSearch} placeholder="Rechercher un da, un nom..." />
-    </div>
-</div>
-
-<div class="grid flex-grow grid-cols-[20rem_1fr_20rem] mx-4 overflow-x-scroll">
+<div class="grid flex-grow grid-cols-[20rem_1fr_20rem] overflow-x-scroll p-6">
     <div class="flex flex-col p-4">
         <h2 class="h4 text-center">Vos amis</h2>
 
         <nav class="list-nav">
             <ul class="flex-grow flex-col gap-4 py-4">
-                {#each friendsFilterQuery($friends, query) as friend}
+                {#each $friends as friend}
                     <li>
                         <a href={getFriendUrl(friend)} class="btn flex justify-start">
                             <input

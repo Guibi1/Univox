@@ -254,9 +254,9 @@ async function getScheduleCookies(session: OmnivoxSession): Promise<ScheduleCook
  * @param htmlPage The PageHTML returned by `fetchSchedulePageHTML`
  * @returns The user's schedule for the entire session
  */
-export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Omit<Lesson, "id">[]> {
-    const schedule: Omit<Lesson, "id">[] = [];
-    const orderedSchedule: Omit<Lesson, "id">[][] = Array.from({ length: 5 }, () => []);
+export async function schedulePageToClasses(htmlPage: PageHTML): Promise<NewLesson[]> {
+    const schedule: NewLesson[] = [];
+    const orderedSchedule: NewLesson[][] = Array.from({ length: 5 }, () => []);
 
     const $ = cheerio.load(htmlPage.html);
     const rows = $("table .CelluleHoraire > tbody > tr:not(:first)");
@@ -291,7 +291,7 @@ export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Omit<Le
                 }
             }
 
-            const c: Omit<Lesson, "id"> = {
+            const c: NewLesson = {
                 name: match[1],
                 code: match[2] || "",
                 group: match[3] ? Number(match[3]) : 0,
@@ -319,9 +319,9 @@ export async function schedulePageToClasses(htmlPage: PageHTML): Promise<Omit<Le
  */
 async function getScheduleForAllSession(
     htmlPage: PageHTML,
-    orderedSchedule: Omit<Lesson, "id">[][]
-): Promise<Omit<Lesson, "id">[]> {
-    const classes: Omit<Lesson, "id">[] = [];
+    orderedSchedule: NewLesson[][]
+): Promise<NewLesson[]> {
+    const classes: NewLesson[] = [];
     let currentMonday = dayjs().startOf("day").day(-8);
     let lastClassesLength = 0;
     let emptyWeeksInARow = 0;
@@ -572,6 +572,8 @@ function regexFind(data: string | null, query: RegExp): RegExpMatchArray {
 
     return match;
 }
+
+type NewLesson = Omit<Lesson, "id" | "userId">;
 
 type Cookies = Record<string, string>;
 

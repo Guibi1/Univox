@@ -1,5 +1,5 @@
 import { getWeekCommonOccupations } from "$lib/commonOccupations";
-import { scheduleFromJson } from "$lib/sanitization";
+import { scheduleToJson } from "$lib/sanitization";
 import * as db from "$lib/server/db";
 import type { Schedule } from "$lib/types";
 import dayjs from "dayjs";
@@ -18,23 +18,21 @@ export const load = (async ({ locals, url }) => {
 
             if (friend) {
                 if (isCommonSchedule) {
-                    const friendScheduleToCompare = scheduleFromJson(await db.getSchedule(friend));
-                    const localUserSchedule = scheduleFromJson(await db.getSchedule(locals.user));
+                    const friendScheduleToCompare = await db.getSchedule(friend);
+                    const localUserSchedule = await db.getSchedule(locals.user);
 
                     return getWeekCommonOccupations(dayjs(), [
                         ...friendScheduleToCompare.periods,
-                        ...friendScheduleToCompare.classes,
+                        ...friendScheduleToCompare.lessons,
                         ...localUserSchedule.periods,
-                        ...localUserSchedule.classes,
+                        ...localUserSchedule.lessons,
                     ]);
                 } else {
                     return await db.getSchedule(friend);
                 }
             }
         } else if (group) {
-            const schedules = group?.users.map((user) =>
-                db.getSchedule(user).then((s) => scheduleFromJson(s))
-            );
+            const schedules = group?.users.map((user) => db.getSchedule(user));
 
             return getWeekCommonOccupations(
                 dayjs(),
@@ -47,7 +45,7 @@ export const load = (async ({ locals, url }) => {
         friendId,
         group,
         streamed: {
-            schedule: getSchedule(),
+            schedule: getSchedule().then((s) => (s ? scheduleToJson(s) : null)),
         },
     };
 }) satisfies PageServerLoad;
