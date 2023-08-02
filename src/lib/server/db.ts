@@ -94,9 +94,6 @@ export async function searchUsers(
     limit = 5,
     sameSchool = true
 ): Promise<User[]> {
-    query = sanitizeQuery(query);
-    query = normalizeQuery(query);
-
     // TODO: Make sure the user isnt a friend
     return await db
         .select()
@@ -580,9 +577,6 @@ export async function searchBooks(
     codes: string[],
     limit = 5
 ): Promise<Book[]> {
-    query = sanitizeQuery(query);
-    query = normalizeQuery(query);
-
     return await db
         .select()
         .from(booksTable)
@@ -590,11 +584,13 @@ export async function searchBooks(
             and(
                 ne(booksTable.userId, user.id),
                 codes.length > 0 ? inArray(booksTable.code, codes) : undefined,
-                or(
-                    eq(booksTable.isbn, query),
-                    eq(booksTable.title, query),
-                    eq(booksTable.author, query)
-                )
+                query.length > 0
+                    ? or(
+                          eq(booksTable.isbn, query),
+                          eq(booksTable.title, query),
+                          eq(booksTable.author, query)
+                      )
+                    : undefined
             )
         )
         .limit(limit);
@@ -767,36 +763,4 @@ export async function getNotificationIfItExists(
                 .limit(1)
         ).at(0) ?? null
     );
-}
-
-/////////////////////////////////////
-// -*-*- QUERY NORMALIZATION -*-*- //
-/////////////////////////////////////
-
-/**
- * Removes any ambigous caracters from a query
- * @param query The string to sanitize
- * @returns The sanitized query
- */
-function sanitizeQuery(query: string): string {
-    return query.replace(/\./g, "").replace(/\\/g, "\\\\").trim();
-}
-
-/**
- * Makes a query match accents as well
- * @param query The string to normalize
- * @returns The normalized query
- */
-function normalizeQuery(query: string): string {
-    return query
-        .replace(/a/g, "[a,á,à,ä,â]")
-        .replace(/A/g, "[A,a,á,à,ä,â]")
-        .replace(/e/g, "[e,é,ë,è]")
-        .replace(/E/g, "[E,e,é,ë,è]")
-        .replace(/i/g, "[i,í,ï,ì]")
-        .replace(/I/g, "[I,i,í,ï,ì]")
-        .replace(/o/g, "[o,ó,ö,ò]")
-        .replace(/O/g, "[O,o,ó,ö,ò]")
-        .replace(/u/g, "[u,ü,ú,ù]")
-        .replace(/U/g, "[U,u,ü,ú,ù]");
 }

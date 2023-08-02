@@ -1,7 +1,8 @@
 <script lang="ts">
     export let query = "";
-    export let handleSearch: (query: string) => void;
+    export let handleSearch: (query: string) => void = () => {};
     export let reactiveSearch = false;
+    export let name = "";
     export let placeholder = "Rechercher...";
 
     let timeout: NodeJS.Timeout | null;
@@ -13,10 +14,11 @@
 
 <div class="input-group h-12 grid-cols-[auto_1fr]">
     <div class="grid">
-        <i class="bx bx-search-alt text-2xl" />
+        <i class="bx bx-search text-2xl" />
     </div>
 
     <input
+        {name}
         type="search"
         {placeholder}
         class="text-lg"

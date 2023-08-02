@@ -3,40 +3,32 @@ import * as db from "$lib/server/db";
 import { fail, redirect } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import { setError, superValidate } from "sveltekit-superforms/server";
-import type { Actions } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
 
-export const load = async ({ locals }) => {
+export const load = (async ({ locals }) => {
     const form = await superValidate(newBookSchema);
-    return { form, codes: await db.getClassCodes(locals.user) };
-};
+    return { form, codes: [...(await db.getClassCodes(locals.user)), "Autres"] };
+}) satisfies PageServerLoad;
 
 export const actions = {
     default: async ({ request, locals }) => {
         const formData = await request.formData();
         const form = await superValidate(formData, newBookSchema);
 
-        if (!form.valid || !(await db.getClassCodes(locals.user)).includes(form.data.classCode)) {
+        if (
+            !form.valid ||
+            !(
+                form.data.classCode === "Autres" ||
+                (await db.getClassCodes(locals.user)).includes(form.data.classCode)
+            )
+        ) {
             return fail(400, { form });
         }
 
-        console.log("🚀 ~ file: +page.server.ts:17 ~ default: ~ form:", form.data);
-
         const images: File[] = [];
-
         for (let i = 0; ; i++) {
             const data = formData.get("image" + i)?.valueOf();
-
-            if (!(data instanceof File)) {
-                if (images.length === 0) {
-                    return setError(
-                        form,
-                        "images",
-                        "Il faut au moins une image pour afficher un livre"
-                    );
-                } else {
-                    break;
-                }
-            }
+            if (!(data instanceof File)) break;
 
             const result = imageSchema.safeParse(data);
             if (result.success) {
@@ -44,6 +36,10 @@ export const actions = {
             } else {
                 return setError(form, "images", result.error.errors[0].message);
             }
+        }
+
+        if (images.length === 0) {
+            return setError(form, "images", "Il faut au moins une image pour afficher un livre");
         }
 
         const uploads: Promise<boolean>[] = [];

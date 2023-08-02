@@ -8,11 +8,9 @@
     const { form, errors, delayed, enhance } = superForm(data.form, {
         taintedMessage: null,
         onSubmit: ({ data }) => {
-            if (!images) return;
             let i = 0;
-            for (const image of images) {
-                //! TO TEST
-                data.append("image" + ++i, image);
+            for (const image of images ?? []) {
+                data.append("image" + i++, image);
             }
         },
     });
@@ -26,7 +24,12 @@
 
 <h1 class="h2 m-6 text-center">Vendre un livre</h1>
 
-<form use:enhance class="m-auto grid max-w-5xl grid-cols-[2fr_2fr] gap-6" method="post">
+<form
+    use:enhance
+    class="m-auto grid max-w-5xl grid-cols-[2fr_2fr] gap-6"
+    method="post"
+    enctype="multipart/form-data"
+>
     <div class="flex flex-col items-stretch gap-5">
         <label class="label" data-error={$errors.title}>
             <span> Nom du livre </span>
@@ -97,11 +100,9 @@
 
             <FileDropzone bind:files={images} name="files" accept="image/png, image/jpeg">
                 <i slot="lead" class="bx bx-cloud-upload pointer-events-none text-7xl" />
-
                 <svelte:fragment slot="message">
                     Glissez ici une image de votre livre
                 </svelte:fragment>
-
                 <svelte:fragment slot="meta">Seul les PNG et JPG sont acceptés</svelte:fragment>
             </FileDropzone>
 

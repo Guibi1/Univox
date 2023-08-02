@@ -1,7 +1,3 @@
-/**
- * @file API endpoints to delete a book
- */
-
 import * as db from "$lib/server/db";
 import { json } from "@sveltejs/kit";
 import { apiValidate } from "sveltekit-api-fetch/server";
