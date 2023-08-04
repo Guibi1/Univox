@@ -35,7 +35,7 @@
 
         <span class="flex items-center justify-center gap-2">
             <i class="bx bx-map text-2xl" />
-            Étudiant au {data.schoolName}
+            Étudiant au {data.school}
         </span>
 
         <span>
