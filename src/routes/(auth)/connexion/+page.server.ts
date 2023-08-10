@@ -1,5 +1,5 @@
 import { connexionSchema } from "$lib/formSchema";
-import { auth } from "$lib/server/auth";
+import { auth } from "$lib/server/lucia";
 import { fail } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
@@ -22,7 +22,7 @@ export const actions = {
                 await auth.useKey("email", form.data.email, form.data.password),
                 new Promise((r) => setTimeout(r, 600)),
             ]);
-            const session = await auth.createSession(key.userId);
+            const session = await auth.createSession({ userId: key.userId, attributes: {} });
             locals.auth.setSession(session);
         } catch (e) {
             return setError(form, "password", "Mot de passe erroné");

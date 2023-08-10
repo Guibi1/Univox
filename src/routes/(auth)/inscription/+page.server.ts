@@ -1,5 +1,5 @@
 import { inscriptionSchema } from "$lib/formSchema";
-import { auth } from "$lib/server/auth";
+import { auth } from "$lib/server/lucia";
 import * as omnivox from "$lib/server/omnivox";
 import { fail } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
@@ -77,7 +77,7 @@ export const actions = {
         if (!form.data.firstStep) {
             try {
                 const user = await auth.createUser({
-                    primaryKey: {
+                    key: {
                         providerId: "email",
                         providerUserId: form.data.email,
                         password: form.data.password,
@@ -91,7 +91,7 @@ export const actions = {
                     },
                 });
 
-                const session = await auth.createSession(user.id);
+                const session = await auth.createSession({ userId: user.userId, attributes: {} });
                 locals.auth.setSession(session);
             } catch (e) {
                 // If the account already exists

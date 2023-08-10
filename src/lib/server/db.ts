@@ -23,8 +23,8 @@ import {
 } from "drizzle-orm";
 import { alias, type MySqlUpdateSetSource } from "drizzle-orm/mysql-core";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
-import type { User } from "lucia-auth";
-import { auth } from "./auth";
+import type { User } from "lucia";
+import { auth } from "./lucia";
 import { booksTable } from "./schemas/books";
 import { friendsTable } from "./schemas/friends";
 import { groupUsersTable, groupsTable } from "./schemas/groups";
@@ -71,10 +71,10 @@ export async function getUser(id: string): Promise<User | null> {
  */
 export async function updateUser(
     user: User,
-    data: Partial<Lucia.UserAttributes>
+    data: Partial<Lucia.DatabaseUserAttributes>
 ): Promise<boolean> {
     try {
-        await auth.updateUserAttributes(user.id, data);
+        await auth.updateUserAttributes(user.userId, data);
         return true;
     } catch {
         warn("The function 'updateUser' was called but failed to update the user's data");
@@ -100,7 +100,7 @@ export async function searchUsers(
         .from(usersTable)
         .where(
             and(
-                ne(usersTable.id, user.id),
+                ne(usersTable.userId, user.userId),
                 or(
                     eq(usersTable.da, query),
                     eq(usersTable.email, query),
@@ -128,15 +128,15 @@ export async function getUserIfFriend(user: User, id: string): Promise<User | nu
         .from(friendsTable)
         .where(
             or(
-                and(eq(friendsTable.friendId, id), eq(friendsTable.userId, user.id)),
-                and(eq(friendsTable.friendId, user.id), eq(friendsTable.userId, id))
+                and(eq(friendsTable.friendId, id), eq(friendsTable.userId, user.userId)),
+                and(eq(friendsTable.friendId, user.userId), eq(friendsTable.userId, id))
             )
         )
         .innerJoin(
             usersTable,
             and(
                 or(eq(friendsTable.friendId, id), eq(friendsTable.userId, id)),
-                ne(usersTable.id, user.id)
+                ne(usersTable.userId, user.userId)
             )
         )
         .limit(1);
@@ -153,9 +153,9 @@ export async function getFriendsId(user: User): Promise<string[]> {
     const result = await db
         .select({ a: friendsTable.userId, b: friendsTable.friendId })
         .from(friendsTable)
-        .where(or(eq(friendsTable.friendId, user.id), eq(friendsTable.userId, user.id)));
+        .where(or(eq(friendsTable.friendId, user.userId), eq(friendsTable.userId, user.userId)));
 
-    return result.map(({ a, b }) => (user.id !== a ? a : b));
+    return result.map(({ a, b }) => (user.userId !== a ? a : b));
 }
 
 /**
@@ -168,13 +168,13 @@ export async function getFriends(user: User): Promise<User[]> {
         ...(await db
             .select(getTableColumns(usersTable))
             .from(friendsTable)
-            .where(eq(friendsTable.userId, user.id))
-            .innerJoin(usersTable, eq(usersTable.id, friendsTable.friendId))),
+            .where(eq(friendsTable.userId, user.userId))
+            .innerJoin(usersTable, eq(usersTable.userId, friendsTable.friendId))),
         ...(await db
             .select(getTableColumns(usersTable))
             .from(friendsTable)
-            .where(eq(friendsTable.friendId, user.id))
-            .innerJoin(usersTable, eq(usersTable.id, friendsTable.userId))),
+            .where(eq(friendsTable.friendId, user.userId))
+            .innerJoin(usersTable, eq(usersTable.userId, friendsTable.userId))),
     ];
 }
 
@@ -185,11 +185,11 @@ export async function getFriends(user: User): Promise<User[]> {
  * @returns True if the operation succeded, false otherwise
  */
 export async function addFriend(user: User, friendId: string): Promise<boolean> {
-    if (user.id === friendId) return false;
-    if ((await getFriends(user)).some((u) => u.id === friendId)) return false;
+    if (user.userId === friendId) return false;
+    if ((await getFriends(user)).some((u) => u.userId === friendId)) return false;
 
     try {
-        await db.insert(friendsTable).values({ userId: user.id, friendId });
+        await db.insert(friendsTable).values({ userId: user.userId, friendId });
         return true;
     } catch {
         warn("The function 'addFriend' was called but failed to update the user's data");
@@ -204,15 +204,15 @@ export async function addFriend(user: User, friendId: string): Promise<boolean> 
  * @returns True if the operation succeded, false otherwise
  */
 export async function deleteFriend(user: User, friendId: string): Promise<boolean> {
-    if (user.id === friendId) return false;
+    if (user.userId === friendId) return false;
 
     try {
         await db
             .delete(friendsTable)
             .where(
                 or(
-                    and(eq(friendsTable.userId, user.id), eq(friendsTable.friendId, friendId)),
-                    and(eq(friendsTable.userId, friendId), eq(friendsTable.friendId, user.id))
+                    and(eq(friendsTable.userId, user.userId), eq(friendsTable.friendId, friendId)),
+                    and(eq(friendsTable.userId, friendId), eq(friendsTable.friendId, user.userId))
                 )
             );
         return true;
@@ -271,7 +271,7 @@ export async function getGroupWithUsers(id: number): Promise<(Group & { users: U
             .from(groupsTable)
             .where(eq(groupsTable.id, id))
             .innerJoin(groupUsersTable, eq(groupUsersTable.groupId, groupsTable.id))
-            .innerJoin(usersTable, eq(groupUsersTable.userId, usersTable.id));
+            .innerJoin(usersTable, eq(groupUsersTable.userId, usersTable.userId));
 
         return result.reduce<(Group & { users: User[] }) | null>((prev, v) => {
             if (!prev) {
@@ -300,7 +300,7 @@ export async function getGroups(user: User): Promise<Group[]> {
             userId: alias(groupUsersTable, "others").userId,
         })
         .from(groupUsersTable)
-        .where(eq(groupUsersTable.userId, user.id))
+        .where(eq(groupUsersTable.userId, user.userId))
         .innerJoin(groupsTable, eq(groupUsersTable.groupId, groupsTable.id))
         .innerJoin(
             alias(groupUsersTable, "others"),
@@ -326,14 +326,14 @@ export async function getGroups(user: User): Promise<Group[]> {
  * @returns True if the operation succeded, false otherwise
  */
 export async function createGroup(user: User, friendsId: string[]): Promise<boolean> {
-    if (friendsId.some((id) => user.id === id)) return false;
+    if (friendsId.some((id) => user.userId === id)) return false;
     if (friendsId.length !== new Set(friendsId).size) return false;
 
     try {
         const group = await db.insert(groupsTable).values({ name: "Nouveau groupe" });
 
         await db.insert(groupUsersTable).values(
-            [user.id, ...friendsId].map((id) => ({
+            [user.userId, ...friendsId].map((id) => ({
                 groupId: group.insertId as unknown as number,
                 userId: id,
             }))
@@ -353,11 +353,11 @@ export async function createGroup(user: User, friendsId: string[]): Promise<bool
  * @returns True if the operation succeded, false otherwise
  */
 export async function addToGroup(user: User, group: Group, friendsId: string[]): Promise<boolean> {
-    if (!group.usersId.some((id) => user.id === id)) return false;
+    if (!group.usersId.some((id) => user.userId === id)) return false;
 
     try {
         await db.insert(groupUsersTable).values(
-            [user.id, ...friendsId].map((id) => ({
+            [user.userId, ...friendsId].map((id) => ({
                 groupId: group.id,
                 userId: id,
             }))
@@ -379,7 +379,9 @@ export async function quitGroup(user: User, groupId: number): Promise<boolean> {
     try {
         await db
             .delete(groupUsersTable)
-            .where(and(eq(groupUsersTable.userId, user.id), eq(groupUsersTable.groupId, groupId)));
+            .where(
+                and(eq(groupUsersTable.userId, user.userId), eq(groupUsersTable.groupId, groupId))
+            );
 
         return true;
     } catch {
@@ -401,7 +403,7 @@ export async function updateGroup(
     group: Group,
     data: MySqlUpdateSetSource<typeof groupsTable>
 ): Promise<boolean> {
-    if (!group.usersId.some((id) => id === user.id)) {
+    if (!group.usersId.some((id) => id === user.userId)) {
         return false;
     }
 
@@ -425,8 +427,14 @@ export async function updateGroup(
  * @returns The user's schedule
  */
 export async function getSchedule(user: User): Promise<Schedule> {
-    const periods = await db.select().from(periodsTable).where(eq(periodsTable.userId, user.id));
-    const lessons = await db.select().from(lessonsTable).where(eq(lessonsTable.userId, user.id));
+    const periods = await db
+        .select()
+        .from(periodsTable)
+        .where(eq(periodsTable.userId, user.userId));
+    const lessons = await db
+        .select()
+        .from(lessonsTable)
+        .where(eq(lessonsTable.userId, user.userId));
 
     return { periods, lessons };
 }
@@ -442,7 +450,7 @@ export async function addPeriodsToSchedule(
     periods: Omit<Period, "id" | "userId">[]
 ): Promise<boolean> {
     try {
-        await db.insert(periodsTable).values(periods.map((p) => ({ ...p, userId: user.id })));
+        await db.insert(periodsTable).values(periods.map((p) => ({ ...p, userId: user.userId })));
 
         return true;
     } catch {
@@ -462,7 +470,7 @@ export async function addClassesToSchedule(
     lessons: Omit<Lesson, "id" | "userId">[]
 ): Promise<boolean> {
     try {
-        await db.insert(lessonsTable).values(lessons.map((l) => ({ ...l, userId: user.id })));
+        await db.insert(lessonsTable).values(lessons.map((l) => ({ ...l, userId: user.userId })));
 
         return true;
     } catch {
@@ -478,7 +486,7 @@ export async function addClassesToSchedule(
  */
 export async function deleteAllClassesInSchedule(user: User): Promise<boolean> {
     try {
-        await db.delete(lessonsTable).where(eq(lessonsTable.userId, user.id));
+        await db.delete(lessonsTable).where(eq(lessonsTable.userId, user.userId));
 
         return true;
     } catch {
@@ -502,7 +510,7 @@ export async function deletePeriodFromSchedule(
     try {
         await db
             .delete(periodsTable)
-            .where(and(eq(periodsTable.id, period.id), eq(periodsTable.userId, user.id)));
+            .where(and(eq(periodsTable.id, period.id), eq(periodsTable.userId, user.userId)));
 
         return true;
     } catch {
@@ -521,7 +529,7 @@ export async function getClassCodes(user: User): Promise<string[]> {
         await db
             .selectDistinct({ code: lessonsTable.code })
             .from(lessonsTable)
-            .where(eq(lessonsTable.userId, user.id))
+            .where(eq(lessonsTable.userId, user.userId))
     ).map((r) => r.code);
 }
 
@@ -552,7 +560,7 @@ export async function getBook(bookId: number): Promise<Book | null> {
  * @returns An array of all the user's books
  */
 export async function getBooks(user: User): Promise<Book[]> {
-    return await db.select().from(booksTable).where(eq(booksTable.userId, user.id));
+    return await db.select().from(booksTable).where(eq(booksTable.userId, user.userId));
 }
 
 /**
@@ -565,7 +573,7 @@ export async function getBookCodes(user: User): Promise<string[]> {
         await db
             .selectDistinct({ code: booksTable.code })
             .from(booksTable)
-            .where(ne(booksTable.userId, user.id))
+            .where(ne(booksTable.userId, user.userId))
     ).map((o) => o.code);
 }
 
@@ -587,7 +595,7 @@ export async function searchBooks(
         .from(booksTable)
         .where(
             and(
-                ne(booksTable.userId, user.id),
+                ne(booksTable.userId, user.userId),
                 codes.length > 0 ? inArray(booksTable.code, codes) : undefined,
                 query.length > 0
                     ? or(
@@ -607,7 +615,7 @@ export async function searchBooks(
  * @returns True if the operation succeded, false otherwise
  */
 export async function addBookListing(user: User, book: Omit<Book, "id">): Promise<boolean> {
-    if (user.id !== book.userId) {
+    if (user.userId !== book.userId) {
         return false;
     }
 
@@ -630,7 +638,7 @@ export async function deleteBookListing(user: User, bookId: number): Promise<boo
     try {
         const query = await db
             .delete(booksTable)
-            .where(and(eq(booksTable.id, bookId), eq(booksTable.userId, user.id)));
+            .where(and(eq(booksTable.id, bookId), eq(booksTable.userId, user.userId)));
 
         if (query.rowsAffected === 0) {
             return false;
@@ -664,8 +672,8 @@ export async function getNotifications(user: User): Promise<Notification[]> {
             sender: getTableColumns(usersTable),
         })
         .from(notificationsTable)
-        .where(eq(notificationsTable.userId, user.id))
-        .innerJoin(usersTable, eq(notificationsTable.senderId, usersTable.id));
+        .where(eq(notificationsTable.userId, user.userId))
+        .innerJoin(usersTable, eq(notificationsTable.senderId, usersTable.userId));
 }
 
 /**
@@ -693,7 +701,7 @@ export async function sendNotification(
     if (kind === "FriendRequest") {
         const otherUserRequest = await getNotificationIfItExists(receiver, kind, user);
         if (otherUserRequest) {
-            if (await addFriend(user, receiver.id)) {
+            if (await addFriend(user, receiver.userId)) {
                 await deleteNotification(user, otherUserRequest.id);
                 return true;
             }
@@ -704,7 +712,7 @@ export async function sendNotification(
     try {
         await db
             .insert(notificationsTable)
-            .values({ userId: receiverId, senderId: user.id, kind, details });
+            .values({ userId: receiverId, senderId: user.userId, kind, details });
         return true;
     } catch {
         warn("The function 'sendNotification' was called but failed to update the user's data");
@@ -725,7 +733,7 @@ export async function deleteNotification(user: User, notificationId: number): Pr
             .where(
                 and(
                     eq(notificationsTable.id, notificationId),
-                    eq(notificationsTable.userId, user.id)
+                    eq(notificationsTable.userId, user.userId)
                 )
             );
         return true;
@@ -759,12 +767,12 @@ export async function getNotificationIfItExists(
                 .from(notificationsTable)
                 .where(
                     and(
-                        eq(notificationsTable.userId, receiver.id),
-                        eq(notificationsTable.senderId, sender.id),
+                        eq(notificationsTable.userId, receiver.userId),
+                        eq(notificationsTable.senderId, sender.userId),
                         eq(notificationsTable.kind, kind)
                     )
                 )
-                .innerJoin(usersTable, eq(notificationsTable.senderId, usersTable.id))
+                .innerJoin(usersTable, eq(notificationsTable.senderId, usersTable.userId))
                 .limit(1)
         ).at(0) ?? null
     );

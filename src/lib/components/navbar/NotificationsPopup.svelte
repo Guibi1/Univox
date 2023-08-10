@@ -25,7 +25,7 @@
                     <div class="flex flex-col justify-center gap-2 pr-2">
                         <button
                             class="btn-icon btn-icon-sm variant-ghost-success"
-                            on:click={() => friends.add(notification.sender.id)}
+                            on:click={() => friends.add(notification.sender.userId)}
                         >
                             <i class="bx bx-check text-xl" />
                         </button>

@@ -10,18 +10,18 @@
     import groups from "$lib/stores/groups";
     import type { Group } from "$lib/types.js";
     import { Accordion, AccordionItem, modalStore } from "@skeletonlabs/skeleton";
-    import type { User } from "lucia-auth";
+    import type { User } from "lucia";
 
     export let data;
 
-    $: currentFriend = $friends.find((u) => u.id === data.friendId);
+    $: currentFriend = $friends.find((u) => u.userId === data.friendId);
 
     let selectedFriends: User[] = [];
 
     // Generates the search params that redirects to the user's schedule
     $: getFriendUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
-        params.set("friendId", friend.id.toString());
+        params.set("friendId", friend.userId);
         params.delete("commonSchedule");
         params.delete("groupId");
         return `?${params}`;
@@ -40,7 +40,7 @@
     $: getCommonScheduleUrl = (friend: User) => {
         const params = new URLSearchParams($page.url.searchParams);
         params.delete("groupId");
-        params.set("friendId", friend.id.toString());
+        params.set("friendId", friend.userId);
         params.set("commonSchedule", "commonSchedule");
         return `?${params}`;
     };
@@ -141,7 +141,7 @@
                         <div slot="content" class="grid">
                             <button
                                 class="btn variant-ghost-error"
-                                on:click={() => currentFriend && friends.remove(currentFriend.id)}
+                                on:click={() => currentFriend && friends.remove(currentFriend.userId)}
                             >
                                 Retirer l'ami
                             </button>

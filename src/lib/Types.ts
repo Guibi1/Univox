@@ -1,5 +1,5 @@
 import type { Dayjs } from "dayjs";
-import type { User } from "lucia-auth";
+import type { User } from "lucia";
 
 /**
  * Represents a friend group

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { User } from "lucia-auth";
+    import type { User } from "lucia";
     import Avatar from "./Avatar.svelte";
 
     export let user: User;

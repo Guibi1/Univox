@@ -51,7 +51,7 @@ export const actions = {
         }
 
         const book = {
-            userId: locals.user.id,
+            userId: locals.user.userId,
             title: form.data.title,
             author: form.data.author,
             state: form.data.state,

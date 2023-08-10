@@ -1,7 +1,7 @@
 <script lang="ts">
     import friends from "$lib/stores/friends";
     import { modalStore, toastStore } from "@skeletonlabs/skeleton";
-    import type { User } from "lucia-auth";
+    import type { User } from "lucia";
     import { api } from "sveltekit-api-fetch";
 
     let searchQuery = "";
@@ -11,7 +11,7 @@
     let elemSearch: HTMLElement;
 
     function addFriend(user: User) {
-        friends.add(user.id);
+        friends.add(user.userId);
         $modalStore[0].response?.(user);
         modalStore.close();
         toastStore.trigger({

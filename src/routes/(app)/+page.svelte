@@ -39,7 +39,7 @@
                             </div>
                         </div>
                         <div class="flex flex-row items-center gap-3 px-5">
-                            <a class="filled h-10 w-24" href="/amis?friendId={friend.id}">
+                            <a class="filled h-10 w-24" href="/amis?friendId={friend.userId}">
                                 Horaire
                             </a>
                         </div>

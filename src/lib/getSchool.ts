@@ -1,4 +1,4 @@
-import type { User } from "lucia-auth";
+import type { User } from "lucia";
 
 export function getSchool(user: User) {
     const domain = user.email.split("@")[1];

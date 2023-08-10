@@ -2,8 +2,8 @@ import { dev } from "$app/environment";
 import { DATABASE_HOST, DATABASE_PASSWORD, DATABASE_USERNAME } from "$env/static/private";
 import { planetscale } from "@lucia-auth/adapter-mysql";
 import { connect } from "@planetscale/database";
-import lucia from "lucia-auth";
-import { sveltekit } from "lucia-auth/middleware";
+import { lucia } from "lucia";
+import { sveltekit } from "lucia/middleware";
 
 const conn = connect({
     host: DATABASE_HOST,
@@ -12,33 +12,27 @@ const conn = connect({
 });
 
 export const auth = lucia({
-    adapter: planetscale(conn),
+    adapter: planetscale(conn, {
+        user: "auth_user",
+        key: "auth_key",
+        session: "auth_session",
+    }),
     env: dev ? "DEV" : "PROD",
     middleware: sveltekit(),
-    transformDatabaseUser: (d) => {
-        // Lucia does not map the table columns to the property name
-        // Here we have to rename some property to make it align with the User type
-        const data = d as unknown as Omit<U, "firstName" | "lastName"> & {
+    getUserAttributes(d) {
+        const data = d as unknown as {
             first_name: string;
             last_name: string;
         };
+
         return {
-            id: data.id,
-            da: data.da,
-            email: data.email,
+            da: d.da,
+            email: d.email,
             firstName: data.first_name,
             lastName: data.last_name,
-            avatar: data.avatar,
-        } as U;
+            avatar: d.avatar,
+        };
     },
 });
 
 export type Auth = typeof auth;
-
-type U = Required<
-    Readonly<
-        {
-            id: string;
-        } & Required<Lucia.UserAttributes>
-    >
->;

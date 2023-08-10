@@ -1,6 +1,6 @@
 import type { Group } from "$lib/types";
 import { modalStore } from "@skeletonlabs/skeleton";
-import type { User } from "lucia-auth";
+import type { User } from "lucia";
 import { writable } from "svelte/store";
 import { api } from "sveltekit-api-fetch";
 
@@ -15,7 +15,7 @@ function createGroupsStore() {
 
     async function create(users: User[]) {
         const { success } = await (
-            await api.POST("/api/groups", { body: { usersId: users.map((u) => u.id) } })
+            await api.POST("/api/groups", { body: { usersId: users.map((u) => u.userId) } })
         ).json();
         if (success) refresh();
         return success;
@@ -50,7 +50,7 @@ function createGroupsStore() {
             await api.POST("/api/groups/invite", {
                 body: {
                     groupId: group.id,
-                    usersId: users.map((u) => u.id),
+                    usersId: users.map((u) => u.userId),
                 },
             })
         ).json();

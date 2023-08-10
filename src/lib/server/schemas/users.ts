@@ -3,7 +3,7 @@ import { mysqlTable, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 export const usersTable = mysqlTable(
     "auth_user",
     {
-        id: varchar("id", { length: 15 }).primaryKey(),
+        userId: varchar("id", { length: 15 }).primaryKey(),
         da: varchar("da", { length: 7 }).notNull(),
         email: varchar("email", { length: 128 }).notNull(),
         firstName: varchar("first_name", { length: 128 }).notNull(),
