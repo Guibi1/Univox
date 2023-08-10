@@ -13,7 +13,7 @@
 </script>
 
 <div class="input-group h-12 grid-cols-[auto_1fr]">
-    <div class="grid">
+    <div class="!pl-4 !pr-0">
         <i class="bx bx-search text-2xl" />
     </div>
 
@@ -21,7 +21,7 @@
         {name}
         type="search"
         {placeholder}
-        class="text-lg"
+        class="input text-lg"
         bind:value={query}
         on:input={reactiveSearch ? timedSearch : null}
         on:keypress={(e) => {

@@ -13,39 +13,46 @@
         <Loader />
     </div>
 {:then books}
-    <ul class="flex flex-col divide-y">
+    <ul class="flex flex-wrap justify-center gap-4">
         {#each books as book}
             <li>
                 <a
                     href={`/livres/${book.id}`}
-                    class="grid cursor-pointer grid-cols-[8rem_1fr_5rem] grid-rows-[min-content_min-content_min-content_1fr_min-content] gap-x-6 p-6"
+                    class="card card-hover flex flex-col w-72 overflow-hidden isolate"
                 >
-                    <img
-                        src={book.image}
-                        class="row-span-full h-40 w-32 rounded object-cover"
-                        alt="Couverture du livre"
-                    />
+                    <div class="grid relative h-44 isolate -z-10">
+                        <img
+                            src={book.image}
+                            class="object-cover h-60 w-full"
+                            alt="Couverture du livre"
+                        />
 
-                    <span class="flex flex-col justify-between">
-                        <b>{book.title}</b>
-                    </span>
+                        <span class="chip variant-glass-primary absolute top-2 right-2">
+                            {book.code}
+                        </span>
 
-                    <span class="col-start-3 row-span-4 text-right text-lg">
-                        {book.price} $
-                    </span>
+                        <div
+                            class="bg-gradient-to-t via-80% via-transparent from-surface-100 dark:from-surface-800 z-10 h-60 absolute inset-0"
+                        />
+                    </div>
 
-                    <span class="italic">
-                        <small>de</small>
-                        {book.author}</span
-                    >
+                    <div class="flex flex-col p-4">
+                        <small class="opacity-60">{book.isbn}</small>
 
-                    <span class="py-2">{book.state}</span>
+                        <h1 class="h3">{book.title}</h1>
 
-                    <span class="py-2">Pour le cours {book.code}</span>
+                        <i>{book.author}</i>
+                    </div>
 
-                    <small class="italic">ISBN: {book.isbn}</small>
+                    <hr />
 
-                    <a href={`/livres/${book.id}`} class="text-right">Détails ></a>
+                    <footer class="card-footer pt-4 flex justify-between items-center">
+                        <span class="text-lg">
+                            ${book.price}
+                        </span>
+
+                        <span>{book.state}</span>
+                    </footer>
                 </a>
             </li>
         {/each}

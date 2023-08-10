@@ -18,16 +18,18 @@
     }
 </script>
 
-<main class="grid grid-cols-[1fr_3fr_1fr] items-start gap-8 p-8">
-    <div class="flex flex-col gap-4">
+<main class="flex gap-8 p-8">
+    <div class="flex flex-col gap-4 w-64">
         <h1 class="h3">Rechercher</h1>
 
-        <SearchBar bind:query {handleSearch} placeholder="Rechercher un livre..." />
+        <SearchBar bind:query {handleSearch} placeholder="Rechercher" />
 
         <BookFilter bind:selectedCodes codes={data.bookCodes} />
 
         <button on:click={handleSearch} class="btn variant-filled-primary">Rechercher</button>
     </div>
 
-    <slot />
+    <div class="flex-grow">
+        <slot />
+    </div>
 </main>

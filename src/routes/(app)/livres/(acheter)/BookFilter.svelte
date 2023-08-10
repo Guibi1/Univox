@@ -27,14 +27,14 @@
         placeholder="Code du cours"
     />
 
-    <div class="card max-h-48 w-full max-w-sm overflow-y-auto p-4" tabindex="-1">
+    <div class="card max-h-48 w-full overflow-y-auto p-4" tabindex="-1">
         <Autocomplete
             bind:input={userInput}
             {options}
             on:selection={onSelection}
             emptyState={codes.length === 0
                 ? "Aucun cours disponible pour le moment"
-                : "Aucun cours correspond à votre recherche"}
+                : "Aucun cours ne correspond à votre recherche"}
         />
     </div>
 </div>
