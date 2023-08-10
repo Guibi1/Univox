@@ -17,6 +17,7 @@ export function getCommonOccupied(date: Dayjs, periods: Period[]): Period[] {
     // Add a free time in our result array
     const addOccupied = (timeStart: Dayjs, timeEnd: Dayjs) =>
         occupiedTime.push({
+            userId: "",
             id: -1,
             name: "Occupé",
             timeStart,
@@ -77,7 +78,6 @@ export function getWeekCommonOccupations(week: Dayjs, periods: Period[]): Schedu
 
     //Et on return les périodes libres
     return {
-        id: -1,
         periods: free,
         lessons: [],
     };

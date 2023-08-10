@@ -439,7 +439,7 @@ export async function getSchedule(user: User): Promise<Schedule> {
  */
 export async function addPeriodsToSchedule(
     user: User,
-    periods: Omit<Period, "id">[]
+    periods: Omit<Period, "id" | "userId">[]
 ): Promise<boolean> {
     try {
         await db.insert(periodsTable).values(periods.map((p) => ({ ...p, userId: user.id })));
@@ -459,7 +459,7 @@ export async function addPeriodsToSchedule(
  */
 export async function addClassesToSchedule(
     user: User,
-    lessons: Omit<Lesson, "id">[]
+    lessons: Omit<Lesson, "id" | "userId">[]
 ): Promise<boolean> {
     try {
         await db.insert(lessonsTable).values(lessons.map((l) => ({ ...l, userId: user.id })));
@@ -495,9 +495,14 @@ export async function deleteAllClassesInSchedule(user: User): Promise<boolean> {
  * @param period The period object to delete
  * @returns True if the operation succeeded, false otherwise
  */
-export async function deletePeriodFromSchedule(user: User, period: Period): Promise<boolean> {
+export async function deletePeriodFromSchedule(
+    user: User,
+    period: Omit<Period, "userId">
+): Promise<boolean> {
     try {
-        await db.delete(periodsTable).where(eq(periodsTable.id, period.id));
+        await db
+            .delete(periodsTable)
+            .where(and(eq(periodsTable.id, period.id), eq(periodsTable.userId, user.id)));
 
         return true;
     } catch {

@@ -14,9 +14,12 @@ dayjs.tz.setDefault("America/Montreal");
 
 export async function load() {
     const form = await superValidate(newPeriodSchema);
-    form.data.date = dayjs().format("YYYY-MM-DD");
-    form.data.startTime = dayjs().add(1, "hour").format("HH:00");
-    form.data.endTime = dayjs().add(3, "hour").format("HH:00");
+    const day = dayjs();
+
+    form.data.date = day.format("YYYY-MM-DD");
+    form.data.startTime = day.add(1, "hour").format("HH:00");
+    form.data.endTime = day.add(3, "hour").format("HH:00");
+
     return { form };
 }
 
@@ -36,11 +39,10 @@ export const actions = {
                     timeEnd: dayjs(form.data.date + form.data.endTime, "YYYY-MM-DDHH:mm"),
                 },
             ]);
-
-            // Everything is good!
-            return { form };
         } catch {
             return fail(500, { form });
         }
+
+        return { form };
     },
 } satisfies Actions;
