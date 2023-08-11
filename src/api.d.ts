@@ -17,9 +17,9 @@ type ProjectAPI = {
         "/api/friends": { body: { friendId: string; }; params: never; };
         "/api/friends/search": { body: { searchQuery: string; }; params: never; };
         "/api/groups": { body: { usersId: string[]; }; params: never; };
-        "/api/groups/invite": { body: { usersId: string[]; groupId: number; }; params: never; };
-        "/api/groups/members": { body: { groupId: number; }; params: never; };
-        "/api/groups/name": { body: { groupId: number; name: string; }; params: never; };
+        "/api/groups/invite": { body: { usersId: string[]; groupId: string; }; params: never; };
+        "/api/groups/members": { body: { groupId: string; }; params: never; };
+        "/api/groups/name": { body: { groupId: string; name: string; }; params: never; };
         "/api/notifications": { body: { kind: string; receiverId: string; }; params: never; };
         "/api/schedule": { body: { periods: { name: string; id: number; timeStart: string; timeEnd: string; }[]; }; params: never; };
         "/api/user/avatar": { body: { avatar: string; }; params: never; };
@@ -30,7 +30,7 @@ type ProjectAPI = {
     DELETE: {
         "/api/book": { body: { bookId: string; }; params: never; };
         "/api/friends": { body: { friendId: string; }; params: never; };
-        "/api/groups": { body: { groupId: number; }; params: never; };
+        "/api/groups": { body: { groupId: string; }; params: never; };
         "/api/notifications": { body: { notificationId: number; }; params: never; };
         "/api/schedule": { body: { period: { name: string; id: number; timeStart: string; timeEnd: string; }; }; params: never; };
     };

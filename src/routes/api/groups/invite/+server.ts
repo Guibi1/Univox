@@ -8,7 +8,7 @@ import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
 const _postSchema = z.object({
-    groupId: z.number(),
+    groupId: z.string().length(16),
     usersId: z.array(z.string()).min(1),
 });
 

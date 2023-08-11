@@ -232,7 +232,7 @@ export async function deleteFriend(user: User, friendId: string): Promise<boolea
  * @param id The group id
  * @returns The group data
  */
-export async function getGroup(id: number): Promise<Group | null> {
+export async function getGroup(id: string): Promise<Group | null> {
     try {
         const result = await db
             .select({
@@ -260,7 +260,7 @@ export async function getGroup(id: number): Promise<Group | null> {
  * @param id The group id
  * @returns The group data
  */
-export async function getGroupWithUsers(id: number): Promise<(Group & { users: User[] }) | null> {
+export async function getGroupWithUsers(id: string): Promise<(Group & { users: User[] }) | null> {
     try {
         const result = await db
             .select({
@@ -315,7 +315,7 @@ export async function getGroups(user: User): Promise<Group[]> {
                 group.usersId.push(result.userId);
                 groups.set(result.groups.id, group);
                 return groups;
-            }, new Map<number, Group>())
+            }, new Map<string, Group>())
             .values()
     );
 }
@@ -331,11 +331,13 @@ export async function createGroup(user: User, friendsId: string[]): Promise<bool
     if (friendsId.length !== new Set(friendsId).size) return false;
 
     try {
-        const group = await db.insert(groupsTable).values({ name: "Nouveau groupe" });
+        const group = await db
+            .insert(groupsTable)
+            .values({ name: "Nouveau groupe", id: generateRandomString(16) });
 
         await db.insert(groupUsersTable).values(
             [user.userId, ...friendsId].map((id) => ({
-                groupId: group.insertId as unknown as number,
+                groupId: group.insertId,
                 userId: id,
             }))
         );
@@ -376,7 +378,7 @@ export async function addToGroup(user: User, group: Group, friendsId: string[]):
  * @param groupId The targeted group's id
  * @returns True if the operation succeded, false otherwise
  */
-export async function quitGroup(user: User, groupId: number): Promise<boolean> {
+export async function quitGroup(user: User, groupId: string): Promise<boolean> {
     try {
         await db
             .delete(groupUsersTable)

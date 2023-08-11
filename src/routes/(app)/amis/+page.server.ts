@@ -7,7 +7,7 @@ import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ locals, url }) => {
     const friendId = url.searchParams.get("friendId");
-    const groupId = Number.parseInt(url.searchParams.get("groupId") ?? "");
+    const groupId = url.searchParams.get("groupId");
     const isCommonSchedule = url.searchParams.get("commonSchedule") !== null;
 
     const group = groupId ? await db.getGroupWithUsers(groupId) : null;

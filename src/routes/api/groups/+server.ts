@@ -21,7 +21,7 @@ export const POST = (async ({ request, locals }) => {
     return json({ success: await db.createGroup(locals.user, data.usersId) });
 }) satisfies RequestHandler;
 
-const _deleteSchema = z.object({ groupId: z.number() });
+const _deleteSchema = z.object({ groupId: z.string().length(16) });
 
 export const DELETE = (async ({ request, locals }) => {
     const { data } = await apiValidate(request, _deleteSchema);

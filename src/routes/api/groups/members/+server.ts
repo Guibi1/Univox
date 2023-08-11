@@ -9,7 +9,7 @@ import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
 const _postSchema = z.object({
-    groupId: z.number(),
+    groupId: z.string().length(16),
 });
 
 export const POST = (async ({ locals, request }) => {

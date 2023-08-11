@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
 const _postSchema = z.object({
-    groupId: z.number(),
+    groupId: z.string().length(16),
     name: z.string().min(3).max(30),
 });
 

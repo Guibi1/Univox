@@ -7,7 +7,7 @@ import type { booksTable } from "./server/schemas/books";
  * Represents a friend group
  */
 export interface Group {
-    id: number;
+    id: string;
     name: string;
     usersId: string[];
 }
