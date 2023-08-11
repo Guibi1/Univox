@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
 const _deleteSchema = z.object({
-    bookId: z.number(),
+    bookId: z.string().length(20),
 });
 
 export const DELETE = (async ({ request, locals }) => {

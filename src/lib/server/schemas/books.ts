@@ -1,9 +1,9 @@
-import { index, mysqlTable, serial, smallint, varchar } from "drizzle-orm/mysql-core";
+import { index, mysqlTable, smallint, varchar } from "drizzle-orm/mysql-core";
 
 export const booksTable = mysqlTable(
     "books",
     {
-        id: serial("id").primaryKey(),
+        id: varchar("id", { length: 20 }).primaryKey(),
         userId: varchar("user_id", { length: 15 }).notNull(),
         title: varchar("title", { length: 128 }).notNull(),
         isbn: varchar("isbn", { length: 16 }).notNull(),

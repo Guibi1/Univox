@@ -24,6 +24,7 @@ import {
 import { alias, type MySqlUpdateSetSource } from "drizzle-orm/mysql-core";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 import type { User } from "lucia";
+import { generateRandomString } from "lucia/utils";
 import { auth } from "./lucia";
 import { booksTable } from "./schemas/books";
 import { friendsTable } from "./schemas/friends";
@@ -542,7 +543,7 @@ export async function getClassCodes(user: User): Promise<string[]> {
  * @param bookId The targeted book's ID
  * @returns The requested book or null if it doesn't exist
  */
-export async function getBook(bookId: number): Promise<Book | null> {
+export async function getBook(bookId: string): Promise<Book | null> {
     const book = (await db.select().from(booksTable).where(eq(booksTable.id, bookId)).limit(1)).at(
         0
     );
@@ -620,7 +621,7 @@ export async function addBookListing(user: User, book: Omit<Book, "id">): Promis
     }
 
     try {
-        await db.insert(booksTable).values(book);
+        await db.insert(booksTable).values({ ...book, id: generateRandomString(20) });
         log("New book created");
         return true;
     } catch {
@@ -634,7 +635,7 @@ export async function addBookListing(user: User, book: Omit<Book, "id">): Promis
  * @param book The book to add
  * @returns True if the operation succeded, false otherwise
  */
-export async function deleteBookListing(user: User, bookId: number): Promise<boolean> {
+export async function deleteBookListing(user: User, bookId: string): Promise<boolean> {
     try {
         const query = await db
             .delete(booksTable)

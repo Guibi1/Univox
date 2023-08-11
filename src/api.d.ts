@@ -28,7 +28,7 @@ type ProjectAPI = {
         "/api/settings/colorScheme": { body: { colorScheme: string; }; params: never; };
     };
     DELETE: {
-        "/api/book": { body: { bookId: number; }; params: never; };
+        "/api/book": { body: { bookId: string; }; params: never; };
         "/api/friends": { body: { friendId: string; }; params: never; };
         "/api/groups": { body: { groupId: number; }; params: never; };
         "/api/notifications": { body: { notificationId: number; }; params: never; };

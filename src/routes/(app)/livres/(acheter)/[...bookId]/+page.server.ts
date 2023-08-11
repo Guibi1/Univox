@@ -4,13 +4,7 @@ import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ params }) => {
-    const bookId = Number.parseInt(params.bookId);
-
-    if (isNaN(bookId)) {
-        throw redirect(302, "/livres/");
-    }
-
-    const book = await db.getBook(bookId);
+    const book = await db.getBook(params.bookId);
     if (!book) {
         throw redirect(302, "/livres/");
     }
