@@ -4,21 +4,17 @@ import { apiValidate } from "sveltekit-api-fetch/server";
 import { z } from "zod";
 import type { RequestHandler } from "../$types";
 
-const _postSchema = z.object({
-    searchQuery: z.string().min(0),
-});
-
-export const POST = (async ({ request, locals }) => {
-    const { data } = await apiValidate(request, _postSchema);
+export const GET = (async ({ request, locals }) => {
+    const { data } = await apiValidate(request, { searchParams: z.object({ query: z.string() }) });
 
     const results = [];
 
-    const users = await db.searchUsers(locals.user, data.searchQuery);
+    const users = await db.searchUsers(locals.user, data.searchParams.query);
     if (users.length > 0) {
         results.push({ users, otherSchool: false });
     }
 
-    const otherSchoolUsers = await db.searchUsers(locals.user, data.searchQuery, 5, false);
+    const otherSchoolUsers = await db.searchUsers(locals.user, data.searchParams.query, 5, false);
     if (otherSchoolUsers.length > 0) {
         results.push({ users: otherSchoolUsers, otherSchool: true });
     }

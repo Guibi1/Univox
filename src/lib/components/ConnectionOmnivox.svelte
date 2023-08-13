@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { connectionOmnivoxSchema } from "$lib/formSchema";
+    import type { omnivoxLoginSchema } from "$lib/zod_schemas";
     import type { Readable, Writable } from "svelte/store";
     import type { ValidationErrors } from "sveltekit-superforms";
     import type { z } from "zod";
 
     export let email: string | undefined = undefined;
-    export let form: Readable<z.infer<typeof connectionOmnivoxSchema>>;
-    export let errors: Writable<ValidationErrors<typeof connectionOmnivoxSchema>>;
+    export let form: Readable<z.infer<typeof omnivoxLoginSchema>>;
+    export let errors: Writable<ValidationErrors<typeof omnivoxLoginSchema>>;
     export let submitting: Readable<boolean>;
     export let message: Writable<any>;
 

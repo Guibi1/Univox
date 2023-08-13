@@ -1,10 +1,10 @@
-import { newPeriodSchema } from "$lib/formSchema";
 import * as db from "$lib/server/db";
 import { fail } from "@sveltejs/kit";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { superValidate } from "sveltekit-superforms/server";
+import { z } from "zod";
 import type { Actions } from "./$types";
 
 dayjs.extend(utc);
@@ -46,3 +46,20 @@ export const actions = {
         return { form };
     },
 } satisfies Actions;
+
+const newPeriodSchema = z
+    .object({
+        name: z.string().min(3, "Requis"),
+        date: z.string().regex(/\d\d\d\d-\d\d-\d\d/),
+        startTime: z.string().regex(/\d\d:\d\d/),
+        endTime: z.string().regex(/\d\d:\d\d/),
+    })
+    .superRefine(({ startTime, endTime }, { addIssue }) => {
+        if (!dayjs(startTime, "HH:mm").isBefore(dayjs(endTime, "HH:mm"), "minutes")) {
+            addIssue({
+                path: ["endTime"],
+                message: "La fin de l'évenement doit être après le début",
+                code: "custom",
+            });
+        }
+    });

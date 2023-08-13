@@ -1,29 +1,24 @@
 import * as db from "$lib/server/db";
 import type { NotificationKind } from "$lib/types";
+import { serialIdSchema, userIdSchema } from "$lib/zod_schemas";
 import { json } from "@sveltejs/kit";
 import { apiValidate } from "sveltekit-api-fetch/server";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
-const _postSchema = z.object({
-    kind: z.string().transform((k) => k as NotificationKind),
-    receiverId: z.string().length(15),
-});
-
 export const POST = (async ({ request, locals }) => {
-    const { data } = await apiValidate(request, _postSchema);
+    const { data } = await apiValidate(request, {
+        kind: z.string().transform((k) => k as NotificationKind),
+        receiverId: userIdSchema,
+    });
 
     return json({
         success: await db.sendNotification(locals.user, data.receiverId, data.kind),
     });
 }) satisfies RequestHandler;
 
-const _deleteSchema = z.object({
-    notificationId: z.number(),
-});
-
 export const DELETE = (async ({ request, locals }) => {
-    const { data } = await apiValidate(request, _deleteSchema);
+    const { data } = await apiValidate(request, { notificationId: serialIdSchema });
 
     return json({ success: await db.deleteNotification(locals.user, data.notificationId) });
 }) satisfies RequestHandler;

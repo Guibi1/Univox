@@ -506,14 +506,11 @@ export async function deleteAllClassesInSchedule(user: User): Promise<boolean> {
  * @param period The period object to delete
  * @returns True if the operation succeeded, false otherwise
  */
-export async function deletePeriodFromSchedule(
-    user: User,
-    period: Omit<Period, "userId">
-): Promise<boolean> {
+export async function deletePeriodFromSchedule(user: User, periodId: number): Promise<boolean> {
     try {
         await db
             .delete(periodsTable)
-            .where(and(eq(periodsTable.id, period.id), eq(periodsTable.userId, user.userId)));
+            .where(and(eq(periodsTable.id, periodId), eq(periodsTable.userId, user.userId)));
 
         return true;
     } catch {

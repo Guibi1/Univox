@@ -6,32 +6,32 @@
 
 type ProjectAPI = {
     GET: {
-        "/api/friends": { body: never; params: never; };
-        "/api/groups": { body: never; params: never; };
-        "/api/images/book/[filename]": { body: never; params: { filename: string }; };
-        "/api/notifications": { body: never; params: never; };
-        "/api/schedule": { body: never; params: never; };
-        "/api/user": { body: never; params: never; };
+        "/api/friends": never;
+        "/api/friends/search": { searchParams: { query: string; } };
+        "/api/groups": never;
+        "/api/images/book/[filename]": { routeParams: { filename: string } };
+        "/api/notifications": never;
+        "/api/schedule": never;
+        "/api/user": never;
     };
     POST: {
-        "/api/friends": { body: { friendId: string; }; params: never; };
-        "/api/friends/search": { body: { searchQuery: string; }; params: never; };
-        "/api/groups": { body: { usersId: string[]; }; params: never; };
-        "/api/groups/invite": { body: { usersId: string[]; groupId: string; }; params: never; };
-        "/api/groups/members": { body: { groupId: string; }; params: never; };
-        "/api/groups/name": { body: { groupId: string; name: string; }; params: never; };
-        "/api/notifications": { body: { kind: string; receiverId: string; }; params: never; };
-        "/api/schedule": { body: { periods: { name: string; id: number; timeStart: string; timeEnd: string; }[]; }; params: never; };
-        "/api/user/avatar": { body: { avatar: string; }; params: never; };
+        "/api/friends": { body: { friendId: string } };
+        "/api/groups": { body: { usersId: string[] } };
+        "/api/groups/invite": { body: { groupId: string; usersId: string[] } };
+        "/api/groups/members": { body: { groupId: string } };
+        "/api/groups/name": { body: { groupId: string; name: string } };
+        "/api/notifications": { body: { kind: string; receiverId: string } };
+        "/api/schedule": { body: { period: { name: string; id: number; timeStart: string; timeEnd: string; } } };
+        "/api/user/avatar": { body: { avatar: string } };
     };
     PUT: {
-        "/api/settings/colorScheme": { body: { colorScheme: string; }; params: never; };
+        "/api/settings/colorScheme": { body: { colorScheme: string } };
     };
     DELETE: {
-        "/api/book": { body: { bookId: string; }; params: never; };
-        "/api/friends": { body: { friendId: string; }; params: never; };
-        "/api/groups": { body: { groupId: string; }; params: never; };
-        "/api/notifications": { body: { notificationId: number; }; params: never; };
-        "/api/schedule": { body: { period: { name: string; id: number; timeStart: string; timeEnd: string; }; }; params: never; };
+        "/api/book": { body: { bookId: string } };
+        "/api/friends": { body: { friendId: string } };
+        "/api/groups": { body: { groupId: string } };
+        "/api/notifications": { body: { notificationId: number } };
+        "/api/schedule": { body: { periodId: number } };
     };
 };

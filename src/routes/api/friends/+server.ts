@@ -1,27 +1,19 @@
 import * as db from "$lib/server/db";
+import { userIdSchema } from "$lib/zod_schemas";
 import { json } from "@sveltejs/kit";
 import { apiValidate } from "sveltekit-api-fetch/server";
-import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
-const _postSchema = z.object({
-    friendId: z.string().length(15),
-});
-
 export const POST = (async ({ request, locals }) => {
-    const { data } = await apiValidate(request, _postSchema);
+    const { data } = await apiValidate(request, { friendId: userIdSchema });
 
     return json({
         success: await db.sendNotification(locals.user, data.friendId, "FriendRequest"),
     });
 }) satisfies RequestHandler;
 
-const _deleteSchema = z.object({
-    friendId: z.string().length(15),
-});
-
 export const DELETE = (async ({ request, locals }) => {
-    const { data } = await apiValidate(request, _deleteSchema);
+    const { data } = await apiValidate(request, { friendId: userIdSchema });
 
     return json({
         success: await db.deleteFriend(locals.user, data.friendId),

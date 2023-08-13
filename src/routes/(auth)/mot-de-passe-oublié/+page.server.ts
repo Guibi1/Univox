@@ -1,18 +1,18 @@
-import { resetPasswordSchema } from "$lib/formSchema";
 import { auth } from "$lib/server/lucia";
 import * as omnivox from "$lib/server/omnivox";
+import { omnivoxLoginSchema, passwordSchema } from "$lib/zod_schemas";
 import { fail, redirect } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import type { Actions } from "./$types";
 
 export const load = async () => {
-    const form = await superValidate(resetPasswordSchema);
+    const form = await superValidate(resetSchema);
     return { form };
 };
 
 export const actions = {
     reset: async ({ request, url }) => {
-        const form = await superValidate(request, resetPasswordSchema);
+        const form = await superValidate(request, resetSchema);
 
         const baseUrl = form.data.email.match(/\d{7}@(.*).qc.ca/)?.[1];
         if (!form.valid || !baseUrl) {
@@ -58,3 +58,5 @@ export const actions = {
         throw redirect(302, "/connexion?" + url.searchParams);
     },
 } satisfies Actions;
+
+const resetSchema = omnivoxLoginSchema.extend({ password: passwordSchema });

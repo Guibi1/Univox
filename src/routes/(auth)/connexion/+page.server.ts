@@ -1,7 +1,8 @@
-import { connexionSchema } from "$lib/formSchema";
 import { auth } from "$lib/server/lucia";
+import { emailSchema, passwordSchema } from "$lib/zod_schemas";
 import { fail } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
+import { z } from "zod";
 import type { Actions } from "./$types";
 
 export const load = async () => {
@@ -31,3 +32,5 @@ export const actions = {
         return { form };
     },
 } satisfies Actions;
+
+const connexionSchema = z.object({ email: emailSchema, password: passwordSchema });

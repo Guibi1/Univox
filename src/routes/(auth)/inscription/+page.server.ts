@@ -1,19 +1,20 @@
-import { inscriptionSchema } from "$lib/formSchema";
 import { auth } from "$lib/server/lucia";
 import * as omnivox from "$lib/server/omnivox";
+import { emailSchema, omnivoxLoginSchema } from "$lib/zod_schemas";
 import { fail } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
+import { z } from "zod";
 import type { Actions } from "./$types";
 
 export const load = async () => {
-    const form = await superValidate(inscriptionSchema);
+    const form = await superValidate(signupSchema);
     form.data.firstStep = true;
     return { form };
 };
 
 export const actions = {
     signup: async ({ locals, request }) => {
-        const form = await superValidate(request, inscriptionSchema);
+        const form = await superValidate(request, signupSchema);
 
         const baseUrl = form.data.email.match(/\d{7}@(.*).qc.ca/)?.[1];
         if (!form.valid || !baseUrl) {
@@ -103,3 +104,23 @@ export const actions = {
         return { form };
     },
 } satisfies Actions;
+
+const signupSchema = omnivoxLoginSchema
+    .extend({
+        email: emailSchema,
+        password: z.string(),
+        confirmPassword: z.string(),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+
+        firstStep: z.boolean().default(true),
+    })
+    .superRefine(({ confirmPassword, password }, { addIssue }) => {
+        if (confirmPassword !== password) {
+            addIssue({
+                path: ["confirmPassword"],
+                message: "Les mots de passe correspondent pas",
+                code: "custom",
+            });
+        }
+    });

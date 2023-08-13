@@ -1,19 +1,15 @@
-/**
- * @file API endpoints to manage friend groups
- */
 import * as db from "$lib/server/db";
+import { groupIdSchema, userIdSchema } from "$lib/zod_schemas";
 import { error, json } from "@sveltejs/kit";
 import { apiValidate } from "sveltekit-api-fetch/server";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
-const _postSchema = z.object({
-    groupId: z.string().length(16),
-    usersId: z.array(z.string()).min(1),
-});
-
 export const POST = (async ({ request, locals }) => {
-    const { data } = await apiValidate(request, _postSchema);
+    const { data } = await apiValidate(request, {
+        groupId: groupIdSchema,
+        usersId: z.array(userIdSchema).min(1),
+    });
 
     const group = await db.getGroup(data.groupId);
     if (!group) {

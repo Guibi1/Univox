@@ -20,14 +20,11 @@ function createScheduleStore() {
         const { success } = await (
             await api.POST("/api/schedule", {
                 body: {
-                    periods: [
-                        {
-                            ...period,
-                            id: period.id,
-                            timeStart: period.timeStart.toJSON(),
-                            timeEnd: period.timeEnd.toJSON(),
-                        },
-                    ],
+                    period: {
+                        ...period,
+                        timeStart: period.timeStart.toJSON(),
+                        timeEnd: period.timeEnd.toJSON(),
+                    },
                 },
             })
         ).json();
@@ -37,16 +34,7 @@ function createScheduleStore() {
 
     async function remove(period: Period) {
         const { success } = await (
-            await api.DELETE("/api/schedule", {
-                body: {
-                    period: {
-                        ...period,
-                        id: period.id,
-                        timeStart: period.timeStart.toJSON(),
-                        timeEnd: period.timeEnd.toJSON(),
-                    },
-                },
-            })
+            await api.DELETE("/api/schedule", { body: { periodId: period.id } })
         ).json();
         if (success) refresh();
         return success;

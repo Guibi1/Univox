@@ -22,7 +22,7 @@
     }
 
     async function onInput() {
-        const res = await api.POST("/api/friends/search", { body: { searchQuery } });
+        const res = await api.GET("/api/friends/search", { searchParams: { query: searchQuery } });
         results = await res.json();
     }
 
@@ -36,14 +36,14 @@
 
 <modal
     bind:this={elemSearch}
-    class="card bg-surface-100/60 dark:bg-surface-500/30 backdrop-blur-lg overflow-hidden w-modal shadow-xl mt-8 mb-auto"
+    class="card w-modal mb-auto mt-8 overflow-hidden bg-surface-100/60 shadow-xl backdrop-blur-lg dark:bg-surface-500/30"
 >
     <!-- Header -->
     <header class="bg-surface-300-600-token flex items-center">
-        <i class="bx bx-search text-2xl ml-4" />
+        <i class="bx bx-search ml-4 text-2xl" />
 
         <input
-            class="bg-transparent border-0 ring-0 focus:ring-0 w-full p-4 text-lg"
+            class="w-full border-0 bg-transparent p-4 text-lg ring-0 focus:ring-0"
             type="search"
             placeholder="Entrez l'adresse courriel de l'élève"
             bind:value={searchQuery}
@@ -54,17 +54,17 @@
 
     <!-- Results -->
     {#if results.length > 0}
-        <nav class="list-nav overflow-x-auto max-h-[480px] hide-scrollbar" tabindex="-1">
+        <nav class="hide-scrollbar list-nav max-h-[480px] overflow-x-auto" tabindex="-1">
             {#each results as result}
                 {#if result.otherSchool}
-                    <div class="text-sm font-bold p-4">Autres écoles</div>
+                    <div class="p-4 text-sm font-bold">Autres écoles</div>
                 {/if}
 
                 <ul>
                     {#each result.users as user}
-                        <li class="text-lg flex flex-col">
+                        <li class="flex flex-col text-lg">
                             <button
-                                class="!rounded-none btn justify-between flex hover:variant-soft focus:!variant-filled-primary"
+                                class="btn flex justify-between !rounded-none hover:variant-soft focus:!variant-filled-primary"
                                 on:click={() => addFriend(user)}
                             >
                                 <div class="flex items-center gap-4">
@@ -76,7 +76,7 @@
                                     </span>
                                 </div>
 
-                                <span class="hidden md:block text-xs opacity-80">{user.email}</span>
+                                <span class="hidden text-xs opacity-80 md:block">{user.email}</span>
                             </button>
                         </li>
                     {/each}
@@ -91,7 +91,7 @@
 
     <!-- Footer -->
     <footer
-        class="hidden md:flex items-center gap-4 bg-surface-300-600-token p-4 text-xs font-bold"
+        class="bg-surface-300-600-token hidden items-center gap-4 p-4 text-xs font-bold md:flex"
     >
         <span><kbd class="kbd">Esc</kbd> pour fermer</span>
         <span><kbd class="kbd">Tab</kbd> pour naviguer</span>
