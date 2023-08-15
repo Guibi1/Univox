@@ -18,62 +18,52 @@ export const actions = {
             return fail(400, { form });
         }
 
-        try {
-            if (!form.data.session) {
-                try {
-                    const login = await omnivox.login(locals.user.email, form.data.omnivoxPassword);
-
-                    if (login.mfa) {
-                        form.data.session = JSON.stringify(login.session.cookies);
-                        form.data.mfaId = login.mfa.id;
-                        form.message = login.mfa.type;
-                        return { form };
-                    }
-                } catch (e) {
-                    return setError(form, "omnivoxPassword", "Mot de passe omnivox incorrect");
-                }
-            } else {
-                if (!form.data.code) {
-                    return setError(form, "code", "Champ nécessaire");
-                }
-
-                const result = await omnivox.submitCode2FA(
-                    form.data.code,
-                    omnivox.createSessionFromCookies(
-                        JSON.parse(form.data.session),
-                        locals.user.email
-                    ),
-                    form.data.mfaId
-                );
-
-                form.data.code = undefined;
-                if (!result.success) {
-                    return setError(form, "code", "Code invalide");
-                }
-            }
-
+        if (!form.data.session) {
             try {
-                const html = await omnivox.fetchSchedulePageHTML(
-                    omnivox.createSessionFromCookies(
-                        JSON.parse(form.data.session),
-                        locals.user.email
-                    ),
-                    2023,
-                    omnivox.Semester.Winter
-                );
-                const schedule = await omnivox.schedulePageToClasses(html);
+                const login = await omnivox.login(locals.user.email, form.data.omnivoxPassword);
 
-                await db.deleteAllClassesInSchedule(locals.user);
-                await db.addClassesToSchedule(locals.user, schedule);
-            } catch {
-                return setError(
-                    form,
-                    "omnivoxPassword",
-                    "Impossible d'importer votre horaire pour l'instant"
-                );
+                if (login.mfa) {
+                    form.data.session = JSON.stringify(login.session.cookies);
+                    form.data.mfaId = login.mfa.id;
+                    form.message = login.mfa.type;
+                    return { form };
+                }
+            } catch (e) {
+                return setError(form, "omnivoxPassword", "Mot de passe omnivox incorrect");
             }
+        } else {
+            if (!form.data.code) {
+                return setError(form, "code", "Champ nécessaire");
+            }
+
+            const result = await omnivox.submitCode2FA(
+                form.data.code,
+                omnivox.createSessionFromCookies(JSON.parse(form.data.session), locals.user.email),
+                form.data.mfaId
+            );
+
+            form.data.code = undefined;
+            if (!result.success) {
+                return setError(form, "code", "Code invalide");
+            }
+        }
+
+        try {
+            const html = await omnivox.fetchSchedulePageHTML(
+                omnivox.createSessionFromCookies(JSON.parse(form.data.session), locals.user.email),
+                2023,
+                omnivox.Semester.Winter
+            );
+            const schedule = await omnivox.schedulePageToClasses(html);
+
+            await db.deleteAllClassesInSchedule(locals.user);
+            await db.addClassesToSchedule(locals.user, schedule);
         } catch {
-            return setError(form, "omnivoxPassword", "Mot de passe erroné");
+            return setError(
+                form,
+                "omnivoxPassword",
+                "Impossible d'importer votre horaire pour l'instant"
+            );
         }
 
         throw redirect(302, "/horaire");

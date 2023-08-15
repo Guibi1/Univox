@@ -80,13 +80,26 @@ export async function fetchSchedulePageHTML(
 }
 
 /**
- * This function parses the provided HTML to create an array of Class
- * @param HTML The 'visualise' page's HTML content
- * @returns The user's schedule
+ * Fetches the user's home page and extracts the full name
+ * @param session The user's cookie session
+ * @returns The user's first and last name
  */
-export function schedulePageToName(HTML: string) {
-    const $ = cheerio.load(HTML);
-    const match = regexFind($("#headerNavbarProfileUserName").first().text(), /(.*)\s(.*)/);
+export async function fetchUserFullName(session: OmnivoxSession) {
+    const res = await fetch(`https://${session.baseUrl}-estd.omnivox.ca:443/intr`, {
+        headers: {
+            Cookie: formatCookies(session.cookies),
+        },
+    });
+
+    const $ = cheerio.load(await res.text());
+    const text = $("#headerNavbarProfileUserName")
+        .first()
+        .text()
+        .trim()
+        .split(" ")
+        .map((s) => s.at(0)?.toUpperCase() + s.substring(1).toLowerCase())
+        .join(" ");
+    const match = regexFind(text, /(.*)\s(.*)/);
 
     return { firstName: match[1], lastName: match[2] };
 }

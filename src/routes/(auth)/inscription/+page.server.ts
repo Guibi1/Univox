@@ -52,13 +52,16 @@ export const actions = {
                     return setError(form, "code", "Code invalide");
                 }
             }
+        } catch (e) {
+            form.data.firstStep = true;
+            return setError(form, "omnivoxPassword", "Mot de passe erroné");
+        }
 
-            const { html } = await omnivox.fetchSchedulePageHTML(
-                { cookies: JSON.parse(form.data.session), baseUrl },
-                2023,
-                omnivox.Semester.Winter
-            );
-            const info = omnivox.schedulePageToName(html);
+        try {
+            const info = await omnivox.fetchUserFullName({
+                cookies: JSON.parse(form.data.session),
+                baseUrl,
+            });
 
             // Everything it good!
             form.data.password = "";
@@ -72,7 +75,7 @@ export const actions = {
             }
         } catch (e) {
             form.data.firstStep = true;
-            return setError(form, "omnivoxPassword", "Mot de passe erroné");
+            return setError(form, "omnivoxPassword", "Une erreur inconnue est survenue");
         }
 
         if (!form.data.firstStep) {
