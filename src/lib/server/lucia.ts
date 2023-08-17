@@ -13,26 +13,22 @@ const conn = connect({
 
 export const auth = lucia({
     adapter: planetscale(conn, {
-        user: "auth_user",
-        key: "auth_key",
-        session: "auth_session",
+        user: "users",
+        key: "user_key",
+        session: "user_session",
     }),
     env: dev ? "DEV" : "PROD",
     middleware: sveltekit(),
     getUserAttributes(d) {
-        const data = d as unknown as {
-            first_name: string;
-            last_name: string;
-        };
-
         return {
             da: d.da,
             email: d.email,
-            firstName: data.first_name,
-            lastName: data.last_name,
+            firstName: d.firstName,
+            lastName: d.lastName,
             avatar: d.avatar,
         };
     },
+    csrfProtection: true,
 });
 
 export type Auth = typeof auth;

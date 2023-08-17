@@ -1,6 +1,7 @@
 import { auth } from "$lib/server/lucia";
 import { emailSchema, passwordSchema } from "$lib/zod_schemas";
 import { fail } from "@sveltejs/kit";
+import { LuciaError } from "lucia";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import { z } from "zod";
 import type { Actions } from "./$types";
@@ -18,14 +19,22 @@ export const actions = {
             return fail(400, { form });
         }
 
-        try {
-            const [key] = await Promise.all([
-                await auth.useKey("email", form.data.email, form.data.password),
-                new Promise((r) => setTimeout(r, 600)),
-            ]);
-            const session = await auth.createSession({ userId: key.userId, attributes: {} });
+        const [key] = await Promise.allSettled([
+            auth.useKey("email", form.data.email.toLowerCase(), form.data.password),
+            new Promise((r) => setTimeout(r, 600)),
+        ]);
+
+        if (key.status === "fulfilled") {
+            const session = await auth.createSession({
+                userId: key.value.userId,
+                attributes: {},
+            });
             locals.auth.setSession(session);
-        } catch (e) {
+        } else if (
+            key.reason instanceof LuciaError &&
+            (key.reason.message === "AUTH_INVALID_KEY_ID" ||
+                key.reason.message === "AUTH_INVALID_PASSWORD")
+        ) {
             return setError(form, "password", "Mot de passe erroné");
         }
 

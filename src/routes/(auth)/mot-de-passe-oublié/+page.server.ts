@@ -50,7 +50,11 @@ export const actions = {
         }
 
         try {
-            auth.updateKeyPassword("email", form.data.email, form.data.password);
+            await auth.updateKeyPassword(
+                "email",
+                form.data.email.toLowerCase(),
+                form.data.password
+            );
         } catch {
             return setError(form, "email", "Aucun compte associé à cet email");
         }
