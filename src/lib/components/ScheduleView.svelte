@@ -17,7 +17,7 @@
     let scheduleDiv: Element;
 
     // Mise à jour de l'heure actuelle toutes les 60 secondes
-    let interval: NodeJS.Timer;
+    let interval: NodeJS.Timeout;
     onMount(async () => {
         interval = setInterval(() => (currentTime = dayjs()), 60000);
 
