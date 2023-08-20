@@ -4,8 +4,8 @@ import { apiValidate } from "sveltekit-api-fetch/server";
 import { z } from "zod";
 import type { RequestHandler } from "../$types";
 
-export const GET = (async ({ request, locals }) => {
-    const { data } = await apiValidate(request, { searchParams: z.object({ query: z.string() }) });
+export const GET = (async ({ locals, url }) => {
+    const { data } = await apiValidate(url, { searchParams: z.object({ query: z.string() }) });
 
     const results = [];
 
