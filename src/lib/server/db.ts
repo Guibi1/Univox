@@ -644,8 +644,6 @@ export async function deleteBookListing(user: User, bookId: string): Promise<boo
             return false;
         }
 
-        // TODO: Delete the image
-
         log("Book deleted");
         return true;
     } catch {

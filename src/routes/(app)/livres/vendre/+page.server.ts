@@ -1,7 +1,7 @@
+import { uploadBookCover } from "$lib/server/bucket";
 import * as db from "$lib/server/db";
 import { imageSchema } from "$lib/zod_schemas";
 import { fail, redirect } from "@sveltejs/kit";
-import { randomUUID } from "crypto";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import { z } from "zod";
 import type { Actions, PageServerLoad } from "./$types";
@@ -26,29 +26,15 @@ export const actions = {
             return fail(400, { form });
         }
 
-        const images: File[] = [];
-        for (let i = 0; ; i++) {
-            const data = formData.get("image" + i)?.valueOf();
-            if (!(data instanceof File)) break;
-
-            const result = imageSchema.safeParse(data);
-            if (result.success) {
-                images.push(result.data);
+        let src = "";
+        const imageData = formData.get("image")?.valueOf();
+        if (imageData) {
+            const imageParse = imageSchema.safeParse(imageData);
+            if (imageParse.success) {
+                src = await uploadBookCover(imageParse.data);
             } else {
-                return setError(form, "images", result.error.errors[0].message);
+                return setError(form, "images", imageParse.error.errors[0].message);
             }
-        }
-
-        if (images.length === 0) {
-            return setError(form, "images", "Il faut au moins une image pour afficher un livre");
-        }
-
-        const uploads: Promise<boolean>[] = [];
-        const imagesSrc: string[] = [];
-        for (const image of images) {
-            const name = randomUUID();
-            // uploads.push(uploadBookImage(image, name));
-            imagesSrc.push(`/api/images/book/${name + image}`);
         }
 
         const book = {
@@ -59,10 +45,9 @@ export const actions = {
             price: form.data.price,
             isbn: form.data.isbn,
             code: form.data.classCode,
-            image: "",
+            image: src,
         };
 
-        await Promise.allSettled(uploads);
         await db.addBookListing(locals.user, book);
 
         throw redirect(302, "/livres/mes-livres");

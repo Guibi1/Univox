@@ -9,7 +9,6 @@ type ProjectAPI = {
         "/api/friends": never;
         "/api/friends/search": { searchParams: { query: string; } };
         "/api/groups": never;
-        "/api/images/book/[filename]": { routeParams: { filename: string } };
         "/api/notifications": never;
         "/api/schedule": never;
         "/api/user": never;

@@ -7,11 +7,9 @@
 
     const { form, errors, delayed, enhance } = superForm(data.form, {
         taintedMessage: null,
-        onSubmit: ({ data }) => {
-            let i = 0;
-            for (const image of images ?? []) {
-                data.append("image" + i++, image);
-            }
+        onSubmit: ({ formData }) => {
+            const image = images?.item(0);
+            if (image) formData.append("image", image);
         },
     });
 
