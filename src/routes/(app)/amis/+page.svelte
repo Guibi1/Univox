@@ -129,41 +129,42 @@
                 </a>
             </div>
         {:else if currentGroup && data.groupUsers}
-            <div class="m-4 flex flex-col">
+            <div class="card flex flex-col gap-4 p-4">
                 <h4 class="h4">{currentGroup.name}</h4>
 
-                <div class="card flex flex-col gap-4 p-4">
-                    <h5 class="h5">Membres</h5>
-                    <ul class="flex flex-col gap-2">
-                        {#each data.groupUsers as user}
-                            <li>
-                                <UserCard {user} />
-                            </li>
-                        {/each}
-                    </ul>
+                <Accordion>
+                    <AccordionItem open>
+                        <svelte:fragment slot="summary">Membres</svelte:fragment>
 
-                    <Accordion>
-                        <AccordionItem>
-                            <svelte:fragment slot="summary">Plus d'actions</svelte:fragment>
+                        <ul slot="content" class="grid gap-2">
+                            {#each data.groupUsers as user}
+                                <li>
+                                    <UserCard {user} />
+                                </li>
+                            {/each}
+                        </ul>
+                    </AccordionItem>
 
-                            <div slot="content" class="grid gap-2">
-                                <button
-                                    class="btn variant-ghost-secondary"
-                                    on:click={() => currentGroup && groups.rename(currentGroup)}
-                                >
-                                    Renommer le groupe
-                                </button>
+                    <AccordionItem>
+                        <svelte:fragment slot="summary">Plus d'actions</svelte:fragment>
 
-                                <button
-                                    class="btn variant-ghost-error"
-                                    on:click={() => currentGroup && groups.quit(currentGroup)}
-                                >
-                                    Quitter le groupe
-                                </button>
-                            </div>
-                        </AccordionItem>
-                    </Accordion>
-                </div>
+                        <div slot="content" class="grid gap-2">
+                            <button
+                                class="btn variant-ghost-secondary"
+                                on:click={() => currentGroup && groups.rename(currentGroup)}
+                            >
+                                Renommer le groupe
+                            </button>
+
+                            <button
+                                class="btn variant-ghost-error"
+                                on:click={() => currentGroup && groups.quit(currentGroup)}
+                            >
+                                Quitter le groupe
+                            </button>
+                        </div>
+                    </AccordionItem>
+                </Accordion>
             </div>
         {/if}
     </section>
