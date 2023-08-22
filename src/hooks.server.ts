@@ -1,5 +1,5 @@
-import { auth } from "$lib/server/lucia";
 import * as db from "$lib/server/db";
+import { auth } from "$lib/server/lucia";
 import type { Group, Notification, Schedule } from "$lib/types";
 import { fail, redirect, type Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
@@ -7,7 +7,7 @@ import type { User } from "lucia";
 
 const localsHandle = (async ({ event, resolve }) => {
     event.locals.auth = auth.handleRequest(event);
-    const { user } = await event.locals.auth.validate() ?? {};
+    const { user } = (await event.locals.auth.validate()) ?? {};
 
     if (user) {
         event.locals.user = user;

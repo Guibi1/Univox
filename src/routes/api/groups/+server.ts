@@ -6,16 +6,19 @@ import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
 export const POST = (async ({ request, locals }) => {
-    const { data } = await apiValidate(request, { usersId: z.array(userIdSchema).min(2) });
+    const { data } = await apiValidate(request, {
+        name: z.string().min(3).max(80),
+        usersId: z.array(userIdSchema).min(2),
+    });
 
+    const friendsId = await db.getFriendsId(locals.user);
     for (const id of data.usersId) {
-        const friendsId = await db.getFriendsId(locals.user);
         if (!friendsId.some((f) => f === id)) {
             throw error(400, "Invalid data.");
         }
     }
 
-    return json({ success: await db.createGroup(locals.user, data.usersId) });
+    return json({ success: await db.createGroup(locals.user, data.name, data.usersId) });
 }) satisfies RequestHandler;
 
 export const DELETE = (async ({ request, locals }) => {

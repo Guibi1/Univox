@@ -3,12 +3,11 @@
     import { modalStore, toastStore } from "@skeletonlabs/skeleton";
     import type { User } from "lucia";
     import { api } from "sveltekit-api-fetch";
+    import UsersList from "./components/UsersList.svelte";
 
     let searchQuery = "";
     let results: { users: User[]; otherSchool: boolean }[] = [];
-
-    // Elements
-    let elemSearch: HTMLElement;
+    let modalRef: HTMLElement;
 
     function addFriend(user: User) {
         friends.add(user.userId);
@@ -22,20 +21,20 @@
     }
 
     async function onInput() {
-        const res = await api.GET("/api/friends/search", { searchParams: { query: searchQuery } });
+        const res = await api.GET("/api/user/search", { searchParams: { query: searchQuery } });
         results = await res.json();
     }
 
     function onKeyDown(event: KeyboardEvent) {
         if (["Enter", "ArrowDown"].includes(event.code)) {
-            const queryFirstAnchorElement = elemSearch.querySelector("button");
+            const queryFirstAnchorElement = modalRef.querySelector("button");
             if (queryFirstAnchorElement) queryFirstAnchorElement.focus();
         }
     }
 </script>
 
 <modal
-    bind:this={elemSearch}
+    bind:this={modalRef}
     class="card w-modal mb-auto mt-8 overflow-hidden bg-surface-100/60 shadow-xl backdrop-blur-lg dark:bg-surface-500/30"
 >
     <!-- Header -->
@@ -60,27 +59,7 @@
                     <div class="p-4 text-sm font-bold">Autres écoles</div>
                 {/if}
 
-                <ul>
-                    {#each result.users as user}
-                        <li class="flex flex-col text-lg">
-                            <button
-                                class="btn flex justify-between !rounded-none hover:variant-soft focus:!variant-filled-primary"
-                                on:click={() => addFriend(user)}
-                            >
-                                <div class="flex items-center gap-4">
-                                    <i class="bx bx-user-plus text-xl" />
-
-                                    <span class="flex-auto font-bold opacity-75">
-                                        {user.firstName}
-                                        {user.lastName}
-                                    </span>
-                                </div>
-
-                                <span class="hidden text-xs opacity-80 md:block">{user.email}</span>
-                            </button>
-                        </li>
-                    {/each}
-                </ul>
+                <UsersList users={result.users} on:click={(e) => addFriend(e.detail)} />
             {/each}
         </nav>
     {:else}

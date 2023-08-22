@@ -13,9 +13,9 @@ function createGroupsStore() {
         return success;
     }
 
-    async function create(users: User[]) {
+    async function create(name: string, users: User[]) {
         const { success } = await (
-            await api.POST("/api/groups", { body: { usersId: users.map((u) => u.userId) } })
+            await api.POST("/api/groups", { body: { name, usersId: users.map((u) => u.userId) } })
         ).json();
         if (success) refresh();
         return success;

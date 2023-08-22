@@ -7,15 +7,15 @@
 type ProjectAPI = {
     GET: {
         "/api/friends": never;
-        "/api/friends/search": { searchParams: { query: string; } };
         "/api/groups": never;
         "/api/notifications": never;
         "/api/schedule": never;
         "/api/user": never;
+        "/api/user/search": { searchParams: { query: string; } };
     };
     POST: {
         "/api/friends": { body: { friendId: string } };
-        "/api/groups": { body: { usersId: string[] } };
+        "/api/groups": { body: { name: string; usersId: string[] } };
         "/api/groups/invite": { body: { groupId: string; usersId: string[] } };
         "/api/groups/members": { body: { groupId: string } };
         "/api/groups/name": { body: { groupId: string; name: string } };

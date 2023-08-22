@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { page } from "$app/stores";
     import Avatar from "$lib/components/Avatar.svelte";
     import Loader from "$lib/components/Loader.svelte";
     import ScheduleView from "$lib/components/ScheduleView.svelte";
@@ -15,35 +13,32 @@
     export let data;
 
     $: currentFriend = $friends.find((u) => u.userId === data.friendId);
-
-    let selectedFriends: User[] = [];
+    $: currentGroup = $groups.find((g) => g.id === data.groupId);
 
     // Generates the search params that redirects to the user's schedule
     $: getFriendUrl = (friend: User) => {
-        const params = new URLSearchParams($page.url.searchParams);
+        const params = new URLSearchParams();
         params.set("friendId", friend.userId);
-        params.delete("commonSchedule");
-        params.delete("groupId");
         return `?${params}`;
     };
 
     // Generates the search params that redirects to the user's schedule
     $: getGroupUrl = (group: Group) => {
-        const params = new URLSearchParams($page.url.searchParams);
-        params.delete("friendId");
-        params.delete("commonSchedule");
+        const params = new URLSearchParams();
         params.set("groupId", group.id.toString());
         return `?${params}`;
     };
 
     // Generates the search params that redirects to the common schedule between the user and a friend
     $: getCommonScheduleUrl = (friend: User) => {
-        const params = new URLSearchParams($page.url.searchParams);
-        params.delete("groupId");
+        const params = new URLSearchParams();
         params.set("friendId", friend.userId);
-        params.set("commonSchedule", "commonSchedule");
+        params.set("commonSchedule", "");
         return `?${params}`;
     };
+
+    const addFriend = () => modalStore.trigger({ type: "component", component: "add-friend" });
+    const createGroup = () => modalStore.trigger({ type: "component", component: "create-group" });
 </script>
 
 <svelte:head>
@@ -52,21 +47,13 @@
 
 <div class="grid flex-grow grid-cols-[20rem_1fr_20rem] overflow-x-scroll p-6">
     <div class="flex flex-col p-4">
-        <h2 class="h4 text-center">Vos amis</h2>
+        <h1 class="h3">Vos amis</h1>
 
         <nav class="list-nav">
-            <ul class="flex-grow flex-col gap-4 py-4">
+            <ul class="flex-grow flex-col gap-4 py-2">
                 {#each $friends as friend}
                     <li>
                         <a href={getFriendUrl(friend)} class="btn flex justify-start">
-                            <input
-                                type="checkbox"
-                                class="checkbox"
-                                value={friend}
-                                bind:group={selectedFriends}
-                                on:click|stopPropagation={() => {}}
-                            />
-
                             <UserCard user={friend} />
                         </a>
                     </li>
@@ -75,7 +62,7 @@
                 {#each $groups as group}
                     <li>
                         <a href={getGroupUrl(group)} class="btn flex justify-start">
-                            <div class="flex flex-col justify-around items-start">
+                            <div class="flex flex-col items-start justify-around">
                                 <span>{group.name}</span>
                                 <small class="opacity-50"> {group.usersId.length} personnes</small>
                             </div>
@@ -85,28 +72,15 @@
             </ul>
         </nav>
 
-        {#if selectedFriends.length >= 2}
-            <button
-                class="btn variant-filled-secondary my-4"
-                on:click={() => {
-                    groups.create(selectedFriends);
-                    selectedFriends = [];
-                }}
-            >
-                Créer un groupe
-            </button>
-        {/if}
-
-        <button
-            class="btn variant-filled-primary"
-            on:click={() => modalStore.trigger({ type: "component", component: "add-friend" })}
-        >
+        <button class="btn variant-filled-primary my-4" on:click={addFriend}>
             Ajouter un ami
         </button>
+
+        <button class="btn variant-filled-primary" on:click={createGroup}> Créer un groupe </button>
     </div>
 
     {#await data.streamed.schedule}
-        <div class="grid justify-center items-center">
+        <div class="grid items-center justify-center">
             <Loader />
         </div>
     {:then schedule}
@@ -117,13 +91,13 @@
         {/if}
     {/await}
 
-    <section class="flex flex-col m-4">
+    <section class="m-4 flex flex-col">
         {#if currentFriend}
-            <div class="w-24 h-24 mx-auto">
+            <div class="mx-auto h-24 w-24">
                 <Avatar seed={currentFriend.avatar} />
             </div>
 
-            <div class="card flex flex-col p-4 gap-4">
+            <div class="card flex flex-col gap-4 p-4">
                 <div>
                     <h4 class="h4">{currentFriend.firstName} {currentFriend.lastName}</h4>
                     <span class="opacity-70">{currentFriend.email}</span>
@@ -141,7 +115,8 @@
                         <div slot="content" class="grid">
                             <button
                                 class="btn variant-ghost-error"
-                                on:click={() => currentFriend && friends.remove(currentFriend.userId)}
+                                on:click={() =>
+                                    currentFriend && friends.remove(currentFriend.userId)}
                             >
                                 Retirer l'ami
                             </button>
@@ -149,21 +124,18 @@
                     </AccordionItem>
                 </Accordion>
 
-                <button
-                    class="btn variant-filled-primary"
-                    on:click={() => currentFriend && goto(getCommonScheduleUrl(currentFriend))}
-                >
+                <a class="btn variant-filled-primary" href={getCommonScheduleUrl(currentFriend)}>
                     Disponibilités communes
-                </button>
+                </a>
             </div>
-        {:else if data.group}
-            <div class="flex flex-col m-4">
-                <h4 class="h4">{data.group.name}</h4>
+        {:else if currentGroup && data.groupUsers}
+            <div class="m-4 flex flex-col">
+                <h4 class="h4">{currentGroup.name}</h4>
 
-                <div class="card flex flex-col p-4 gap-4">
+                <div class="card flex flex-col gap-4 p-4">
                     <h5 class="h5">Membres</h5>
                     <ul class="flex flex-col gap-2">
-                        {#each data.group.users as user}
+                        {#each data.groupUsers as user}
                             <li>
                                 <UserCard {user} />
                             </li>
@@ -177,14 +149,14 @@
                             <div slot="content" class="grid gap-2">
                                 <button
                                     class="btn variant-ghost-secondary"
-                                    on:click={() => data.group && groups.rename(data.group)}
+                                    on:click={() => currentGroup && groups.rename(currentGroup)}
                                 >
                                     Renommer le groupe
                                 </button>
 
                                 <button
                                     class="btn variant-ghost-error"
-                                    on:click={() => data.group && groups.quit(data.group)}
+                                    on:click={() => currentGroup && groups.quit(currentGroup)}
                                 >
                                     Quitter le groupe
                                 </button>

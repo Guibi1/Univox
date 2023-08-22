@@ -260,29 +260,14 @@ export async function getGroup(id: string): Promise<Group | null> {
  * @param id The group id
  * @returns The group data
  */
-export async function getGroupWithUsers(id: string): Promise<(Group & { users: User[] }) | null> {
+export async function getGroupUsers(id: string): Promise<User[] | null> {
     try {
-        const result = await db
-            .select({
-                id: groupsTable.id,
-                name: groupsTable.name,
-                userId: groupUsersTable.userId,
-                user: getTableColumns(usersTable),
-            })
+        return await db
+            .select(getTableColumns(usersTable))
             .from(groupsTable)
             .where(eq(groupsTable.id, id))
             .innerJoin(groupUsersTable, eq(groupUsersTable.groupId, groupsTable.id))
             .innerJoin(usersTable, eq(groupUsersTable.userId, usersTable.userId));
-
-        return result.reduce<(Group & { users: User[] }) | null>((prev, v) => {
-            if (!prev) {
-                return { id: v.id, name: v.name, usersId: [v.userId], users: [v.user] };
-            }
-
-            prev.usersId.push(v.userId);
-            prev.users.push(v.user);
-            return prev;
-        }, null);
     } catch {
         log("A group couldn't be found");
         return null;
@@ -296,7 +281,7 @@ export async function getGroupWithUsers(id: string): Promise<(Group & { users: U
  */
 export async function getGroups(user: User): Promise<Group[]> {
     const result = await db
-        .select({
+        .selectDistinct({
             groups: getTableColumns(groupsTable),
             userId: alias(groupUsersTable, "others").userId,
         })
@@ -326,18 +311,17 @@ export async function getGroups(user: User): Promise<Group[]> {
  * @param friendsId The friends to add to the new group
  * @returns True if the operation succeded, false otherwise
  */
-export async function createGroup(user: User, friendsId: string[]): Promise<boolean> {
+export async function createGroup(user: User, name: string, friendsId: string[]): Promise<boolean> {
     if (friendsId.some((id) => user.userId === id)) return false;
     if (friendsId.length !== new Set(friendsId).size) return false;
 
     try {
-        const group = await db
-            .insert(groupsTable)
-            .values({ name: "Nouveau groupe", id: generateRandomString(16) });
+        const groupId = generateRandomString(16);
 
+        await db.insert(groupsTable).values({ name, id: groupId });
         await db.insert(groupUsersTable).values(
             [user.userId, ...friendsId].map((id) => ({
-                groupId: group.insertId,
+                groupId: groupId,
                 userId: id,
             }))
         );

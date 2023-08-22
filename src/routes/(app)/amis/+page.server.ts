@@ -10,7 +10,7 @@ export const load = (async ({ locals, url }) => {
     const groupId = url.searchParams.get("groupId");
     const isCommonSchedule = url.searchParams.get("commonSchedule") !== null;
 
-    const group = groupId ? await db.getGroupWithUsers(groupId) : null;
+    const groupUsers = groupId ? await db.getGroupUsers(groupId) : null;
 
     const getSchedule: () => Promise<Schedule | undefined> = async () => {
         if (friendId) {
@@ -31,8 +31,8 @@ export const load = (async ({ locals, url }) => {
                     return await db.getSchedule(friend);
                 }
             }
-        } else if (group) {
-            const schedules = group?.users.map((user) => db.getSchedule(user));
+        } else if (groupUsers) {
+            const schedules = groupUsers.map((user) => db.getSchedule(user));
 
             return getWeekCommonOccupations(
                 dayjs(),
@@ -43,7 +43,8 @@ export const load = (async ({ locals, url }) => {
 
     return {
         friendId,
-        group,
+        groupId,
+        groupUsers,
         streamed: {
             schedule: getSchedule().then((s) => (s ? scheduleToJson(s) : null)),
         },
