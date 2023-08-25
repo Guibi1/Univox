@@ -6,6 +6,8 @@
 
 type ProjectAPI = {
     GET: {
+        "/api/books": { searchParams: { query: string; codes: string; page: string; } };
+        "/api/books/[bookId]": { routeParams: { bookId: string } };
         "/api/friends": never;
         "/api/groups": never;
         "/api/notifications": never;
@@ -27,7 +29,7 @@ type ProjectAPI = {
         "/api/settings/colorScheme": { body: { colorScheme: string } };
     };
     DELETE: {
-        "/api/book": { body: { bookId: string } };
+        "/api/books/[bookId]": { routeParams: { bookId: string } };
         "/api/friends": { body: { friendId: string } };
         "/api/groups": { body: { groupId: string } };
         "/api/notifications": { body: { notificationId: number } };

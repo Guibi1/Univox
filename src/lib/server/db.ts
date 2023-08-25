@@ -20,6 +20,7 @@ import {
     ne,
     notLike,
     or,
+    sql,
 } from "drizzle-orm";
 import { alias, type MySqlUpdateSetSource } from "drizzle-orm/mysql-core";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
@@ -566,31 +567,69 @@ export async function getBookCodes(user: User): Promise<string[]> {
  * @param user The current user
  * @param query The search query
  * @param codes An array of book codes
- * @returns An array of 5 corresponding books, or less
+ * @param page The page to find
+ * @param codes The number of books per page
+ * @returns An array of corresponding books
  */
 export async function searchBooks(
     user: User,
     query: string,
     codes: string[],
-    limit = 5
+    page = 1,
+    limit = 15
 ): Promise<Book[]> {
+    const where = and(
+        ne(booksTable.userId, user.userId),
+        codes.length > 0 ? inArray(booksTable.code, codes) : undefined,
+        query.length > 0
+            ? or(
+                  eq(booksTable.isbn, query),
+                  eq(booksTable.title, query),
+                  eq(booksTable.author, query)
+              )
+            : undefined
+    );
+
     return await db
         .select()
         .from(booksTable)
-        .where(
-            and(
-                ne(booksTable.userId, user.userId),
-                codes.length > 0 ? inArray(booksTable.code, codes) : undefined,
-                query.length > 0
-                    ? or(
-                          eq(booksTable.isbn, query),
-                          eq(booksTable.title, query),
-                          eq(booksTable.author, query)
-                      )
-                    : undefined
-            )
-        )
-        .limit(limit);
+        .where(where)
+        .limit(limit)
+        .offset((page - 1) * limit);
+}
+
+/**
+ * Searches the database to find books that match the query
+ * @param user The current user
+ * @param query The search query
+ * @param codes An array of book codes
+ * @returns An array of 5 corresponding books, or less
+ */
+export async function getNumberOfSearchResults(
+    user: User,
+    query: string,
+    codes: string[]
+): Promise<number> {
+    const where = and(
+        ne(booksTable.userId, user.userId),
+        codes.length > 0 ? inArray(booksTable.code, codes) : undefined,
+        query.length > 0
+            ? or(
+                  eq(booksTable.isbn, query),
+                  eq(booksTable.title, query),
+                  eq(booksTable.author, query)
+              )
+            : undefined
+    );
+
+    const count = (
+        await db
+            .select({ count: sql<string>`count(*)` })
+            .from(booksTable)
+            .where(where)
+    ).at(0)?.count;
+
+    return Number.parseInt(count ?? "0");
 }
 
 /**

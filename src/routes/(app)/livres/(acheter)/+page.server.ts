@@ -6,8 +6,12 @@ export const load = (async ({ locals, url }) => {
     const selectedCodes = url.searchParams.getAll("codes");
 
     return {
+        query,
+        selectedCodes,
+        page: 1,
         streamed: {
             books: db.searchBooks(locals.user, query, selectedCodes),
+            count: db.getNumberOfSearchResults(locals.user, query, selectedCodes),
         },
     };
 }) satisfies LayoutServerLoad;

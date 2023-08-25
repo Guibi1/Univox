@@ -19,7 +19,7 @@
 </script>
 
 <main class="flex gap-8 p-8">
-    <div class="flex flex-col gap-4 w-64">
+    <div class="flex w-64 flex-col gap-4">
         <h1 class="h3">Rechercher</h1>
 
         <SearchBar bind:query {handleSearch} placeholder="Rechercher" />

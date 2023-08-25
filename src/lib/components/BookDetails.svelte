@@ -4,60 +4,51 @@
     import Carousel from "$lib/components/Carousel.svelte";
     import { api } from "sveltekit-api-fetch";
 
-    export let book: Book | null = null;
+    export let book: Book;
     export let isDeletable: boolean = false;
     export let sellerMail: string = "";
 
-    async function removeBook() {
-        if (!book) return;
-
+    async function deleteBook() {
         const { success } = await (
-            await api.DELETE("/api/book", { body: { bookId: book.id } })
+            await api.DELETE("/api/books/[bookId]", { routeParams: { bookId: book.id } })
         ).json();
-
-        if (success) {
-            invalidate("books");
-        }
+        if (success) invalidate("books");
     }
 </script>
 
 <div class="flex flex-col items-center">
-    {#if book}
-        <Carousel images={book.image ? [book.image] : undefined} readOnly />
+    <Carousel images={book.image ? [book.image] : undefined} readOnly />
 
-        <div class="grid grid-cols-[4fr_0px] gap-2">
-            <div class="flex flex-col items-center">
-                <span>
-                    <span class="text-xl font-bold">{book.title}</span>
-                    <span class="font-bold italic">de {book.author}</span>
-                </span>
+    <div class="grid grid-cols-[4fr_0px] gap-2">
+        <div class="flex flex-col items-center">
+            <span>
+                <span class="text-xl font-bold">{book.title}</span>
+                <span class="font-bold italic">de {book.author}</span>
+            </span>
 
-                <span>
-                    Pour le cours
-                    <span class="underline">{book.code}</span>
-                </span>
+            <span>
+                Pour le cours
+                <span class="underline">{book.code}</span>
+            </span>
 
-                <span>{book.state}</span>
+            <span>{book.state}</span>
 
-                <span>En vente pour {book.price} $</span>
+            <span>En vente pour {book.price} $</span>
 
-                <span>ISBN : {book.isbn}</span>
+            <span>ISBN : {book.isbn}</span>
 
-                {#if !isDeletable}
-                    <a href="mailto:{sellerMail}" class="filled"> Contacter </a>
-                {/if}
-            </div>
-
-            {#if isDeletable}
-                <button
-                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-900"
-                    on:click={removeBook}
-                >
-                    <i class="bx bx-trash" />
-                </button>
+            {#if !isDeletable}
+                <a href="mailto:{sellerMail}" class="filled"> Contacter </a>
             {/if}
         </div>
-    {:else}
-        <span>Pas de livre sélectionné</span>
-    {/if}
+
+        {#if isDeletable}
+            <button
+                class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-900"
+                on:click={deleteBook}
+            >
+                <i class="bx bx-trash" />
+            </button>
+        {/if}
+    </div>
 </div>
