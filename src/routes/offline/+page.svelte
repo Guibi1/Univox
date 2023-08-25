@@ -4,7 +4,7 @@
     import Logo from "$src/assets/logo.svelte";
     import { onDestroy, onMount } from "svelte";
 
-    let timer: NodeJS.Timer;
+    let timer: NodeJS.Timeout;
     onMount(() => (timer = setInterval(() => invalidateAll(), 5000)));
     onDestroy(() => clearInterval(timer));
 </script>

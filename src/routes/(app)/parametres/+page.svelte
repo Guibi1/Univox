@@ -1,7 +1,5 @@
 <script lang="ts">
     import Avatar from "$lib/components/Avatar.svelte";
-    import Option from "$lib/components/Option.svelte";
-    import Select from "$lib/components/Select.svelte";
     import colorScheme from "$lib/stores/colorScheme";
     import user from "$lib/stores/user";
     import { superForm } from "sveltekit-superforms/client";
@@ -17,7 +15,7 @@
     <title>Univox | Paramètres</title>
 </svelte:head>
 
-<div class="lg:grid-cols-[max-content_20rem] lg:divide-x mx-auto grid gap-6 py-4">
+<div class="mx-auto grid gap-6 py-4 lg:grid-cols-[max-content_20rem] lg:divide-x">
     <div class="flex flex-col items-center gap-2 text-center">
         <div class="h-32">
             <Avatar />
