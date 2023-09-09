@@ -2,12 +2,17 @@ import dayjs from "dayjs";
 import { z } from "zod";
 
 /**
+ * Validates a user's da
+ */
+export const daSchema = z.string().regex(/\d{7}/, "Numéro d'étudiant invalide");
+
+/**
  * Validates a user's email
  */
 export const emailSchema = z
     .string()
     .email("Courriel invalide")
-    .endsWith(".qc.ca", "Assurez-vous d'utiliser votre courriel étudiant");
+    .endsWith(".ca", "Assurez-vous d'utiliser votre courriel étudiant");
 
 /**
  * Validates a user's password
@@ -58,6 +63,7 @@ export const periodSchema = z.object({
  * Validates the required fields to login into Omnivox
  */
 export const omnivoxLoginSchema = z.object({
+    da: daSchema,
     email: emailSchema,
     omnivoxPassword: z.string().min(1, "Entrez votre mot de passe Omnivox"),
     mfaId: z.string().default(""),

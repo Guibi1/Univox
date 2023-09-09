@@ -28,7 +28,7 @@
 </div>
 
 <form use:enhance class="m-auto flex w-80 flex-col gap-6" method="post" action="?/import">
-    <ConnectionOmnivox {form} {errors} {submitting} {message} email={$user.email} />
+    <ConnectionOmnivox {form} {errors} {submitting} {message} da={$user.da} email={$user.email} />
 
     {#if !$submitting}
         <button type="submit" class="btn variant-filled-secondary">Importer l'horaire</button>

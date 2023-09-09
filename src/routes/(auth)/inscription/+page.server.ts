@@ -1,6 +1,6 @@
 import { auth } from "$lib/server/lucia";
 import * as omnivox from "$lib/server/omnivox";
-import { emailSchema, omnivoxLoginSchema } from "$lib/zod_schemas";
+import { omnivoxLoginSchema } from "$lib/zod_schemas";
 import { fail } from "@sveltejs/kit";
 import { setError, superValidate } from "sveltekit-superforms/server";
 import { z } from "zod";
@@ -16,15 +16,18 @@ export const actions = {
     signup: async ({ locals, request }) => {
         const form = await superValidate(request, signupSchema);
 
-        const baseUrl = form.data.email.match(/\d{7}@(.*).qc.ca/)?.[1];
-        if (!form.valid || !baseUrl) {
+        if (!form.valid) {
             return fail(400, { form });
         }
 
         try {
             if (!form.data.session) {
                 // Login via Omnivox to verify the user's identity
-                const login = await omnivox.login(form.data.email, form.data.omnivoxPassword);
+                const login = await omnivox.login(
+                    form.data.da,
+                    form.data.email,
+                    form.data.omnivoxPassword
+                );
                 form.data.session = JSON.stringify(login.session.cookies);
 
                 if (login.mfa) {
@@ -39,7 +42,10 @@ export const actions = {
 
                 const result = await omnivox.submitCode2FA(
                     form.data.code,
-                    { cookies: JSON.parse(form.data.session), baseUrl },
+                    omnivox.createSessionFromCookies(
+                        JSON.parse(form.data.session),
+                        form.data.email
+                    ),
                     form.data.mfaId
                 );
 
@@ -58,10 +64,9 @@ export const actions = {
         }
 
         try {
-            const info = await omnivox.fetchUserFullName({
-                cookies: JSON.parse(form.data.session),
-                baseUrl,
-            });
+            const info = await omnivox.fetchUserFullName(
+                omnivox.createSessionFromCookies(JSON.parse(form.data.session), form.data.email)
+            );
 
             // Everything it good!
             form.data.password = "";
@@ -87,7 +92,7 @@ export const actions = {
                         password: form.data.password,
                     },
                     attributes: {
-                        da: form.data.email.split("@")[0],
+                        da: form.data.da,
                         email: form.data.email,
                         firstName: form.data.firstName,
                         lastName: form.data.lastName,
@@ -110,7 +115,6 @@ export const actions = {
 
 const signupSchema = omnivoxLoginSchema
     .extend({
-        email: emailSchema,
         password: z.string(),
         confirmPassword: z.string(),
         firstName: z.string().optional(),

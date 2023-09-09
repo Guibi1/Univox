@@ -20,7 +20,7 @@ export const actions = {
 
         if (!form.data.session) {
             try {
-                const login = await omnivox.login(locals.user.email, form.data.omnivoxPassword);
+                const login = await omnivox.login(locals.user.da, locals.user.email, form.data.omnivoxPassword);
 
                 if (login.mfa) {
                     form.data.session = JSON.stringify(login.session.cookies);

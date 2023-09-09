@@ -4,14 +4,32 @@
     import type { ValidationErrors } from "sveltekit-superforms";
     import type { z } from "zod";
 
+    export let da: string | undefined = undefined;
     export let email: string | undefined = undefined;
     export let form: Readable<z.infer<typeof omnivoxLoginSchema>>;
     export let errors: Writable<ValidationErrors<typeof omnivoxLoginSchema>>;
     export let submitting: Readable<boolean>;
     export let message: Writable<any>;
 
+    $: if (da) $form.da = da;
     $: if (email) $form.email = email;
 </script>
+
+<label class="label" data-error={$errors.da}>
+    <span> Numéro étudiant (da) </span>
+
+    <input
+        name="da"
+        type="text"
+        class="input"
+        bind:value={$form.da}
+        readonly={!!da || $submitting}
+    />
+
+    {#if $errors.da}
+        <span>{$errors.da[0]}</span>
+    {/if}
+</label>
 
 <label class="label" data-error={$errors.email}>
     <span> Adresse courriel étudiante </span>

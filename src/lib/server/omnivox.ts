@@ -111,12 +111,11 @@ export async function fetchUserFullName(session: OmnivoxSession) {
  * @returns An object containing all the usefull information
  */
 export async function login(
+    da: string,
     email: string,
     password: string
 ): Promise<{ session: OmnivoxSession; mfa?: { type: "T" | "E"; id: string } }> {
-    const match = regexFind(email, /(\d{7})@(.*).qc.ca/);
-    const da = match[1];
-    const baseUrl = match[2];
+    const { baseUrl } = createSessionFromCookies({}, email);
 
     // GET COOKIES
     const firstRes = await fetch(`https://${baseUrl}.omnivox.ca:443/Login/Account/Login`);
@@ -560,7 +559,7 @@ function formatCookies(...cookies: Cookies[]): string {
  * @returns The SessionCookie
  */
 export function createSessionFromCookies(cookies: Cookies, email: string): OmnivoxSession {
-    const baseUrl = email.match(/\d{7}@(.*).qc.ca/)?.[1];
+    const baseUrl = email.match(/\S@(.*)(.qc)?.ca/)?.[1];
     if (!baseUrl) throw "Invalid email";
 
     return { cookies, baseUrl };

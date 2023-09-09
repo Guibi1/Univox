@@ -14,14 +14,17 @@ export const actions = {
     reset: async ({ request, url }) => {
         const form = await superValidate(request, resetSchema);
 
-        const baseUrl = form.data.email.match(/\d{7}@(.*).qc.ca/)?.[1];
-        if (!form.valid || !baseUrl) {
+        if (!form.valid) {
             return fail(400, { form });
         }
 
         if (!form.data.session) {
             try {
-                const login = await omnivox.login(form.data.email, form.data.omnivoxPassword);
+                const login = await omnivox.login(
+                    form.data.da,
+                    form.data.email,
+                    form.data.omnivoxPassword
+                );
 
                 if (login.mfa) {
                     form.data.session = JSON.stringify(login.session.cookies);
@@ -39,7 +42,7 @@ export const actions = {
 
             const result = await omnivox.submitCode2FA(
                 form.data.code,
-                { cookies: JSON.parse(form.data.session), baseUrl },
+                omnivox.createSessionFromCookies(JSON.parse(form.data.session), form.data.email),
                 form.data.mfaId
             );
 
