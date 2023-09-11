@@ -7,8 +7,10 @@
     import friends from "$lib/stores/friends";
     import groups from "$lib/stores/groups";
     import type { Group } from "$lib/types.js";
-    import { Accordion, AccordionItem, modalStore } from "@skeletonlabs/skeleton";
+    import { Accordion, AccordionItem, getModalStore } from "@skeletonlabs/skeleton";
     import type { User } from "lucia";
+
+    const modalStore = getModalStore();
 
     export let data;
 
@@ -72,11 +74,11 @@
             </ul>
         </nav>
 
-        <button class="btn variant-filled-primary my-4" on:click={addFriend}>
+        <button class="variant-filled-primary btn my-4" on:click={addFriend}>
             Ajouter un ami
         </button>
 
-        <button class="btn variant-filled-primary" on:click={createGroup}> Créer un groupe </button>
+        <button class="variant-filled-primary btn" on:click={createGroup}> Créer un groupe </button>
     </div>
 
     {#await data.streamed.schedule}
@@ -114,7 +116,7 @@
 
                         <div slot="content" class="grid">
                             <button
-                                class="btn variant-ghost-error"
+                                class="variant-ghost-error btn"
                                 on:click={() =>
                                     currentFriend && friends.remove(currentFriend.userId)}
                             >
@@ -124,7 +126,7 @@
                     </AccordionItem>
                 </Accordion>
 
-                <a class="btn variant-filled-primary" href={getCommonScheduleUrl(currentFriend)}>
+                <a class="variant-filled-primary btn" href={getCommonScheduleUrl(currentFriend)}>
                     Disponibilités communes
                 </a>
             </div>
@@ -150,14 +152,14 @@
 
                         <div slot="content" class="grid gap-2">
                             <button
-                                class="btn variant-ghost-secondary"
+                                class="variant-ghost-secondary btn"
                                 on:click={() => currentGroup && groups.rename(currentGroup)}
                             >
                                 Renommer le groupe
                             </button>
 
                             <button
-                                class="btn variant-ghost-error"
+                                class="variant-ghost-error btn"
                                 on:click={() => currentGroup && groups.quit(currentGroup)}
                             >
                                 Quitter le groupe

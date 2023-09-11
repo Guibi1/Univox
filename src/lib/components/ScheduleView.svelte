@@ -68,7 +68,7 @@
             {startDay.year()}
         </p>
         <!-- Buttons for navigating to the previous or next week -->
-        <div class="btn-group variant-ghost h-8">
+        <div class="variant-ghost btn-group h-8">
             <button on:click={() => moveWeek(-1)}>
                 <i class="bx bxs-left-arrow text-sm" />
             </button>
@@ -119,7 +119,7 @@
         <div class="absolute left-12 right-0 h-0">
             {#each Array.from({ length: 24 - timeStart }) as _}
                 <div
-                    class="border-b bg-gray-300 dark:border-gray3 dark:bg-gray2"
+                    class="border-b bg-neutral-300 dark:border-neutral-900 dark:bg-neutral-700"
                     style={`height: ${rowHeight}rem`}
                 />
             {/each}
@@ -128,7 +128,7 @@
         <!-- Calendar -->
         {#each getDaysToShow(startDay) as day, i}
             <div
-                class="relative min-w-0 flex-1 border-l-2 dark:border-gray3"
+                class="relative min-w-0 flex-1 border-l-2 dark:border-neutral-900"
                 style={`height: ${rowHeight * (24 - timeStart)}rem`}
             >
                 <!-- Boucle pour chaque période de l'emploi du temps -->

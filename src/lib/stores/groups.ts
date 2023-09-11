@@ -1,5 +1,5 @@
 import type { Group } from "$lib/types";
-import { modalStore } from "@skeletonlabs/skeleton";
+import { getModalStore } from "@skeletonlabs/skeleton";
 import type { User } from "lucia";
 import { writable } from "svelte/store";
 import { api } from "sveltekit-api-fetch";
@@ -30,6 +30,8 @@ function createGroupsStore() {
     }
 
     async function rename(group: Group) {
+        const modalStore = getModalStore();
+
         modalStore.trigger({
             type: "prompt",
             title: "Renommer le groupe",

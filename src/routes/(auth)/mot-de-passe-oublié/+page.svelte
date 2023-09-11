@@ -2,8 +2,10 @@
     import { page } from "$app/stores";
     import ConnectionOmnivox from "$lib/components/ConnectionOmnivox.svelte";
     import Loader from "$lib/components/Loader.svelte";
-    import { toastStore } from "@skeletonlabs/skeleton";
+    import { getToastStore } from "@skeletonlabs/skeleton";
     import { superForm } from "sveltekit-superforms/client";
+
+    const toastStore = getToastStore();
 
     export let data;
 
@@ -58,7 +60,7 @@
     {#if !$submitting}
         <button
             type="submit"
-            class="btn variant-filled-secondary flex w-7/12 items-center justify-center self-center"
+            class="variant-filled-secondary btn flex w-7/12 items-center justify-center self-center"
         >
             Suivant <i class="bx bx-chevron-right" />
         </button>

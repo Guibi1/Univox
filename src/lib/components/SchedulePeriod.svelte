@@ -28,10 +28,11 @@
     class="group relative m-0 h-0 w-full min-w-0"
     style={`top: ${getTopOffset(period, timeStart)}rem;`}
     on:mousemove={handleMousemove}
+    role="tooltip"
 >
     <div
         class={classNames(
-            "mx-0.5 flex flex-col justify-between text-ellipsis rounded-lg bg-blue-primary px-2 text-center",
+            "card variant-outline-primary mx-0.5 flex flex-col justify-between text-ellipsis px-2 text-center",
             getHeight(period) >= rowHeight * 1.9 ? "py-4" : "py-2"
         )}
         style={`height: ${getHeight(period)}rem;`}
@@ -48,7 +49,6 @@
             {/if}
         </div>
 
-        <!-- If is a Class -->
         {#if "group" in period}
             <div class="flex flex-row items-center justify-around">
                 {#if period.virtual}
@@ -70,7 +70,7 @@
         <!-- Affiche les informations supplémentaires lorsqu'on survole le div -->
         <div
             class={classNames(
-                "pointer-events-none absolute z-10 mx-2 hidden w-max flex-col rounded border-2 border-blue-primary bg-zinc-700 p-4 text-left group-hover:flex",
+                "card pointer-events-none absolute z-10 mx-2 hidden w-max flex-col p-4 text-left group-hover:flex",
                 isRight ? "right-full" : "left-full"
             )}
             style={`top: ${tooltipY}px;`}

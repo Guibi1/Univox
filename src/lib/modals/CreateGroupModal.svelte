@@ -1,10 +1,12 @@
 <script lang="ts">
     import friends from "$lib/stores/friends";
-    import { modalStore, toastStore } from "@skeletonlabs/skeleton";
-    import type { User } from "lucia";
-    import { api } from "sveltekit-api-fetch";
-    import UsersList from "./components/UsersList.svelte";
     import groups from "$lib/stores/groups";
+    import { getModalStore, getToastStore } from "@skeletonlabs/skeleton";
+    import type { User } from "lucia";
+    import UsersList from "./components/UsersList.svelte";
+
+    const modalStore = getModalStore();
+    const toastStore = getToastStore();
 
     let searchQuery = "";
     let name = "";
@@ -51,7 +53,7 @@
         />
 
         <button
-            class="btn variant-filled-tertiary mx-4"
+            class="variant-filled-tertiary btn mx-4"
             on:click={createGroup}
             disabled={selectedUsers.size < 2 || name.length < 3}
         >
@@ -63,7 +65,7 @@
     <div class="flex flex-wrap justify-center gap-2">
         {#each selectedUsers as user}
             <span
-                class="chip variant-ghost-tertiary m-2"
+                class="variant-ghost-tertiary chip m-2"
                 on:click={() => unselectUser(user)}
                 on:keypress
                 role="button"
@@ -77,7 +79,7 @@
 
     <!-- Results -->
     {#if results.length > 0}
-        <nav class="hide-scrollbar list-nav max-h-[480px] overflow-x-auto" tabindex="-1">
+        <nav class="list-nav hide-scrollbar max-h-[480px] overflow-x-auto" tabindex="-1">
             {#each results as result}
                 {#if result.otherSchool}
                     <div class="p-4 text-sm font-bold">Autres écoles</div>
@@ -87,7 +89,7 @@
             {/each}
         </nav>
     {:else}
-        <nav class="hide-scrollbar list-nav max-h-[480px] overflow-x-auto" tabindex="-1">
+        <nav class="list-nav hide-scrollbar max-h-[480px] overflow-x-auto" tabindex="-1">
             <UsersList users={$friends} on:click={(e) => selectUser(e.detail)} />
         </nav>
     {/if}

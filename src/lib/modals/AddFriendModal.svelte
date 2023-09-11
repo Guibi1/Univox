@@ -1,9 +1,12 @@
 <script lang="ts">
     import friends from "$lib/stores/friends";
-    import { modalStore, toastStore } from "@skeletonlabs/skeleton";
+    import { getModalStore, getToastStore } from "@skeletonlabs/skeleton";
     import type { User } from "lucia";
     import { api } from "sveltekit-api-fetch";
     import UsersList from "./components/UsersList.svelte";
+
+    const modalStore = getModalStore();
+    const toastStore = getToastStore();
 
     let searchQuery = "";
     let results: { users: User[]; otherSchool: boolean }[] = [];
@@ -53,7 +56,7 @@
 
     <!-- Results -->
     {#if results.length > 0}
-        <nav class="hide-scrollbar list-nav max-h-[480px] overflow-x-auto" tabindex="-1">
+        <nav class="list-nav hide-scrollbar max-h-[480px] overflow-x-auto" tabindex="-1">
             {#each results as result}
                 {#if result.otherSchool}
                     <div class="p-4 text-sm font-bold">Autres écoles</div>

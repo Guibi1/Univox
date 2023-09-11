@@ -1,6 +1,7 @@
 import * as db from "$lib/server/db";
 import { fail } from "@sveltejs/kit";
 import dayjs from "dayjs";
+import customParse from "dayjs/plugin/customParseFormat";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { superValidate } from "sveltekit-superforms/server";
@@ -9,6 +10,7 @@ import type { Actions } from "./$types";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(customParse);
 
 dayjs.tz.setDefault("America/Montreal");
 
@@ -55,7 +57,7 @@ const newPeriodSchema = z
         endTime: z.string().regex(/\d\d:\d\d/),
     })
     .superRefine(({ startTime, endTime }, { addIssue }) => {
-        if (!dayjs(startTime, "HH:mm").isBefore(dayjs(endTime, "HH:mm"), "minutes")) {
+        if (!dayjs(startTime, "HH:MM").isBefore(dayjs(endTime, "HH:MM"), "minutes")) {
             addIssue({
                 path: ["endTime"],
                 message: "La fin de l'évenement doit être après le début",

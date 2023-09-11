@@ -140,7 +140,7 @@
             <div
                 transition:fade
                 on:dragleave={() => (isDragginOver = false)}
-                class="absolute inset-0 z-10 flex cursor-pointer flex-col items-center justify-center gap-1 bg-blue-secondary"
+                class="bg-primary-400-500-token absolute inset-0 z-10 flex cursor-pointer flex-col items-center justify-center gap-1"
                 role="form"
             >
                 <i class="bx bx-cloud-upload pointer-events-none text-7xl" />
@@ -159,7 +159,9 @@
                         src={image}
                         class={classNames(
                             "aspect-square w-20 cursor-pointer border-2 object-cover transition duration-100 ease-in-out hover:scale-110",
-                            selectedIndex === i ? "border-blue-primary" : "border-neutral-300"
+                            selectedIndex === i
+                                ? "border-primary-300-600-token"
+                                : "border-neutral-300"
                         )}
                         alt=""
                     />

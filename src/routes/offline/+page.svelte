@@ -13,7 +13,7 @@
     <main class="grid grid-rows-2">
         <div class="flex flex-col items-center gap-4">
             <Logo size="6rem" />
-            <hr class="w-7/12" />
+            <hr class="w-48" />
             <LogoText width="10rem" />
         </div>
 
