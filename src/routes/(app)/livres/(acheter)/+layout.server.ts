@@ -3,6 +3,6 @@ import type { LayoutServerLoad } from "./$types";
 
 export const load = (async ({ locals }) => {
     return {
-        bookCodes: db.getBookCodes(locals.user),
+        bookCodes: await db.getBookCodes(locals.user),
     };
 }) satisfies LayoutServerLoad;

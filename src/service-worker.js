@@ -1,5 +1,10 @@
 /// <reference types="@sveltejs/kit" />
+/// <reference no-default-lib="true"/>
+/// <reference lib="esnext" />
+/// <reference lib="webworker" />
 import { build, files, prerendered, version } from "$service-worker";
+
+const sw = /** @type {ServiceWorkerGlobalScope} */ (/** @type {unknown} */ (self));
 
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
@@ -10,7 +15,7 @@ const ASSETS = [
     ...prerendered,
 ];
 
-self.addEventListener("install", (event) => {
+sw.addEventListener("install", (event) => {
     // Create a new cache and add all files to it
     async function addFilesToCache() {
         const cache = await caches.open(CACHE);
@@ -20,7 +25,7 @@ self.addEventListener("install", (event) => {
     event.waitUntil(addFilesToCache());
 });
 
-self.addEventListener("activate", (event) => {
+sw.addEventListener("activate", (event) => {
     // Remove previous cached data from disk
     async function deleteOldCaches() {
         for (const key of await caches.keys()) {
@@ -31,7 +36,7 @@ self.addEventListener("activate", (event) => {
     event.waitUntil(deleteOldCaches());
 });
 
-self.addEventListener("fetch", (event) => {
+sw.addEventListener("fetch", (event) => {
     // ignore POST requests etc
     if (event.request.method !== "GET") return;
 
@@ -55,10 +60,11 @@ self.addEventListener("fetch", (event) => {
 
             return response;
         } catch {
-            return cache.match("/offline");
             // return cache.match(event.request);
+            return cache.match("/offline");
         }
     }
 
+    // @ts-expect-error Might be undefined but its expected if there is no cache and no network
     event.respondWith(respond());
 });

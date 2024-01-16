@@ -12,6 +12,7 @@ const conn = connect({
 });
 
 export const auth = lucia({
+    //@ts-expect-error Lucia's planetscale version doesn't match
     adapter: planetscale(conn, {
         user: "users",
         key: "user_key",

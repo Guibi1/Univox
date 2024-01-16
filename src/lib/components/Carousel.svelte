@@ -40,7 +40,7 @@
 
     // Function to read image files and update the images and files arrays
     function readImages(filelist: FileList) {
-        for (let file of filelist) {
+        for (let file of Array.from(filelist)) {
             if (file.type !== "image/png" && file.type !== "image/jpeg") return;
             if (images.length >= maxImagesCount) return;
             let reader = new FileReader();

@@ -13,7 +13,7 @@ export const load = (async ({ params }) => {
 
     return {
         book: book,
-        bookUser,
+        bookUser: await bookUser,
         school: await bookUser.then((u) => (u ? getSchool(u) : null)),
     };
 }) satisfies PageServerLoad;

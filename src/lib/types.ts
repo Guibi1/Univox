@@ -1,5 +1,4 @@
 import type { Dayjs } from "dayjs";
-import type { InferModel } from "drizzle-orm";
 import type { User } from "lucia";
 import type { booksTable } from "./server/schemas/books";
 
@@ -15,7 +14,7 @@ export interface Group {
 /**
  * Represents a book to be sold
  */
-export type Book = InferModel<typeof booksTable>;
+export type Book = typeof booksTable.$inferSelect;
 
 /**
  * Represents a user's schedule

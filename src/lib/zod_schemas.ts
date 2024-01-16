@@ -76,7 +76,7 @@ export const omnivoxLoginSchema = z.object({
  */
 export const imageSchema = z
     .instanceof(File)
-    .refine((file: File) => file?.length !== 0, "Il faut un fichier")
+    .refine((file: File) => file?.size !== 0, "Il faut un fichier")
     .refine((file) => file.size < 5000000, "Le fichier doit être plus petit que 5MB")
     .refine((file) => {
         if (!file?.name) return false;
