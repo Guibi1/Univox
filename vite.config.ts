@@ -1,7 +1,7 @@
 import { sveltekit } from "@sveltejs/kit/vite";
-import { apiFetch } from "sveltekit-api-fetch/vite";
+import { typesafeApi } from "sveltekit-typesafe-api/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-    plugins: [sveltekit(), apiFetch()],
+    plugins: [sveltekit(), typesafeApi()],
 });

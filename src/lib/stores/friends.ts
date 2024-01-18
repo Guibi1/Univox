@@ -1,6 +1,6 @@
 import type { User } from "lucia";
 import { writable } from "svelte/store";
-import { api } from "sveltekit-api-fetch";
+import { api } from "sveltekit-typesafe-api";
 
 function createFriendsStore() {
     const { subscribe, set } = writable<User[]>();

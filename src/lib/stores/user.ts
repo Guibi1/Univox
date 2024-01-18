@@ -2,7 +2,7 @@ import { browser } from "$app/environment";
 import { invalidate } from "$app/navigation";
 import type { User } from "lucia";
 import { writable } from "svelte/store";
-import { api } from "sveltekit-api-fetch";
+import { api } from "sveltekit-typesafe-api";
 
 function createUserStore() {
     const { subscribe, set: setStore, update } = writable<User>();

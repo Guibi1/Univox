@@ -1,7 +1,7 @@
 import { scheduleFromJson, type JsonSchedule } from "$lib/sanitization";
 import type { Period, Schedule } from "$lib/types";
 import { writable } from "svelte/store";
-import { api } from "sveltekit-api-fetch";
+import { api } from "sveltekit-typesafe-api";
 
 function createScheduleStore() {
     const { subscribe, set: setStore } = writable<Schedule>();

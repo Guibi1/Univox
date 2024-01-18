@@ -4,7 +4,7 @@
 
 import type { Notification, NotificationKind } from "$lib/types";
 import { writable } from "svelte/store";
-import { api } from "sveltekit-api-fetch";
+import { api } from "sveltekit-typesafe-api";
 
 function createNotificationsStore() {
     const { subscribe, set } = writable<Notification[]>();

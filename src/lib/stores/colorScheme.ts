@@ -5,7 +5,7 @@
 
 import { browser } from "$app/environment";
 import { writable } from "svelte/store";
-import { api } from "sveltekit-api-fetch";
+import { api } from "sveltekit-typesafe-api";
 
 export type ColorScheme = "light" | "dark";
 

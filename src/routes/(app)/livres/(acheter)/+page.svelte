@@ -1,6 +1,6 @@
 <script lang="ts">
     import Loader from "$lib/components/Loader.svelte";
-    import { api } from "sveltekit-api-fetch";
+    import { api } from "sveltekit-typesafe-api";
 
     export let data;
 
@@ -11,7 +11,7 @@
     function showMore() {
         page += 1;
         loadingMore = true;
-        api.GET("/api/books", {
+         api.GET("/api/books", {
             searchParams: {
                 query: data.query,
                 codes: data.selectedCodes.at(0) ?? "",

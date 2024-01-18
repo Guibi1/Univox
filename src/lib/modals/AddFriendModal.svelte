@@ -2,7 +2,7 @@
     import friends from "$lib/stores/friends";
     import { getModalStore, getToastStore } from "@skeletonlabs/skeleton";
     import type { User } from "lucia";
-    import { api } from "sveltekit-api-fetch";
+    import { api } from "sveltekit-typesafe-api";
     import UsersList from "./components/UsersList.svelte";
 
     const modalStore = getModalStore();

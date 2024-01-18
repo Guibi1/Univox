@@ -2,7 +2,7 @@
     import { invalidate } from "$app/navigation";
     import type { Book } from "$lib/types";
     import Carousel from "$lib/components/Carousel.svelte";
-    import { api } from "sveltekit-api-fetch";
+    import { api } from "sveltekit-typesafe-api";
 
     export let book: Book;
     export let isDeletable: boolean = false;

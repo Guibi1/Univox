@@ -1,12 +1,12 @@
 import * as db from "$lib/server/db";
 import { groupIdSchema, userIdSchema } from "$lib/zod_schemas";
 import { error, json } from "@sveltejs/kit";
-import { apiValidate } from "sveltekit-api-fetch/server";
+import { validate } from "sveltekit-typesafe-api/server";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
 export const POST = (async ({ request, locals }) => {
-    const { data } = await apiValidate(request, {
+    const { data } = await validate(request, {
         groupId: groupIdSchema,
         usersId: z.array(userIdSchema).min(1),
     });
